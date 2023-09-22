@@ -1,1 +1,111 @@
+body {
+    background-color: #1F3B4D; 
+}
 
+
+
+ #container  {
+ background-color: #29465B;
+ border: 5px solid #f5e43c;
+ height: 700px; 
+ width: 750px;
+ margin: 0 auto;
+ text-align: center 
+ }
+
+ 
+ #btn {
+ margin: 50px auto;
+ height: 50px; 
+ width: 250px;
+font-size: 22px; 
+background-color: rgb(255, 0, 0);
+text-align: center;
+}
+
+    #factDisplay {
+    margin: 25px auto;
+    font-size: 26px; 
+    color: white;
+    }
+    
+    #undoLastFact {
+    height: 50px ;
+    width: 150px;
+       background-color: rgb(73, 225, 23);
+       text-align: center;
+       font-size: 18px;
+       }
+
+       #readFactButton {
+        height: 50px ;
+        width: 150px;
+           background-color: rgb(73, 225, 23);
+           text-align: center;
+           font-size: 18px;
+           }
+           #stopReadingButton {
+            height: 50px ;
+            width: 150px;
+               background-color: rgb(73, 225, 23);
+               text-align: center;
+               font-size: 18px;
+               }
+               #redoFactButton {
+                height: 50px ;
+                width: 150px;
+                   background-color: rgb(73, 225, 23);
+                   text-align: center;
+                   font-size: 18px;
+                   }
+                   .menu {
+                     position: fixed;
+                     top: 20px;
+                     left: 20px;
+                     z-index: 1000;
+                     background-color: rgb(0, 0, 0);
+                   }
+                   
+                   .menu-icon {
+                     cursor: pointer;
+                     display: flex;
+                     flex-direction: column;
+                     justify-content: space-between;
+                     width: 30px;
+                     height: 20px;
+                   }
+                   
+                   .line {
+                     width: 100%;
+                     height: 4px;
+                     background-color: #ffffff;
+                   }
+                   
+                   
+                   
+                   /* Initial styles for the hidden menu links */
+.menu-links {
+   position: absolute;
+   top: 40px;
+   left: -1000%; /* Initially hide the links off-screen to the left */
+   padding: 10px;
+   border-radius: 1px;
+   transition: left 0.3s ease-in-out; /* Add a transition for the left property */
+ }
+ /* Styles for when the menu is open */
+.menu-links.open {
+   left: 0; /* Slide the links into view */
+ }
+ 
+                   .linkcolor {
+                     color:white
+                   }
+
+
+
+#fontSizeValue {
+  color: white;
+}
+#fontSizeSlidercolor {
+  color: white;
+}
