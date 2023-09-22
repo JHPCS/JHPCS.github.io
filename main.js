@@ -175,31 +175,21 @@ function toggleMenu() {
   menuLinks.classList.toggle("open"); // Toggle the "open" class
 }
 
-const fontSizeSlider = document.getElementById("fontSizeSlider");
-const fontSizeValue = document.getElementById("fontSizeValue");
 
 
-// Initial font size
-let currentFontSize = 16;
 
-// Function to update font size
-function updateFontSize() {
-  const newSize = fontSizeSlider.value + "px";
-  factDisplay.style.fontSize = newSize;
-  fontSizeValue.textContent = newSize;
-}
+document.addEventListener("DOMContentLoaded", function () {
+  const fontSizeSlider = document.getElementById("fontSizeSlider");
+  const fontSizeValue = document.getElementById("fontSizeValue");
 
-const observer = new MutationObserver(function (mutationsList) {
-  // Loop through mutations to check if content has changed
-  for (const mutation of mutationsList) {
-    if (mutation.type === "childList" && mutation.target === factDisplay) {
-      // Call the font size update function
-      updateFontSize();
-    }
+  function updateFontSize() {
+    const newSize = fontSizeSlider.value + "px";
+    factDisplay.style.fontSize = newSize;
+    fontSizeValue.textContent = newSize;
   }
-});
 
-// Start observing changes in the factDisplay element
-observer.observe(factDisplay, { childList: true });
+  fontSizeSlider.addEventListener("input", updateFontSize);
+  updateFontSize();
+});
 
 
