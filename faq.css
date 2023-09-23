@@ -34,7 +34,7 @@ body, ul {
 .faq-list li::marker {
   content: "•"; /* Use a custom bullet point character */
   color: white; /* Set bullet point color to white */
-  margin-right: 5px; /* Add a small space between the bullet point and text */
+  margin-right: 10px; /* Add a small space between the bullet point and text */
 }
 
 .faq-question {
