@@ -1,5 +1,5 @@
+
 ul {
-  list-style: none;
   padding-left: 20px; /* Adjust the spacing between bullet points and text as needed */
 }
 
@@ -9,6 +9,14 @@ ul li::before {
   display: inline-block;
   width: 1em; /* Adjust the width as needed */
   margin-left: -1em; /* Adjust the negative margin to position the bullet points properly */
+}
+ul {
+  list-style-type: disc; /* Use 'disc' for default bullet points or 'none' for no bullet points */
+  margin-left: 20px; /* Adjust the margin as needed for spacing between bullet points and text */
+}
+
+ul li {
+  margin-bottom: 5px; /* Adjust the margin as needed to control vertical spacing between list items */
 }
 
   
