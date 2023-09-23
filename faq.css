@@ -1,4 +1,5 @@
 body, ul {
+  background-color: #1F3B4D; 
   margin: 0;
   padding: 0;
 }
@@ -8,7 +9,7 @@ body, ul {
   max-width: 800px;
   margin: 20px auto;
   padding: 20px;
-  background-color: #fff;
+  background-color: #29465B;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
 }
@@ -16,11 +17,13 @@ body, ul {
 .faq-question {
   font-weight: bold;
   margin-bottom: 5px;
+  color: white;
 }
 
 .faq-answer {
   margin-bottom: 20px;
   display: none ;
+  color:white; 
 }
 
 
