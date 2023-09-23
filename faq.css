@@ -1,9 +1,16 @@
 ul {
-  list-style:none;
+  list-style: none;
+  padding-left: 20px; /* Adjust the spacing between bullet points and text as needed */
 }
+
 ul li::before {
   content: "\2022";
-    color:white;
+  color: white;
+  display: inline-block;
+  width: 1em; /* Adjust the width as needed */
+  margin-left: -1em; /* Adjust the negative margin to position the bullet points properly */
+}
+
   
 }
 .h1-color {
