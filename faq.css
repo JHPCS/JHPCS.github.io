@@ -1,16 +1,34 @@
-.faq-list {
-  list-style: none;
+body, ul {
+  margin: 0;
   padding: 0;
 }
 
-.faq-question {
-  cursor: pointer;
-  font-weight: bold;
-  margin-bottom: 10px;
+/* Style the FAQ list */
+.faq-list {
+  list-style: none;
+  max-width: 600px; /* Adjust the width as needed */
+  margin: 0 auto;
+  padding: 20px;
 }
 
+/* Style each FAQ item */
+.faq-list li {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+/* Style the FAQ question */
+.faq-question {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Style the FAQ answer */
 .faq-answer {
-  display: none;
+  margin-top: 5px;
 }
 .menu {
                      position: fixed;
@@ -56,3 +74,8 @@
                        font-family: sans-serif ;
                        font-size: 16px ;
                    }
+
+
+
+
+
