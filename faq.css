@@ -14,7 +14,6 @@ body, ul {
   padding: 0;
 }
 
-/* Style the FAQ list */
 .faq-list {
   max-width: 800px;
   margin: 20px auto;
@@ -22,18 +21,29 @@ body, ul {
   background-color: #29465B;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
+  color: white; /* Set text color to white for the entire list */
+}
+
+/* Style the FAQ list items and their bullet points */
+.faq-list li {
+  margin-bottom: 20px;
+  list-style: none; /* Remove default bullet points */
+}
+
+.faq-list li::marker {
+  content: "•"; /* Use a custom bullet point character */
+  color: white; /* Set bullet point color to white */
+  margin-right: 5px; /* Add some space between the bullet point and the text */
 }
 
 .faq-question {
   font-weight: bold;
   margin-bottom: 5px;
-  color: white;
 }
 
 .faq-answer {
   margin-bottom: 20px;
-  display: none ;
-  color:white; 
+  display: none;
 }
 
 
