@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     question.addEventListener("click", function () {
       const answer = this.nextElementSibling;
 
-      if (answer.style.display === "block") {
+      if (answer.style.display === "block" || answer.style.display === "") {
         answer.style.display = "none";
       } else {
         answer.style.display = "block";
@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
 const menuIcon = document.querySelector(".menu-icon");
   const menuLinks = document.querySelector(".menu-links");
 
