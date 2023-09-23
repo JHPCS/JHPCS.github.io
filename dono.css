@@ -1,0 +1,84 @@
+ body {
+            font-family: Arial, sans-serif;
+            background-color: #36454f;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1F3B4D;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #29465B;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        .Headingcolors {
+            color: white;
+        }
+
+        .ContentColors {
+            color: white;
+        }
+.menu {
+                     position: fixed;
+                     top: 20px;
+                     left: 20px;
+                     z-index: 1000;
+                     background-color: rgb(0, 0, 0);
+                   }
+                   
+                   .menu-icon {
+                     cursor: pointer;
+                     display: flex;
+                     flex-direction: column;
+                     justify-content: space-between;
+                     width: 30px;
+                     height: 20px;
+                   }
+                   
+                   .line {
+                     width: 100%;
+                     height: 4px;
+                     background-color: #ffffff;
+                   }
+                   
+                   
+                   
+                   /* Initial styles for the hidden menu links */
+.menu-links {
+   position: absolute;
+   top: 40px;
+   left: -1000%; /* Initially hide the links off-screen to the left */
+   padding: 10px;
+   border-radius: 1px;
+   transition: left 0.3s ease-in-out; /* Add a transition for the left property */
+ }
+ /* Styles for when the menu is open */
+.menu-links.open {
+   left: 0; /* Slide the links into view */
+ }
+ 
+                   .linkcolor {
+                     color: white ;
+                       font-family: sans-serif ;
+                       font-size: 16px ;
+                   }
