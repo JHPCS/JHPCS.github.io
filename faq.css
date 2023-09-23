@@ -5,31 +5,24 @@ body, ul {
 
 /* Style the FAQ list */
 .faq-list {
-  list-style: none;
-  max-width: 600px; /* Adjust the width as needed */
-  margin: 0 auto;
+  max-width: 800px;
+  margin: 20px auto;
   padding: 20px;
-}
-
-/* Style each FAQ item */
-.faq-list li {
-  margin-bottom: 20px;
-  border: 1px solid #ddd;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
-  padding: 10px;
-  background-color: #f9f9f9;
 }
 
-/* Style the FAQ question */
 .faq-question {
   font-weight: bold;
   margin-bottom: 5px;
 }
 
-/* Style the FAQ answer */
 .faq-answer {
-  margin-top: 5px;
+  margin-bottom: 20px;
 }
+
+
 .menu {
                      position: fixed;
                      top: 20px;
