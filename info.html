@@ -74,6 +74,26 @@
                      height: 4px;
                      background-color: #ffffff;
                    }
+                   
+                   
+                   
+                   /* Initial styles for the hidden menu links */
+.menu-links {
+   position: absolute;
+   top: 40px;
+   left: -1000%; /* Initially hide the links off-screen to the left */
+   padding: 10px;
+   border-radius: 1px;
+   transition: left 0.3s ease-in-out; /* Add a transition for the left property */
+ }
+ /* Styles for when the menu is open */
+.menu-links.open {
+   left: 0; /* Slide the links into view */
+ }
+ 
+                   .linkcolor {
+                     color:white
+                   }
 
         
     </style>
