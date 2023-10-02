@@ -1,3 +1,12 @@
+function closeDisclaimer() {
+  var disclaimer = document.getElementById('disclaimer');
+  disclaimer.style.display = 'none';
+}
+
+window.onload = function() {
+  var disclaimer = document.getElementById('disclaimer');
+  disclaimer.style.display = 'block';
+}
 
 
 const facts= [
