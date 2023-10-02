@@ -1,3 +1,29 @@
+/* Add this CSS code to style.css */
+.disclaimer {
+  display: none;
+  background-color: yellow;
+  color: black;
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  text-align: center;
+}
+
+.disclaimer-content {
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+  cursor: pointer;
+}
+
 body {
     background-color: #1F3B4D; 
 }
