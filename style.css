@@ -1,4 +1,4 @@
-/* Add this CSS code to style.css */
+
 .disclaimer {
   display: none;
   background-color: yellow;
@@ -16,13 +16,17 @@
   position: relative;
 }
 
+
 .close {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 5px;
+  padding: 10px; /* Increase padding to make it bigger */
+  font-weight: bold; /* Make the "x" bolder */
+  font-size: 20px; /* Adjust the font size as desired */
   cursor: pointer;
 }
+
 
 body {
     background-color: #1F3B4D; 
