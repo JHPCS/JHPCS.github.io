@@ -53,7 +53,7 @@ const facts= [
 ];
 
 
-let currentFactIndex= 22; 
+let currentFactIndex= 23; 
 let factHistory = [];
 
 
@@ -67,6 +67,19 @@ currentFactIndex= randomIndex;
 }
 
 
+function displaySelectedFact() {
+  const factDisplay = document.getElementById("factDisplay");
+  const dropdown = document.getElementById("factDropdown");
+  const selectedIndex = dropdown.value;
+  
+  if (selectedIndex >= 0 && selectedIndex < facts.length) {
+    factDisplay.textContent = facts[selectedIndex];
+  } else {
+    factDisplay.textContent = "Invalid selection";
+  }
+}
+const factDropdown = document.getElementById("factDropdown");
+factDropdown.addEventListener("change", displaySelectedFact);
 
 
 
@@ -181,7 +194,7 @@ window.speechSynthesis.cancel();
 ;
 function toggleMenu() {
   const menuLinks = document.querySelector(".menu-links");
-  menuLinks.classList.toggle("open"); // Toggle the "open" class
+  menuLinks.classList.toggle("open"); 
 }
 
 
@@ -202,3 +215,60 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+
+
+
+const backgroundMusic = document.getElementById('backgroundMusic');
+
+function playBackgroundMusic() {
+  backgroundMusic.play();
+}
+
+function pauseBackgroundMusic() {
+  backgroundMusic.pause();
+}
+
+
+
+
+const audio = document.getElementById('backgroundMusic');
+const songSlider = document.getElementById('songSlider');
+const currentTimeLabel = document.getElementById('currentTime');
+const songDurationLabel = document.getElementById('songDuration');
+
+// Update the duration and max value of the slider when the audio can play through
+audio.addEventListener('canplaythrough', () => {
+    const duration = Math.floor(audio.duration);
+    songSlider.max = duration;
+    songDurationLabel.textContent = formatTime(duration);
+});
+
+// Update the slider and labels as the audio plays
+audio.addEventListener('timeupdate', () => {
+    const currentTime = Math.floor(audio.currentTime);
+    songSlider.value = currentTime;
+    currentTimeLabel.textContent = formatTime(currentTime);
+});
+
+songSlider.addEventListener('input', () => {
+    audio.currentTime = parseInt(songSlider.value);
+    currentTimeLabel.textContent = formatTime(parseInt(songSlider.value));
+});
+
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+}
+
+
+
+
+
+
+
+const playButton = document.getElementById('playButton');
+const pauseButton = document.getElementById('pauseButton');
+
+playButton.addEventListener('click', playBackgroundMusic);
+pauseButton.addEventListener('click', pauseBackgroundMusic);
