@@ -28,7 +28,33 @@
               
 
         </div>
-      
+      <select id="factDropdown" class="right-aligned-dropdown">
+  <option value="-1">Select a fact!</option>
+  <option value="0">Water in microwave.</option>
+  <option value="1">Acoustic Kitty</option>
+  <option value="2">Man ate an entire airplane.</option>
+  <option value="3">You can legally buy a tank.</option>
+  <option value="4">Why JFK airport throws away fruit.</option>
+  <option value="5">You can always see your nose.</option>
+  <option value="6">You walk 2 times around the world.</option>
+  <option value="7">Psychopaths are immune to yawning.</option>
+  <option value="8">Pokemon-themed street names in Nevada.</option>
+  <option value="9">Brazilian priest flew with helium balloons.</option>
+  <option value="10">Woodpeckers wrap their tongue around their skull.</option>
+  <option value="11">Thomas Jefferson's many talents.</option>
+  <option value="12">Peeing on jellyfish stings is a myth.</option>
+  <option value="13">Commercial airliners' speed.</option>
+  <option value="14">Montana license plates on expensive cars.</option>
+  <option value="15">Checking itemized medical bills.</option>
+  <option value="16">Julius Caesar's pirate adventure.</option>
+  <option value="17">Fitting pants around your neck.</option>
+  <option value="18">Why school buses are yellow.</option>
+  <option value="19">Plastic dishes in the dishwasher.</option>
+  <option value="20">The math notebook on a plane.</option>
+  <option value="21">Honey badger's escape antics.</option>
+  <option value="22">Tiger encounter at Duffys Circus.</option>
+</select>
+
        
    
        <div class="menu">
@@ -38,19 +64,41 @@
           <div class="line"></div>
         </div>
         <div class="menu-links">
-            <a href="https://forms.gle/8ajvrSNfZo3SjKAJ7" class="linkcolor">Contact</a>
+            <a href="https://forms.gle/fA4go8dHoo8j5ZqM6" class="linkcolor">Contact</a>
             <a href="https://forms.gle/8sfSYoEKdfM9w1wy9" class="linkcolor">Suggestions</a>
           <a href="info.html" class="linkcolor">Info</a><br>
           <a href="faq.html" class="linkcolor">Help-desk</a>
          <a href="dono.html" class="linkcolor">Donations</a> 
+         <a href="fact-list.html" class="linkcolor">Fact List</a><br>
+
         </div>
       </div>
      
             
-      <label for="fontSizeSlider" id="fontSizeSlidercolor">Font Size:</label>
+      
+      
+      <audio id="backgroundMusic" src="https://codehs.com/uploads/74aa11eb223e22cd24484ddb4d9c6a9d" loop></audio>
+
+      
+      
+      
+      <div class="music-controls">
+          
+<div>
+    <input type="range" id="songSlider" min="0" step="1" value="0">
+</div>
+<div>
+    <span id="currentTime">0:00</span> / <span id="songDuration">0:00</span>
+</div>
+
+  <button id="playButton" class="dark-button">Play Music</button>
+  <button id="pauseButton" class="dark-button">Pause Music</button>
+</div>
+<label for="fontSizeSlider" id="fontSizeSlidercolor">Font Size:</label>
 <input type="range" id="fontSizeSlider" min="10" max="40" step="1" value="27">
 <span id="fontSizeValue">16px</span>
-      
+
+
       
         
         
@@ -80,4 +128,3 @@
     
     
 </html>
-
