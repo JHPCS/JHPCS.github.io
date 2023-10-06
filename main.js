@@ -218,57 +218,77 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-const backgroundMusic = document.getElementById('backgroundMusic');
+   const audio = document.getElementById('backgroundMusic');
+        const songSelector = document.getElementById('songSelector');
 
-function playBackgroundMusic() {
-  backgroundMusic.play();
-}
+        const playlist = [
+            { title: 'Lofi', source: 'https://codehs.com/uploads/74aa11eb223e22cd24484ddb4d9c6a9d' }, 
+            { title: 'Wii theme', source: 'https://codehs.com/uploads/a1f0897939270371279db244cae51ba7' },
+            // Add more songs to the playlist with their respective URLs
+        ];
 
-function pauseBackgroundMusic() {
-  backgroundMusic.pause();
-}
+        let currentSongIndex = 0;
 
+        function loadSong(index) {
+            audio.src = playlist[index].source;
+            audio.load();
+            audio.play();
+        }
 
+        function selectSong() {
+            const selectedSongIndex = songSelector.selectedIndex;
+            if (selectedSongIndex !== -1) {
+                currentSongIndex = selectedSongIndex;
+                loadSong(currentSongIndex);
+            }
+        }
 
+        // Populate the dropdown menu with songs
+        playlist.forEach((song, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.text = song.title;
+            songSelector.appendChild(option);
+        });
 
-const audio = document.getElementById('backgroundMusic');
-const songSlider = document.getElementById('songSlider');
-const currentTimeLabel = document.getElementById('currentTime');
-const songDurationLabel = document.getElementById('songDuration');
+        audio.addEventListener('ended', () => {
+            // Automatically play the next song when the current song ends
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            loadSong(currentSongIndex);
+        });
 
-// Update the duration and max value of the slider when the audio can play through
-audio.addEventListener('canplaythrough', () => {
-    const duration = Math.floor(audio.duration);
-    songSlider.max = duration;
-    songDurationLabel.textContent = formatTime(duration);
-});
-
-// Update the slider and labels as the audio plays
-audio.addEventListener('timeupdate', () => {
-    const currentTime = Math.floor(audio.currentTime);
-    songSlider.value = currentTime;
-    currentTimeLabel.textContent = formatTime(currentTime);
-});
-
-songSlider.addEventListener('input', () => {
-    audio.currentTime = parseInt(songSlider.value);
-    currentTimeLabel.textContent = formatTime(parseInt(songSlider.value));
-});
-
-function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-}
-
+        songSelector.addEventListener('change', selectSong);
+        
 
 
 
 
 
 
-const playButton = document.getElementById('playButton');
-const pauseButton = document.getElementById('pauseButton');
 
-playButton.addEventListener('click', playBackgroundMusic);
-pauseButton.addEventListener('click', pauseBackgroundMusic);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
