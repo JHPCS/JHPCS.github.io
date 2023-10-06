@@ -77,26 +77,32 @@
             
       
       
-      <audio id="backgroundMusic" src="https://codehs.com/uploads/74aa11eb223e22cd24484ddb4d9c6a9d" loop></audio>
-
-      
-      
-      
-      <div class="music-controls">
+</div>
+      <div id="music-player">
           
-<div>
-    <input type="range" id="songSlider" min="0" step="1" value="0">
-</div>
-<div>
-    <span id="currentTime">0:00</span> / <span id="songDuration">0:00</span>
-</div>
+       <audio id="backgroundMusic" controls>
+        <source src="https://codehs.com/uploads/74aa11eb223e22cd24484ddb4d9c6a9d" type="audio/mpeg">
+        <source src="https://codehs.com/uploads/a1f0897939270371279db244cae51ba7" type="audio/mpeg">
+        <!-- Add more <source> elements for additional songs -->
+    </audio>
 
-  <button id="playButton" class="dark-button">Play Music</button>
-  <button id="pauseButton" class="dark-button">Pause Music</button>
-</div>
+    
+    
+    <select id="songSelector"></select>
+
+    
 <label for="fontSizeSlider" id="fontSizeSlidercolor">Font Size:</label>
 <input type="range" id="fontSizeSlider" min="10" max="40" step="1" value="27">
 <span id="fontSizeValue">16px</span>
+</div>
+
+
+
+
+
+
+
+
 
 
       
