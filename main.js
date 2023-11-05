@@ -8,6 +8,21 @@ window.onload = function() {
   disclaimer.style.display = 'block';
 }
 
+const defaultButtonColors = {
+  textColor: "#FF0000", 
+  containerColor: "#29465B",  
+  backgroundColor: "#1F3B4D" 
+};
+window.onload = function() {
+  const textColorInput = document.getElementById("textColor");
+  const containerColorInput = document.getElementById("containerColor");
+  const backgroundColorInput = document.getElementById("backgroundColor");
+
+  // Set the default colors for each input
+  textColorInput.value = defaultButtonColors.textColor;
+  containerColorInput.value = defaultButtonColors.containerColor;
+  backgroundColorInput.value = defaultButtonColors.backgroundColor;
+};
 
 const facts= [
 
@@ -224,7 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const playlist = [
             { title: 'Lofi', source: 'https://codehs.com/uploads/74aa11eb223e22cd24484ddb4d9c6a9d' }, 
             { title: 'Wii theme', source: 'https://codehs.com/uploads/a1f0897939270371279db244cae51ba7' },
-            // Add more songs to the playlist with their respective URLs
+
         ];
 
         let currentSongIndex = 0;
@@ -243,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        // Populate the dropdown menu with songs
+        
         playlist.forEach((song, index) => {
             const option = document.createElement('option');
             option.value = index;
@@ -252,40 +267,50 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         audio.addEventListener('ended', () => {
-            // Automatically play the next song when the current song ends
+             
             currentSongIndex = (currentSongIndex + 1) % playlist.length;
             loadSong(currentSongIndex);
         });
 
         songSelector.addEventListener('change', selectSong);
         
+        
+        
+        
+        
+        
+     
 
+document.getElementById("openSettings").addEventListener("click", function() {
+  document.getElementById("settingsPanel").style.display = "block";
+});
 
+document.getElementById("applySettings").addEventListener("click", function() {
+  const textColorInput = document.getElementById("textColor");
+  const containerColorInput = document.getElementById("containerColor");
+  const backgroundColorInput = document.getElementById("backgroundColor");
 
+  const textColor = textColorInput.value;
+  const containerColor = containerColorInput.value;
+  const backgroundColor = backgroundColorInput.value;
 
+  const factDisplay = document.getElementById("factDisplay");
+  const container = document.getElementById("container");
 
+  if (textColor !== textColorInput.defaultValue) {
+    factDisplay.style.color = textColor;
+  }
 
+  if (containerColor !== containerColorInput.defaultValue) {
+    container.style.backgroundColor = containerColor;
+  }
 
+  if (backgroundColor !== backgroundColorInput.defaultValue) {
+    document.body.style.backgroundColor = backgroundColor;
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  document.getElementById("settingsPanel").style.display = "none";
+});
 
 
 
