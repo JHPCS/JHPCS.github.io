@@ -9,7 +9,7 @@ window.onload = function() {
 }
 
 const defaultButtonColors = {
-  textColor: "#FF0000", 
+  textColor: "#FFFFFF", 
   containerColor: "#29465B",  
   backgroundColor: "#1F3B4D" 
 };
