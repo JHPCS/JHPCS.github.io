@@ -17,7 +17,60 @@
   </div>
 </div>
 
-        <div id="container">
+
+
+
+
+
+
+
+<div id="settingsPanel" class="settings-panel">
+  <h2>Settings</h2>
+
+  <div>
+    <label for="textColor">Text Color:</label>
+    <input type="color" id="textColor">
+  </div>
+
+  <div>
+    <label for="containerColor">Container Color:</label>
+    <input type="color" id="containerColor">
+  </div>
+
+  <div>
+    <label for="backgroundColor">Background Color:</label>
+    <input type="color" id="backgroundColor">
+  </div>
+
+  <button id="applySettings">Apply</button>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <div id="container" >
             
             <button onclick="displayRandomFact()" id="btn">Press for a random fact!</button>
             <div id="factDisplay">Press the button for a random fact!</div>
@@ -70,6 +123,7 @@
           <a href="faq.html" class="linkcolor">Help-desk</a>
          <a href="dono.html" class="linkcolor">Donations</a> 
          <a href="fact-list.html" class="linkcolor">Fact List</a><br>
+         <a href="#" class="linkcolor" id="openSettings">Settings</a>
 
         </div>
       </div>
@@ -83,7 +137,7 @@
        <audio id="backgroundMusic" controls>
         <source src="https://codehs.com/uploads/74aa11eb223e22cd24484ddb4d9c6a9d" type="audio/mpeg">
         <source src="https://codehs.com/uploads/a1f0897939270371279db244cae51ba7" type="audio/mpeg">
-        <!-- Add more <source> elements for additional songs -->
+        
     </audio>
 
     
