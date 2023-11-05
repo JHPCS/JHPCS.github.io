@@ -57,7 +57,7 @@ text-align: center;
     #factDisplay {
     margin: 25px auto;
     font-size: 26px; 
-    color: white;
+    color: red;
     font-style: bold;
     }
     
@@ -224,32 +224,39 @@ text-align: center;
 }
 
 
+.settings-panel {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color:#1F3B4D ;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
 
+.settings-panel h2 {
+  margin-top: 0;
+  color: white;
+}
 
+.settings-panel label {
+  display: block;
+  color: white;
+}
 
+.settings-panel input[type="color"] {
+  width: 100px;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.settings-panel button {
+  margin-top: 10px;
+}
+ 
+ 
+ #applySettings { 
+    color: white;
+    background-color:#1F3B4D ;
+     }
