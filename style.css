@@ -35,38 +35,21 @@ body {
 
 
 
-#container {
-  background-color: #29465B;
-  border: 2% solid #f5e43c;
-  height: 70vh;
-  width: 60vw;
-  margin: 0 auto;
-  text-align: center;
-}
-
-
-  
-}
-
-#btn,
-#undoLastFact,
-#readFactButton,
-#stopReadingButton,
-#redoFactButton {
-  height: 8vh;
-  width: 40%;
-  font-size: 2vw;
-  padding: 1%;
-  
-}
-
+ #container  {
+ background-color: #29465B;
+ border: 10px solid #f5e43c;
+ height: 700px; 
+ width: 750px;
+ margin: 0 auto;
+ text-align: center 
+ }
 
  
  #btn {
  margin: 50px auto;
-
-
-
+ height: 50px; 
+ width: 250px;
+font-size: 22px; 
 background-color: rgb(255, 0, 0);
 text-align: center;
 }
@@ -161,9 +144,6 @@ text-align: center;
 #fontSizeSlidercolor {
   color: white;
 }
-#fontSizeSlider {
-  width: 100%;
-}
 
 
 
@@ -245,23 +225,16 @@ text-align: center;
 
 
 .settings-panel {
-  position: fixed;
+  display: none;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 10px;
-  
-  background-color: #1F3B4D;
-  border: 2px solid #ccc;
+  padding: 20px;
+  background-color:#1F3B4D ;
+  border: 1px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-}
-
-@media (min-width: 768px) {
-  .settings-panel {
-    width: 400px;
-    left: calc(50% - 200px);
-  }
 }
 
 .settings-panel h2 {
