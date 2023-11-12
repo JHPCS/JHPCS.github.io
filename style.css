@@ -235,13 +235,13 @@ text-align: center;
   background-color: #29465B;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  color:white;
+  color: white;
 }
     #videoList {
       text-align: left;
       max-width: 400px;
       margin: 20px auto;
-      color:white;
+      color: white;
     }
 videoList a {
   color: white;
@@ -255,6 +255,7 @@ videoList a {
 
 #videoList a:hover {
   background-color: #0E294C;
+  color: white; 
 }
 
     input {
