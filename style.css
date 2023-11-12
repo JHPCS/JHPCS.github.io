@@ -273,8 +273,16 @@ text-align: center;
       text-align: left;
       max-width: 400px;
       margin: 20px auto;
-      color:white; 
+      
     }
+#videoList a {
+  color: white;
+  text-decoration: none; 
+}
+
+#videoList a:hover {
+  text-decoration: underline; 
+}
 
     input {
       margin: 10px;
