@@ -314,6 +314,44 @@ document.getElementById("applySettings").addEventListener("click", function() {
 
 
 
+const apiKey = 'AIzaSyC80a9hJHBehf8pum1EM8YOL3_9OO3ISAc';
 
+    
+    function searchVideo() {
+      const searchInput = document.getElementById('searchInput').value;
+      if (!searchInput) {
+        alert('Please enter a song name');
+        return;
+      }
+
+      
+      fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchInput}&type=video&key=${apiKey}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.items.length === 0) {
+            alert('No videos found');
+          } else {
+           
+            const videoId = data.items[0].id.videoId;
+            embedPlayer(videoId);
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    
+    function embedPlayer(videoId) {
+      const playerDiv = document.getElementById('player');
+      playerDiv.innerHTML = ''; 
+
+      
+      const iframe = document.createElement('iframe');
+      iframe.width = '100%';
+      iframe.height = '100%';
+      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+      iframe.frameBorder = 0;
+      iframe.allowFullscreen = true;
+      playerDiv.appendChild(iframe);
+    }
 
 
