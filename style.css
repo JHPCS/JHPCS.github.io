@@ -303,38 +303,3 @@ videoList a {
 
 
 
-@media only screen and (max-width: 600px) {
-
-  
-  #container {
-    width: 90%; 
-  }
-
-  #factDisplay,
-  #fontSizeSlider,
-  #fontSizeValue,
-  #songSelector,
-  #searchInput,
-  #videoListContainer {
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  #factDisplay,
-  #fontSizeSlider,
-  #fontSizeValue,
-  #songSelector,
-  #searchInput,
-  #videoListContainer,
-  #player {
-    margin: 10px auto;
-  }
-
-  #music-player {
-    padding: 20px;
-  }
-
-  #music-player audio::-webkit-media-controls-panel {
-    margin-top: 0;
-  }
-}
