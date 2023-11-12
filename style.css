@@ -182,47 +182,6 @@ text-align: center;
   background-color: #555; 
 }
 
-#music-player {
-    color: white;
-    background-color: #29465B;
-    padding: 40px;
-    border-radius: 10px;
-    margin-top: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  width:100%;
-}
-
-#backgroundMusic {
-    width: 100%;
-    margin-bottom: 0px;
-    background-color: #29465B;
-}
-
-#songSelector {
-    color: white;
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 3px solid black;
-    border-radius: 10px;
-    background-color: #29465B;
-}
-
-
-
-#music-player audio::-webkit-media-controls-panel {
-    color: white;
-    background-color: #29465B;
-    border: none;
-    border-radius: px;
-    margin-top: 0px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-#music-player audio::-webkit-media-controls-play-button {
-    color: white;
-    
-}
 
 
 .settings-panel {
