@@ -268,20 +268,32 @@ text-align: center;
       height: 360px;
       margin: 20px auto;
     }
-
+#videoListContainer {
+  max-width: 400px;
+  margin: 20px;
+  padding: 10px;
+  background-color: #29465B;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
     #videoList {
       text-align: left;
       max-width: 400px;
       margin: 20px auto;
       
     }
-#videoList a {
+videoList a {
   color: white;
-  text-decoration: none; 
+  text-decoration: none;
+  display: block;
+  padding: 5px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
 }
 
 #videoList a:hover {
-  text-decoration: underline; 
+  background-color: #0E294C;
 }
 
     input {
