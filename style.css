@@ -243,7 +243,7 @@ text-align: center;
       margin: 20px auto;
       color: white;
     }
-videoList a {
+#videoList a {
   color: white;
   text-decoration: none;
   display: block;
