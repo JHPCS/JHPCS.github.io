@@ -3,26 +3,29 @@ function closeDisclaimer() {
   disclaimer.style.display = 'none';
 }
 
+
 window.onload = function() {
+
   var disclaimer = document.getElementById('disclaimer');
   disclaimer.style.display = 'block';
-}
+
+
+  const textColorInput = document.getElementById("textColor");
+  const containerColorInput = document.getElementById("containerColor");
+  const backgroundColorInput = document.getElementById("backgroundColor");
+
+
+  textColorInput.value = defaultButtonColors.textColor;
+  containerColorInput.value = defaultButtonColors.containerColor;
+  backgroundColorInput.value = defaultButtonColors.backgroundColor;
+};
 
 const defaultButtonColors = {
   textColor: "#FFFFFF", 
   containerColor: "#29465B",  
   backgroundColor: "#1F3B4D" 
 };
-window.onload = function() {
-  const textColorInput = document.getElementById("textColor");
-  const containerColorInput = document.getElementById("containerColor");
-  const backgroundColorInput = document.getElementById("backgroundColor");
 
-  // Set the default colors for each input
-  textColorInput.value = defaultButtonColors.textColor;
-  containerColorInput.value = defaultButtonColors.containerColor;
-  backgroundColorInput.value = defaultButtonColors.backgroundColor;
-};
 
 const facts= [
 
