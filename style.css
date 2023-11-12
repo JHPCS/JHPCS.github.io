@@ -260,3 +260,22 @@ text-align: center;
     color: white;
     background-color:#1F3B4D ;
      }
+
+
+
+#player {
+      width: 640px;
+      height: 360px;
+      margin: 20px auto;
+    }
+
+    #videoList {
+      text-align: left;
+      max-width: 400px;
+      margin: 20px auto;
+      color:white; 
+    }
+
+    input {
+      margin: 10px;
+    }
