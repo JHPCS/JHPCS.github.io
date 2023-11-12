@@ -236,46 +236,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-   const audio = document.getElementById('backgroundMusic');
-        const songSelector = document.getElementById('songSelector');
-
-        const playlist = [
-            { title: 'Lofi', source: 'https://codehs.com/uploads/74aa11eb223e22cd24484ddb4d9c6a9d' }, 
-            { title: 'Wii theme', source: 'https://codehs.com/uploads/a1f0897939270371279db244cae51ba7' },
-
-        ];
-
-        let currentSongIndex = 0;
-
-        function loadSong(index) {
-            audio.src = playlist[index].source;
-            audio.load();
-            audio.play();
-        }
-
-        function selectSong() {
-            const selectedSongIndex = songSelector.selectedIndex;
-            if (selectedSongIndex !== -1) {
-                currentSongIndex = selectedSongIndex;
-                loadSong(currentSongIndex);
-            }
-        }
-
-        
-        playlist.forEach((song, index) => {
-            const option = document.createElement('option');
-            option.value = index;
-            option.text = song.title;
-            songSelector.appendChild(option);
-        });
-
-        audio.addEventListener('ended', () => {
-             
-            currentSongIndex = (currentSongIndex + 1) % playlist.length;
-            loadSong(currentSongIndex);
-        });
-
-        songSelector.addEventListener('change', selectSong);
         
         
         
