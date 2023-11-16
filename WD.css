@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #1F3B4D;
-    color: #3E424B;
+    color: white;
 }
 
 header {
@@ -17,7 +17,7 @@ h1 {
     color: white;
 }
 h2 {
-color: #3E424B;
+color: white;
 }
 main {
     max-width: 800px;
