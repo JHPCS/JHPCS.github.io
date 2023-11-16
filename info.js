@@ -7,5 +7,5 @@ const menuIcon = document.querySelector(".menu-icon");
 ;
 function toggleMenu() {
   const menuLinks = document.querySelector(".menu-links");
-  menuLinks.classList.toggle("open"); // Toggle the "open" class
+  menuLinks.classList.toggle("open"); 
 }
