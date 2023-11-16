@@ -3,11 +3,11 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f5f5f5;
-    color: #333;
+    color: #3E424B;
 }
 
 header {
-    background-color: #333;
+    background-color: #3E424B;
     color: #fff;
     text-align: center;
     padding: 1em 0;
@@ -17,7 +17,7 @@ h1 {
     color: white;
 }
 h2 {
-color: #333;
+color: #3E424B;
 }
 main {
     max-width: 800px;
@@ -34,6 +34,6 @@ section {
 footer {
     text-align: center;
     padding: 10px;
-    background-color: #333;
+    background-color: #3E424B;
     color: #fff;
 }
