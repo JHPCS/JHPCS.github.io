@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Why Choose Me for Your Website</title>
+    <link rel="stylesheet" href="WD.css">
+</head>
+<body>
+    <header>
+        <h1>Why Choose Me for Your Website</h1>
+    </header>
+
+    <main>
+        <section id="experience">
+            <h2>Experience</h2>
+            <p>
+                With a background in computer science and a passion for web development, I bring a solid foundation of technical skills to every project. My experience in HTML, CSS, JavaScript, and more allows me to create websites that are not only visually appealing but also functional and user-friendly.
+            </p>
+        </section>
+
+        <section id="creativity">
+            <h2>Creativity</h2>
+            <p>
+                I believe in the power of creativity to make websites stand out. Whether you need a personal blog, a portfolio, or a business site, I'll work with you to bring your unique vision to life. From design elements to user interactions, I strive to make every website a creative and engaging experience.
+            </p>
+        </section>
+
+        <section id="collaboration">
+            <h2>Collaboration</h2>
+            <p>
+                Your input is invaluable. I prioritize open communication and collaboration throughout the development process. I listen to your ideas, address your concerns, and work together to ensure that the final product aligns with your goals. Your satisfaction is my top priority.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Samuel Flippo</p>
+    </footer>
+
+    <script src="WD.js"></script>
+</body>
+</html>
