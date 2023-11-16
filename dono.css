@@ -3,11 +3,12 @@
             background-color: #36454f;
             margin: 0;
             padding: 0;
+  color:white; 
         }
 
         header {
             background-color: #1F3B4D;
-            color: #fff;
+            color: white;
             text-align: center;
             padding: 20px;
         }
@@ -18,17 +19,18 @@
             padding: 20px;
             background-color: #29465B;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+         color: white; 
         }
 
         h1 {
             font-size: 28px;
-            color: #333;
+            color: white;
         }
 
         p {
             font-size: 16px;
             line-height: 1.5;
-            color: #555;
+            color: white;
         }
 
         .Headingcolors {
