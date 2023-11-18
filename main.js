@@ -249,30 +249,37 @@ document.getElementById("openSettings").addEventListener("click", function() {
 });
 
 document.getElementById("applySettings").addEventListener("click", function() {
-  const textColorInput = document.getElementById("textColor");
-  const containerColorInput = document.getElementById("containerColor");
-  const backgroundColorInput = document.getElementById("backgroundColor");
+    const textColorInput = document.getElementById("textColor");
+    const containerColorInput = document.getElementById("containerColor");
+    const backgroundColorInput = document.getElementById("backgroundColor");
+    const buttonTextColorInput = document.getElementById("buttonTextColor"); // Add this line
 
-  const textColor = textColorInput.value;
-  const containerColor = containerColorInput.value;
-  const backgroundColor = backgroundColorInput.value;
+    const textColor = textColorInput.value;
+    const containerColor = containerColorInput.value;
+    const backgroundColor = backgroundColorInput.value;
+    const buttonTextColor = buttonTextColorInput.value; // Add this line
 
-  const factDisplay = document.getElementById("factDisplay");
-  const container = document.getElementById("container");
+    const factDisplay = document.getElementById("factDisplay");
+    const container = document.getElementById("container");
+    const factButton = document.getElementById("btn"); // Add this line
 
-  if (textColor !== textColorInput.defaultValue) {
-    factDisplay.style.color = textColor;
-  }
+    if (textColor !== textColorInput.defaultValue) {
+        factDisplay.style.color = textColor;
+    }
 
-  if (containerColor !== containerColorInput.defaultValue) {
-    container.style.backgroundColor = containerColor;
-  }
+    if (containerColor !== containerColorInput.defaultValue) {
+        container.style.backgroundColor = containerColor;
+    }
 
-  if (backgroundColor !== backgroundColorInput.defaultValue) {
-    document.body.style.backgroundColor = backgroundColor;
-  }
+    if (backgroundColor !== backgroundColorInput.defaultValue) {
+        document.body.style.backgroundColor = backgroundColor;
+    }
 
-  document.getElementById("settingsPanel").style.display = "none";
+    if (buttonTextColor !== buttonTextColorInput.defaultValue) { // Add this block
+        factButton.style.color = buttonTextColor;
+    }
+
+    document.getElementById("settingsPanel").style.display = "none";
 });
 
 
