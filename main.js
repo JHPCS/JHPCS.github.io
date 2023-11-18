@@ -252,16 +252,19 @@ document.getElementById("applySettings").addEventListener("click", function() {
     const textColorInput = document.getElementById("textColor");
     const containerColorInput = document.getElementById("containerColor");
     const backgroundColorInput = document.getElementById("backgroundColor");
-    const buttonTextColorInput = document.getElementById("buttonTextColor"); // Add this line
+    const buttonTextColorInput = document.getElementById("buttonTextColor");
 
     const textColor = textColorInput.value;
     const containerColor = containerColorInput.value;
     const backgroundColor = backgroundColorInput.value;
-    const buttonTextColor = buttonTextColorInput.value; // Add this line
+    const buttonTextColor = buttonTextColorInput.value;
 
     const factDisplay = document.getElementById("factDisplay");
     const container = document.getElementById("container");
-    const factButton = document.getElementById("btn"); // Add this line
+    const factButton = document.getElementById("btn");
+    const undoLastFactButton = document.getElementById("undoLastFact");
+    const readFactButton = document.getElementById("readFactButton");
+    const stopReadingButton = document.getElementById("stopReadingButton");
 
     if (textColor !== textColorInput.defaultValue) {
         factDisplay.style.color = textColor;
@@ -275,12 +278,16 @@ document.getElementById("applySettings").addEventListener("click", function() {
         document.body.style.backgroundColor = backgroundColor;
     }
 
-    if (buttonTextColor !== buttonTextColorInput.defaultValue) { // Add this block
+    if (buttonTextColor !== buttonTextColorInput.defaultValue) {
         factButton.style.color = buttonTextColor;
+        undoLastFactButton.style.color = buttonTextColor;
+        readFactButton.style.color = buttonTextColor;
+        stopReadingButton.style.color = buttonTextColor;
     }
 
     document.getElementById("settingsPanel").style.display = "none";
 });
+
 
 
 
