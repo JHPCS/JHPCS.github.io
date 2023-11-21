@@ -68,4 +68,43 @@
 
   <div id="shoe-container">
     <img src="https://hips.hearstapps.com/hmg-prod/images/brooksshoeslead-646bc95585ae4.jpg?crop=0.367xw:0.734xh;0.327xw,0.112xh&resize=640:*" class="shoe-image" id="shoe1">
-    <img src="https://www.shutterstock.com/image-photo/sinsheim-germany-02012022-product-photo-6
+    <img src="https://www.shutterstock.com/image-photo/sinsheim-germany-02012022-product-photo-600nw-2116002947.jpg" class="shoe-image" id="shoe2">
+    <img src="https://www.shutterstock.com/image-photo/chiangmaithailand-dec-222019-go-extra-600nw-1595107819.jpg" class="shoe-image" id="shoe3">
+  </div>
+
+  <footer>
+    &copy; 2023 Totally Running. Crafted with passion for runners.
+  </footer>
+
+  <script>
+    const shoeImages = [
+      'https://hips.hearstapps.com/hmg-prod/images/brooksshoeslead-646bc95585ae4.jpg?crop=0.367xw:0.734xh;0.327xw,0.112xh&resize=640:*',
+      'https://www.shutterstock.com/image-photo/sinsheim-germany-02012022-product-photo-600nw-2116002947.jpg',
+      'https://www.shutterstock.com/image-photo/chiangmaithailand-dec-222019-go-extra-600nw-1595107819.jpg',
+    ];
+
+    let currentImageIndex = 0;
+    const shoeContainer = document.getElementById('shoe-container');
+    const shoeImagesElements = document.querySelectorAll('.shoe-image');
+
+    function showNextImage() {
+      shoeImagesElements[currentImageIndex].classList.remove('show');
+      currentImageIndex = (currentImageIndex + 1) % shoeImages.length;
+      shoeImagesElements[currentImageIndex].classList.add('show');
+    }
+
+    shoeImages.forEach((imageUrl, index) => {
+      const img = new Image();
+      img.src = imageUrl;
+      img.onload = () => {
+        if (index === 0) {
+          shoeImagesElements[index].classList.add('show');
+        }
+      };
+    });
+
+    setInterval(showNextImage, 3000);
+  </script>
+
+</body>
+</html>
