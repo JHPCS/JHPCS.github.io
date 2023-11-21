@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shoe Showcase</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    #shoe-container {
+      position: relative;
+      width: 300px;
+      height: 450px;
+      overflow: hidden;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .shoe-image {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="shoe-container">
+    <img src="" alt="Shoe 1" class="shoe-image" id="shoe1">
+    <img src="" alt="Shoe 2" class="shoe-image" id="shoe2">
+    <img src="" alt="Shoe 3" class="shoe-image" id="shoe3">
+  </div>
+
+  <script>
+    
+    const shoeImages = [
+      'https://www.shutterstock.com/image-photo/chiangmaithailand-dec-222019-go-extra-600nw-1595107819.jpg',
+      'https://www.shutterstock.com/image-photo/sinsheim-germany-02012022-product-photo-600nw-2116002947.jpg',
+      'https://www.shutterstock.com/image-photo/chiangmaithailand-dec-222019-go-extra-600nw-1595107819.jpg',
+    ];
+
+    let currentImageIndex = 0;
+    const shoeContainer = document.getElementById('shoe-container');
+    const shoeImagesElements = document.querySelectorAll('.shoe-image');
+
+    function showNextImage() {
+      shoeImagesElements[currentImageIndex].classList.remove('show');
+      currentImageIndex = (currentImageIndex + 1) % shoeImages.length;
+      shoeImagesElements[currentImageIndex].classList.add('show');
+    }
+
+   
+    shoeImages.forEach((imageUrl, index) => {
+      const img = new Image();
+      img.src = imageUrl;
+      img.onload = () => {
+        if (index === 0) {
+          shoeImagesElements[index].classList.add('show');
+        }
+      };
+    });
+
+   
+    setInterval(showNextImage, 3000);
+  </script>
+
+</body>
+</html>
