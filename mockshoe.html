@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Totally Running - Shoe Showcase</title>
+  <title>Totally Running - Quality Footwear</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f8f8f8;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f4f4;
       margin: 0;
       padding: 0;
       display: flex;
@@ -18,11 +18,12 @@
     }
 
     header {
-      background-color: #333;
+      background-color: #4CAF50;
       color: #fff;
       padding: 1rem;
       text-align: center;
       width: 100%;
+      margin-bottom: 20px;
     }
 
     #shoe-container {
@@ -30,9 +31,8 @@
       width: 600px;
       height: 600px;
       overflow: hidden;
-      border: 1px solid #ccc;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      margin-top: 20px;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .shoe-image {
@@ -42,7 +42,7 @@
       object-fit: cover;
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
-      border-radius: 8px;
+      border-radius: 10px;
     }
 
     .show {
@@ -50,9 +50,10 @@
     }
 
     footer {
-      margin-top: 20px;
       text-align: center;
-      color: #555;
+      color: #666;
+      font-size: 0.8rem;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -60,47 +61,11 @@
 
   <header>
     <h1>Totally Running</h1>
+    <p>Discover the comfort and style of our premium running shoes.</p>
+    <p>🕒 Opening Hours: Mon-Fri: 10 AM - 7 PM, Sat: 10 AM - 6 PM, Sun: 10 AM - 5 PM</p>
+    <p>🏅 Proudly visited by Olympic runner Steve Scott!</p>
   </header>
 
   <div id="shoe-container">
     <img src="https://hips.hearstapps.com/hmg-prod/images/brooksshoeslead-646bc95585ae4.jpg?crop=0.367xw:0.734xh;0.327xw,0.112xh&resize=640:*" class="shoe-image" id="shoe1">
-    <img src="https://www.shutterstock.com/image-photo/sinsheim-germany-02012022-product-photo-600nw-2116002947.jpg" class="shoe-image" id="shoe2">
-    <img src="https://www.shutterstock.com/image-photo/chiangmaithailand-dec-222019-go-extra-600nw-1595107819.jpg" class="shoe-image" id="shoe3">
-  </div>
-
-  <footer>
-    &copy; 2023 Totally Running. All rights reserved.
-  </footer>
-
-  <script>
-    const shoeImages = [
-      'https://hips.hearstapps.com/hmg-prod/images/brooksshoeslead-646bc95585ae4.jpg?crop=0.367xw:0.734xh;0.327xw,0.112xh&resize=640:*',
-      'https://www.shutterstock.com/image-photo/sinsheim-germany-02012022-product-photo-600nw-2116002947.jpg',
-      'https://www.shutterstock.com/image-photo/chiangmaithailand-dec-222019-go-extra-600nw-1595107819.jpg',
-    ];
-
-    let currentImageIndex = 0;
-    const shoeContainer = document.getElementById('shoe-container');
-    const shoeImagesElements = document.querySelectorAll('.shoe-image');
-
-    function showNextImage() {
-      shoeImagesElements[currentImageIndex].classList.remove('show');
-      currentImageIndex = (currentImageIndex + 1) % shoeImages.length;
-      shoeImagesElements[currentImageIndex].classList.add('show');
-    }
-
-    shoeImages.forEach((imageUrl, index) => {
-      const img = new Image();
-      img.src = imageUrl;
-      img.onload = () => {
-        if (index === 0) {
-          shoeImagesElements[index].classList.add('show');
-        }
-      };
-    });
-
-    setInterval(showNextImage, 3000);
-  </script>
-
-</body>
-</html>
+    <img src="https://www.shutterstock.com/image-photo/sinsheim-germany-02012022-product-photo-6
