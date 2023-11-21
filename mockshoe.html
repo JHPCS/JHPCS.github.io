@@ -15,7 +15,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      overflow-x: hidden; 
+      overflow-x: hidden;
     }
 
     header {
@@ -36,23 +36,23 @@
     }
 
     #menu-panel {
-      display: none;
       position: fixed;
       top: 0;
-      left: 0;
-      width: 100%;
+      left: -75%;
+      width: 75%;
       height: 100%;
       background-color: #333;
       color: #fff;
       padding: 1rem;
       box-sizing: border-box;
       z-index: 999;
+      transition: left 0.3s ease-in-out; 
     }
 
     #shoe-container {
       position: relative;
-      width: 600px;
-      height: 600px;
+      width: 800px;
+      height: 800px;
       overflow: hidden;
       border: 1px solid #ddd;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -137,13 +137,14 @@
     setInterval(showNextImage, 3000);
 
     menuIcon.addEventListener('click', () => {
-      menuPanel.style.display = menuPanel.style.display === 'block' ? 'none' : 'block';
+     
+      menuPanel.style.left = menuPanel.style.left === '0px' ? '-75%' : '0';
     });
 
-    
+   
     document.addEventListener('click', (event) => {
       if (!menuPanel.contains(event.target) && !menuIcon.contains(event.target)) {
-        menuPanel.style.display = 'none';
+        menuPanel.style.left = '-75%';
       }
     });
   </script>
