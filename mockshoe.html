@@ -36,9 +36,10 @@
     }
 
     #menu-panel {
+      display: none;
       position: fixed;
       top: 0;
-      left: -75%;
+      left: -75%; 
       width: 75%;
       height: 100%;
       background-color: #333;
@@ -46,7 +47,7 @@
       padding: 1rem;
       box-sizing: border-box;
       z-index: 999;
-      transition: left 0.3s ease-in-out; 
+      transition: left 0.3s ease; 
     }
 
     #shoe-container {
@@ -137,13 +138,13 @@
     setInterval(showNextImage, 3000);
 
     menuIcon.addEventListener('click', () => {
-     
-      menuPanel.style.left = menuPanel.style.left === '0px' ? '-75%' : '0';
+      const isOpen = menuPanel.style.left === '0%';
+      menuPanel.style.left = isOpen ? '-75%' : '0%';
     });
 
-   
+    
     document.addEventListener('click', (event) => {
-      if (!menuPanel.contains(event.target) && !menuIcon.contains(event.target)) {
+      if (!menuPanel.contains(event.target) && !menuIcon.contains(event.target) && menuPanel.style.left === '0%') {
         menuPanel.style.left = '-75%';
       }
     });
