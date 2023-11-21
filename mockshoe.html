@@ -40,6 +40,15 @@
       transition: left 0.3s ease-in-out; 
     }
 
+    #info-container {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+      width: 100%; 
+      box-sizing: border-box; 
+    }
+
     #shoe-container {
       position: relative;
       width: 1100px;
@@ -69,15 +78,6 @@
       font-size: 0.8rem;
       margin-top: 20px;
     }
-
-    header {
-      background-color: #4CAF50;
-      color: #fff;
-      padding: 1rem;
-      text-align: center;
-      width: 100%; 
-      box-sizing: border-box;
-    }
   </style>
 </head>
 <body>
@@ -88,18 +88,18 @@
     <p>Menu Content Goes Here</p>
   </div>
 
+  <div id="info-container">
+    <h1>Totally Running</h1>
+    <p>Discover the comfort and style of our premium running shoes.</p>
+    <p>🕒 Opening Hours: Mon-Fri: 10 AM - 7 PM, Sat: 10 AM - 6 PM, Sun: 10 AM - 5 PM</p>
+    <p>🏅 Proudly visited by Olympic runner Steve Scott!</p>
+  </div>
+
   <div id="shoe-container">
     <img src="https://www.stupidbrilliant.com/wp-content/uploads/2016/04/brks-photo-4.jpg" class="shoe-image" id="shoe1">
     <img src="https://www.stupidbrilliant.com/wp-content/uploads/2016/04/brks-photo-1.jpg" class="shoe-image" id="shoe2">
     <img src="https://www.stupidbrilliant.com/wp-content/uploads/2016/04/brks-photo-2.jpg" class="shoe-image" id="shoe3">
   </div>
-
-  <header>
-    <h1>Totally Running</h1>
-    <p>Discover the comfort and style of our premium running shoes.</p>
-    <p>🕒 Opening Hours: Mon-Fri: 10 AM - 7 PM, Sat: 10 AM - 6 PM, Sun: 10 AM - 5 PM</p>
-    <p>🏅 Proudly visited by Olympic runner Steve Scott!</p>
-  </header>
 
   <footer>
     &copy; 2023 Totally Running. Crafted with passion for runners.
@@ -137,9 +137,11 @@
     setInterval(showNextImage, 3000);
 
     menuIcon.addEventListener('click', () => {
+      
       menuPanel.style.left = menuPanel.style.left === '0px' ? '-25%' : '0';
     });
 
+    
     document.addEventListener('click', (event) => {
       if (!menuPanel.contains(event.target) && !menuIcon.contains(event.target)) {
         menuPanel.style.left = '-25%';
