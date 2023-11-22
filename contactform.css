@@ -1,39 +1,47 @@
-
 body {
   font-family: sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #212529;
+  color: #fff;
 }
 
 h1 {
   text-align: center;
   margin-top: 20px;
   margin-bottom: 10px;
+  color: #fff;
 }
 
 p {
   text-align: center;
+  color: #fff;
 }
 
 form {
-  width: 300px;
+  width: 400px;
   margin: 0 auto;
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid #212529;
   border-radius: 5px;
+  background-color: #32373f;
+  color: #fff;
 }
 
 label {
   display: block;
   margin-bottom: 5px;
+  color: #fff;
 }
 
 input,
 textarea {
   width: 100%;
   padding: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid #212529;
   border-radius: 3px;
+  background-color: #32373f;
+  color: #fff;
 }
 
 textarea {
