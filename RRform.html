@@ -21,9 +21,12 @@
      border-radius: 5px;
      cursor: pointer;
      background-color: #6272a4;
-     color: white; /* Change button text color to white */
+     color: white; 
      transition: background-color 0.3s ease;
      margin: 10px;
+    background: linear-gradient(270deg, #6272a4, #8be9fd, #ff79c6);
+     background-size: 200% 200%;
+     animation: gradient 3s ease infinite;
    }
 
    @keyframes gradient {
@@ -32,14 +35,8 @@
      100% {background-position: 0% 50%;}
    }
 
-   .button {
-     background: linear-gradient(270deg, #6272a4, #8be9fd, #ff79c6);
-     background-size: 200% 200%;
-     animation: gradient 3s ease infinite;
-   }
-
    h1 {
-     text-align: center;
+     text-align: top;
      color: white;
      font-family: 'Arial', sans-serif;
      margin-bottom: 20px;
