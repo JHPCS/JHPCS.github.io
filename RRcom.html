@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <style>
+      body {
+ background-color: #1e1f28;
+ color: #f8f8f2;
+ font-family: Arial, sans-serif;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ height: 100vh;
+ margin: 0;
+ padding: 0;
+}
+
+form {
+ max-width:500px;
+ padding: 20px;
+ border-radius: 5px;
+ background-color: #282a36;
+  margin: auto;
+}
+
+label {
+ display: block;
+ margin-bottom: 5px;
+}
+
+input[type="text"] {
+ width: 90%;
+ padding: 10px;
+ margin-bottom: 20px;
+ border-radius: 5px;
+ border: none;
+ outline: none;
+ background-color: #1e1f28; 
+ color: #f8f8f2; 
+ 
+}
+
+
+input[type="text"]::placeholder {
+   color: #ffffff;
+}
+
+button {
+ width: 100%;
+ padding: 10px;
+ border: none;
+ border-radius: 5px;
+ cursor: pointer;
+ background-color: #6272a4;
+ color: #f8f8f2;
+ transition: background-color 0.3s ease;
+}
+@keyframes gradient {
+ 0% {background-position: 0% 50%;}
+ 50% {background-position: 100% 50%;}
+ 100% {background-position: 0% 50%;}
+}
+
+button {
+ 
+ background: linear-gradient(270deg, #6272a4, #8be9fd, #ff79c6);
+ background-size: 200% 200%;
+ animation: gradient 3s ease infinite;
+}
+ h1 {
+       text-align: center;
+       color: white;
+       font-family: 'Arial', sans-serif;
+       margin-bottom: 20px;
+     }
+  </style>
+    <title>RecRoom Forms</title>
+</head>
+<body>
+  <h1>Commissioner Applications</h1>
+<form action="https://formspree.io/f/mwkgkwbv" method="post">
+  <label for="Discord">Whats your discord user? For example Justarandomjeff#5576 or Justarandomjeff</label>
+  <input type="text" name="Discord" id="Discord" placeholder="Your Answer">
+
+  <label for="RecRoom">Whats your Rec Room @?</label>
+  <input type="text" name="RecRoom" id="RecRoom" placeholder="Your Answer">
+
+  <label for="List or String">Do you use string import or list create? Explain the proccess of wichever you use.</label>
+  <input type="text" name="List or String" id="List or String" placeholder="Your Answer">
+
+  <label for="Custom Colors">Do you use custom colors or stock Rec Room colors? Explain the proccess of whichever you use.</label>
+  <input type="text" name="Custom Colors" id="Custom Colors" placeholder="Your Answer">
+
+  <label for="Summary">Give brief step-by-step instructions to printing. 1-4 sentences long, do not get into too much detail.</label>
+  <input type="text" name="Summary" id="Summary" placeholder="Your Answer">
+
+  <button type="submit">Submit</button>
+</form>
+</body>
+<html>
