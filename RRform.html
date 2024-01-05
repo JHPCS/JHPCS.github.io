@@ -33,6 +33,13 @@ input[type="text"] {
  border-radius: 5px;
  border: none;
  outline: none;
+ background-color: #282a36; 
+ color: #f8f8f2; 
+}
+
+
+input[type="text"]::placeholder {
+   color: #ffffff;
 }
 
 button {
@@ -41,11 +48,10 @@ button {
  border: none;
  border-radius: 5px;
  cursor: pointer;
- background-color: #282a36; /* Darker button color */
- color: #f8f8f2; /* White text color */
+ background-color: #6272a4;
+ color: #f8f8f2;
  transition: background-color 0.3s ease;
 }
-
 @keyframes gradient {
  0% {background-position: 0% 50%;}
  50% {background-position: 100% 50%;}
@@ -54,7 +60,7 @@ button {
 
 button {
  /* ...existing styles... */
- background: linear-gradient(270deg, #282a36, #282a36, #282a36); /* Darker gradient */
+ background: linear-gradient(270deg, #6272a4, #8be9fd, #ff79c6);
  background-size: 200% 200%;
  animation: gradient 3s ease infinite;
 }
