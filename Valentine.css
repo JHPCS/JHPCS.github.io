@@ -1,0 +1,27 @@
+body {
+  background-color: #f8f0e8; 
+  color: #663333; 
+}
+
+h1, h2 {
+  font-family: cursive;
+}
+#riddle p {
+  border: 1px solid #e0dede;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.1);
+  background-image: url("images/heart-pattern.png");
+  background-repeat: repeat;
+}
+
+.heart-shape {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 50px;
+  left: 100px;
+  transform: rotate(45deg);
+  background-color: #ff0000;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
