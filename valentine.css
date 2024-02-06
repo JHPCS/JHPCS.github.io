@@ -1,0 +1,30 @@
+body {
+  font-family: sans-serif;
+  background-color: #f0f8ff;
+  color: #663399;
+}
+
+header {
+  text-align: center;
+  padding: 20px;
+  font-size: 2em;
+}
+
+.riddle {
+  padding: 10px;
+  font-style: italic;
+}
+
+.answer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+button {
+  background-color: #ff6699;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
