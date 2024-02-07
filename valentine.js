@@ -8,6 +8,6 @@ function checkAnswer() {
         result.innerHTML = "Correct! You found my secret!";
     } else {
         result.style.display = 'block';
-        result.innerHTML = "Try again! Hint: It starts with a 'Y' and ends with 'me'.";
+        result.innerHTML = "Try again! Hint: It starts with a 'S' and ends with 'm'.";
     }
 }
