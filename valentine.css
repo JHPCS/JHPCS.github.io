@@ -25,6 +25,10 @@ h1 {
 input[type="text"] {
     padding:  5px;
     font-size:  1em;
+    width:  70%; 
+    margin:  10px  0; 
+    border:  2px solid #FF69B4; 
+    border-radius:  5px; 
 }
 
 button {
