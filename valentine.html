@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Valentine's Riddle</title>
-  <link rel="stylesheet" href="valentine.css"> </head>
-<body>
-  <header>
-    <h1>My Heart's Enigma</h1>
-  </header>
-  <main>
-    <section class="riddle">
-      <h2>Can you guess who holds my key?</h2>
-      <p>I have no voice, but speak to your soul,<br>
-        I have no wings, but fly with your goals.<br>
-        I have no hands, but hold you tight,<br>
-        Unveil my name, and win love's light.</p>
-    </section>
-  </main>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Riddle</title>
 
+    <link rel="stylesheet" href="valentine.css">
+</head>
+<body>
+    <div class="valentine-container">
+        <h1>Welcome to the Valentine's Riddle!</h1>
+        <p id="riddle">Can you solve this riddle? Who am I?</p>
+        <input type="text" id="answer" placeholder="Type your guess here...">
+        <button onclick="checkAnswer()">Submit</button>
+        <p id="result"></p>
+    </div>
+
+    <script src="valentine.js"></script>
 </body>
 </html>
