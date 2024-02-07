@@ -1,40 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine's Riddle</title>
-    <link rel="stylesheet" href="valentine.css">
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valentine's Riddle</title>
+  <link rel="stylesheet" href="valentine.css"> </head>
 <body>
-    <header>
-        <h1>My Heart's Enigma</h1>
-    </header>
-    <main>
-        <section class="riddle">
-            <h2>Can you guess who holds my key?</h2>
-            <p>I have no voice, but speak to your soul,<br>
-                I have no wings, but fly with your goals.<br>
-                I have no hands, but hold you tight,<br>
-                Unveil my name, and win love's light.</p>
-        </section>
-        <section class="answer">
-            <form>
-                <input type="text" name="answer" id="answerInput" placeholder="Enter your answer">
-                <button type="button" onclick="checkAnswer()">Reveal</button>
-            </form>
-        </section>
-    </main>
-    <script>
-        function checkAnswer() {
-            const answer = document.getElementById("answerInput").value.toLowerCase();
-            if (answer === "This") {
-                alert("Congratulations! You guessed the riddle correctly!");
-            } else {
-                // Provide more specific feedback or hints if possible
-                alert("Try again! Perhaps there's something you missed.");
-            }
-        }
-    </script>
+  <header>
+    <h1>My Heart's Enigma</h1>
+  </header>
+  <main>
+    <section class="riddle">
+      <h2>Can you guess who holds my key?</h2>
+      <p>I have no voice, but speak to your soul,<br>
+        I have no wings, but fly with your goals.<br>
+        I have no hands, but hold you tight,<br>
+        Unveil my name, and win love's light.</p>
+    </section>
+    <section class="answer">
+      <form>
+        <input type="text" name="answer" id="answerInput" placeholder="Enter your answer">
+        <button type="button" onclick="checkAnswer()">Reveal</button>
+      </form>
+    </section>
+  </main>
+  <script>
+    function checkAnswer() {
+      const answer = document.getElementById("answerInput").value.toLowerCase();
+      if (answer === "Answer") { // Replace with the actual answer
+        alert("Congratulations! You guessed the riddle correctly!");
+      } else {
+        // Provide more specific feedback or hints if possible
+        alert("Try again! Perhaps there's something you missed.");
+      }
+    }
+  </script>
 </body>
 </html>
