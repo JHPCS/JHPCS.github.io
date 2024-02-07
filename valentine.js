@@ -11,3 +11,12 @@ function checkAnswer() {
         result.innerHTML = "Try again! Hint: It starts with a 'R' and ends with 'r'.";
     }
 }
+
+document.querySelector('.valentine-container').addEventListener('click', function() {
+    var bottomRightText = document.getElementById('bottomRightText');
+    if (bottomRightText.style.display === 'none') {
+        bottomRightText.style.display = 'block';
+    } else {
+        bottomRightText.style.display = 'none';
+    }
+});
