@@ -3,11 +3,11 @@ function checkAnswer() {
     var result = document.getElementById('result');
     
     
-    if (answer.toLowerCase().trim() === 'sam') {
+    if (answer.toLowerCase().trim() === 'refrigerator') {
         result.style.display = 'block';
-        result.innerHTML = "Correct! You found my secret!";
+        result.innerHTML = "Correct! You may want to explore!";
     } else {
         result.style.display = 'block';
-        result.innerHTML = "Try again! Hint: It starts with a 'S' and ends with 'm'.";
+        result.innerHTML = "Try again! Hint: It starts with a 'R' and ends with 'r'.";
     }
 }
