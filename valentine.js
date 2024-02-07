@@ -3,7 +3,7 @@ function checkAnswer() {
     var result = document.getElementById('result');
     
     
-    if (answer.toLowerCase().trim() === 'Sam') {
+    if (answer.toLowerCase().trim() === 'sam') {
         result.style.display = 'block';
         result.innerHTML = "Correct! You found my secret!";
     } else {
