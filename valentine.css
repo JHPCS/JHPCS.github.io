@@ -50,3 +50,10 @@ button:hover {
     display: none;
     font-weight: bold;
 }
+
+
+.hint {
+    font-style: italic;
+    color: #FF69B4; 
+}
+
