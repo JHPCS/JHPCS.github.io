@@ -35,3 +35,12 @@ document.querySelector('.valentine-container').addEventListener('click', functio
         }
     }
 });
+
+function toggleHint() {
+    var hintElement = document.getElementById('hint');
+    if (hintElement.style.display === 'none') {
+        hintElement.style.display = 'block';
+    } else {
+        hintElement.style.display = 'none';
+    }
+}
