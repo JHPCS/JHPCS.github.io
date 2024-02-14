@@ -57,3 +57,7 @@ button:hover {
     color: #FF69B4; 
 }
 
+
+#hint {
+    display: none;
+}
