@@ -14,17 +14,17 @@ function checkAnswer() {
 
 
 document.querySelector('.valentine-container').addEventListener('click', function(event) {
-    // Get the container's bounding rectangle
+    
     var rect = this.getBoundingClientRect();
-    // Calculate the distance from the click to the edges of the container
+    
     var distFromTop = event.clientY - rect.top;
     var distFromBottom = rect.bottom - event.clientY;
     var distFromLeft = event.clientX - rect.left;
     var distFromRight = rect.right - event.clientX;
-    // Define the threshold distance from the edge to consider it a border click
+    
     var borderThreshold =  10; // Adjust this value as needed
 
-    // Check if the click was near the border
+    
     if (distFromTop <= borderThreshold || distFromBottom <= borderThreshold ||
         distFromLeft <= borderThreshold || distFromRight <= borderThreshold) {
         var bottomRightText = document.getElementById('bottomRightText');
