@@ -43,9 +43,15 @@ document.addEventListener("click", function(event) {
                     target.style.backgroundColor = "red"; // Reset color to red after some time
                 }, 1000); // Adjust this time delay as needed
 
-                // Increment score
-                score++;
-                document.getElementById("score").innerText = score;
+                // Increment score based on target position
+                if (target.classList.contains("target-top")) {
+                    score += 3; // Top target gives 3 points
+                } else if (target.classList.contains("target-bottom")) {
+                    score += 1; // Bottom target gives 1 point
+                } else {
+                    score += 2; // Normal target gives 2 points
+                }
+                document.getElementById("score").innerText = "Score: " + score;
             }
             // Reset target position
             target.style.left = "0";
