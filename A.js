@@ -30,6 +30,12 @@ function init() {
     let floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2; // Rotate to be horizontal
     scene.add(floor);
+// Creating a green cube
+let cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+let cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+let cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+cube.position.set(0, 0, -5); // Position the cube in front of the camera
+scene.add(cube);
 
     let ambientLight = new THREE.AmbientLight(0x404040);
     scene.add(ambientLight);
