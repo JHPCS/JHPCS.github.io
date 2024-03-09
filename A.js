@@ -64,14 +64,14 @@ function animate() {
     let deltaTime = clock.getDelta();
     let moveDirection = new THREE.Vector3();
 
-    if (moveForward) moveDirection.z -= 1;
-    if (moveBackward) moveDirection.z += 1;
-    if (moveLeft) moveDirection.x -= 1;
-    if (moveRight) moveDirection.x += 1;
+    if (moveForward) moveDirection.z = -1;
+    if (moveBackward) moveDirection.z = 1;
+    if (moveLeft) moveDirection.x = -1;
+    if (moveRight) moveDirection.x = 1;
 
     moveDirection.normalize();
-    controls.moveForward(moveDirection.z * deltaTime * 5); // Adjust speed as needed
-    controls.moveRight(-moveDirection.x * deltaTime * 5); // Adjust speed as needed
+    controls.getObject().translateOnAxis(new THREE.Vector3(0, 0, -1), moveDirection.z * deltaTime * 5); // move forward/backward
+    controls.getObject().translateOnAxis(new THREE.Vector3(-1, 0, 0), moveDirection.x * deltaTime * 5); // move left/right
 
     renderer.render(scene, camera);
 }
