@@ -2,6 +2,8 @@ let scene, camera, renderer, controls;
 let isMouseDown = false;
 let sensitivity = 0.002;
 let pitch = 0;
+let rotationSpeed = new THREE.Vector2(0, 0);
+let clock = new THREE.Clock();
 
 function init() {
     scene = new THREE.Scene();
@@ -65,8 +67,14 @@ function init() {
             let movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
             let movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
-            controls.getObject().rotation.y -= movementX * sensitivity;
-            pitch -= movementY * sensitivity;
+            rotationSpeed.x += movementX * sensitivity;
+            rotationSpeed.y += movementY * sensitivity;
+
+            // Apply damping
+            rotationSpeed.multiplyScalar(0.9);
+
+            controls.getObject().rotation.y -= rotationSpeed.x;
+            pitch -= rotationSpeed.y;
             pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
             controls.getObject().rotation.x = pitch;
         }
@@ -82,6 +90,13 @@ function init() {
 
 function animate() {
     requestAnimationFrame(animate);
+
+    // Calculate delta time
+    let deltaTime = clock.getDelta();
+
+    // Update controls
+    controls.update(deltaTime);
+
     renderer.render(scene, camera);
 }
 
