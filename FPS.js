@@ -4,51 +4,24 @@ document.addEventListener("mousemove", function(event) {
     crosshair.style.top = event.clientY + "px";
 });
 
-let canShoot = true; // Variable to control shooting delay
 document.addEventListener("click", function() {
-    if (canShoot) {
-        const target = document.querySelector(".target");
-        const crosshair = document.querySelector(".crosshair");
-        const bullet = document.querySelector(".bullet");
+    const target = document.querySelector(".target");
+    const crosshair = document.querySelector(".crosshair");
 
-        const targetRect = target.getBoundingClientRect();
-        const crosshairRect = crosshair.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const crosshairRect = crosshair.getBoundingClientRect();
 
-        // Calculate bullet position
-        const bulletX = crosshairRect.left + crosshairRect.width / 2;
-        const bulletY = crosshairRect.top + crosshairRect.height / 2;
-        bullet.style.left = bulletX + "px";
-        bullet.style.top = bulletY + "px";
-
-        // Move bullet towards target
-        const targetX = targetRect.left + targetRect.width / 2;
-        const targetY = targetRect.top + targetRect.height / 2;
-        const dx = targetX - bulletX;
-        const dy = targetY - bulletY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const speed = 5; // Adjust bullet speed as needed
-        const time = distance / speed;
-
-        bullet.style.transition = `left ${time}s linear, top ${time}s linear`;
-        bullet.style.left = targetX + "px";
-        bullet.style.top = targetY + "px";
-
-        canShoot = false; // Disable shooting temporarily
-
-        // After bullet reaches the target, turn the target green
+    if (isColliding(targetRect, crosshairRect)) {
+        target.style.backgroundColor = "green";
         setTimeout(() => {
-            if (isColliding(targetRect, bullet.getBoundingClientRect())) {
-                target.style.backgroundColor = "green";
-                canShoot = true; // Enable shooting again
-            }
-        }, time * 1000); // Convert time to milliseconds
+            target.style.backgroundColor = "red"; // Reset color to red after some time
+        }, 1000); // Adjust this time delay as needed
 
-        // Reset bullet position after bullet reaches the target
-        setTimeout(() => {
-            bullet.style.transition = "";
-            bullet.style.left = "-100px";
-            bullet.style.top = "-100px";
-        }, time * 1000 + 100); // Add some extra time for the bullet to fully reach the target
+        // Reset target position
+        target.style.left = "0";
+
+        // Reset target shootable state
+        target.shootable = true;
     }
 });
 
