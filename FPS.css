@@ -28,7 +28,7 @@ body, html {
 .target-bottom {
     bottom: 5%;
     animation-duration: 7s; /* Adjust the duration for the bottom target */
-    transform: translateY(100%); /* Adjust the position of the bottom target */
+    
 }
 
 @keyframes moveTarget {
