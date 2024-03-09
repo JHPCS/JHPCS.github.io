@@ -1,3 +1,4 @@
+let isMouseDown = false; // Variable to track mouse button state
 let score = 0; // Initialize score variable
 let timeLeft = 60; // Initialize time left in seconds
 
@@ -20,14 +21,22 @@ function countdown() {
 // Start the timer countdown
 const timerInterval = setInterval(countdown, 1000);
 
-document.addEventListener("mousemove", function(event) {
-    const crosshair = document.querySelector(".crosshair");
-    crosshair.style.left = event.clientX + "px";
-    crosshair.style.top = event.clientY + "px";
+// Event listener for mouse down
+document.addEventListener("mousedown", function(event) {
+    isMouseDown = true;
 });
 
-document.addEventListener("mousedown", function(event) {
-    event.preventDefault(); // Prevent default selection behavior
+// Event listener for mouse up
+document.addEventListener("mouseup", function(event) {
+    isMouseDown = false;
+});
+
+document.addEventListener("mousemove", function(event) {
+    if (isMouseDown) { // Check if mouse button is pressed
+        const crosshair = document.querySelector(".crosshair");
+        crosshair.style.left = event.clientX + "px";
+        crosshair.style.top = event.clientY + "px";
+    }
 });
 
 document.addEventListener("click", function(event) {
@@ -85,4 +94,4 @@ function isColliding(rect1, rect2) {
 }
 
 // Initialize and update the timer display
-updateTimer();
+upd
