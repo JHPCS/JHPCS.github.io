@@ -1,3 +1,5 @@
+let score = 0; // Initialize score variable
+
 document.addEventListener("mousemove", function(event) {
     const crosshair = document.querySelector(".crosshair");
     crosshair.style.left = event.clientX + "px";
@@ -23,13 +25,15 @@ document.addEventListener("click", function(event) {
             // Reset target position
             target.style.left = "0";
 
+            // Increment score
+            score++;
+            document.getElementById("score").innerText = "Score: " + score;
+
             // Reset target shootable state
             target.shootable = true;
         }
     });
 });
-
-
 
 function isColliding(rect1, rect2) {
     return !(rect1.right < rect2.left || 
