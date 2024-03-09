@@ -4,6 +4,10 @@ let sensitivity = 0.002;
 let pitch = 0;
 let rotationSpeed = new THREE.Vector2(0, 0);
 let clock = new THREE.Clock();
+let moveForward = false;
+let moveBackward = false;
+let moveLeft = false;
+let moveRight = false;
 
 function init() {
     scene = new THREE.Scene();
@@ -36,16 +40,33 @@ function init() {
     let onKeyDown = function (event) {
         switch (event.code) {
             case 'KeyW':
-                controls.getObject().translateZ(-0.1);
+                moveForward = true;
                 break;
             case 'KeyA':
-                controls.getObject().translateX(-0.1);
+                moveLeft = true;
                 break;
             case 'KeyS':
-                controls.getObject().translateZ(0.1);
+                moveBackward = true;
                 break;
             case 'KeyD':
-                controls.getObject().translateX(0.1);
+                moveRight = true;
+                break;
+        }
+    };
+
+    let onKeyUp = function (event) {
+        switch (event.code) {
+            case 'KeyW':
+                moveForward = false;
+                break;
+            case 'KeyA':
+                moveLeft = false;
+                break;
+            case 'KeyS':
+                moveBackward = false;
+                break;
+            case 'KeyD':
+                moveRight = false;
                 break;
         }
     };
@@ -81,6 +102,7 @@ function init() {
     };
 
     document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
     document.addEventListener('mousedown', onMouseDown);
     document.addEventListener('mouseup', onMouseUp);
     document.addEventListener('mousemove', onMouseMove);
@@ -93,6 +115,16 @@ function animate() {
 
     // Calculate delta time
     let deltaTime = clock.getDelta();
+
+    // Update controls
+    let moveDirection = new THREE.Vector3();
+    if (moveForward) moveDirection.z -= 1;
+    if (moveBackward) moveDirection.z += 1;
+    if (moveLeft) moveDirection.x -= 1;
+    if (moveRight) moveDirection.x += 1;
+
+    moveDirection.normalize();
+    controls.getObject().translateOnAxis(moveDirection, 0.1);
 
     renderer.render(scene, camera);
 }
