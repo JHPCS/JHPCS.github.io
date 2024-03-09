@@ -59,26 +59,21 @@ function onKeyUp(event) {
 }
 
 function animate() {
-    try {
-        requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
 
-        let deltaTime = clock.getDelta();
-        let moveDirection = new THREE.Vector3();
+    let deltaTime = clock.getDelta();
+    let moveDirection = new THREE.Vector3();
 
-        if (moveForward) moveDirection.z -= 1;
-        if (moveBackward) moveDirection.z += 1;
-        if (moveLeft) moveDirection.x -= 1;
-        if (moveRight) moveDirection.x += 1;
+    if (moveForward) moveDirection.z -= 1;
+    if (moveBackward) moveDirection.z += 1;
+    if (moveLeft) moveDirection.x -= 1;
+    if (moveRight) moveDirection.x += 1;
 
-        moveDirection.normalize();
-        let speed = 5; // Adjust speed as needed
-        controls.getObject().position.x += moveDirection.x * speed * deltaTime;
-        controls.getObject().position.z += moveDirection.z * speed * deltaTime;
+    moveDirection.normalize();
+    controls.moveForward(moveDirection.z * deltaTime * 5); // Adjust speed as needed
+    controls.moveRight(-moveDirection.x * deltaTime * 5); // Adjust speed as needed
 
-        renderer.render(scene, camera);
-    } catch (error) {
-        console.error('An error occurred during animation:', error);
-    }
+    renderer.render(scene, camera);
 }
 
 init();
