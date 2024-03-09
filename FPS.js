@@ -26,6 +26,10 @@ document.addEventListener("mousemove", function(event) {
     crosshair.style.top = event.clientY + "px";
 });
 
+document.addEventListener("mousedown", function(event) {
+    event.preventDefault(); // Prevent default selection behavior
+});
+
 document.addEventListener("click", function(event) {
     const crosshair = document.querySelector(".crosshair");
 
@@ -72,7 +76,6 @@ function showGameOverScreen() {
     gameOverScreen.innerHTML = "<h1>Time's Up!</h1><p>Final Score: " + score + "</p><button onclick='window.location.href=\"https://arfg.space/FPS.html\"'>Play Again</button>";
     gameContainer.appendChild(gameOverScreen);
 }
-
 
 function isColliding(rect1, rect2) {
     return !(rect1.right < rect2.left || 
