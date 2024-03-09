@@ -12,16 +12,14 @@ document.addEventListener("click", function() {
     const crosshairRect = crosshair.getBoundingClientRect();
 
     if (isColliding(targetRect, crosshairRect)) {
-        target.style.backgroundColor = "green";
-        if (!target.hitEdge) { // Check if the target has hit the edge before
-            target.hitEdge = true; // Set hitEdge flag to true
-            target.style.backgroundColor = "red"; // Change color to red
+        if (target.shootable) { // Check if target is shootable
+            target.style.backgroundColor = "green";
+            target.shootable = false; // Set shootable state to false
+            setTimeout(() => {
+                target.style.backgroundColor = "red"; // Change color back to red after delay
+                target.shootable = true; // Set shootable state to true again
+            }, 1000); // Adjust delay time as needed
         }
-    }
-    // If the target has hit the edge, reset its position and shootable state
-    if (target.hitEdge) {
-        target.style.left = "0";
-        target.shootable = true;
     }
 });
 
