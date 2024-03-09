@@ -25,7 +25,7 @@ document.addEventListener("click", function(event) {
 
                 // Increment score
                 score++;
-                document.getElementById("score").innerText = "Score: " + score;
+                document.getElementById("score").innerText = score;
             }
             // Reset target position
             target.style.left = "0";
