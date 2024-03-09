@@ -20,6 +20,13 @@ body, html {
     background-color: red;
     animation: moveTarget 5s linear infinite alternate;
 }
+.target-top {
+    top: 20%; /* Adjust the percentage to position it above */
+}
+
+.target-bottom {
+    bottom: 20%; /* Adjust the percentage to position it below */
+}
 
 @keyframes moveTarget {
     from {
