@@ -12,6 +12,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     controls = new THREE.PointerLockControls(camera, document.body);
+    controls.enabled = true; // Enable pointer lock controls
     scene.add(controls.getObject());
 
     let geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -45,6 +46,15 @@ function init() {
     };
 
     document.addEventListener('keydown', onKeyDown);
+
+    let onMouseMove = function (event) {
+        if (controls.enabled) {
+            let movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+            controls.getObject().rotation.y -= movementX * 0.002;
+        }
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
 
     animate();
 }
