@@ -24,18 +24,11 @@ function init() {
     controls.enabled = true; // Enable pointer lock controls
     scene.add(controls.getObject());
 
-    // Creating a bright orange floor
-    let floorGeometry = new THREE.PlaneGeometry(1000, 1000); // Large enough to appear infinite
-    let floorMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500 }); // Orange color
-    let floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2; // Rotate to be horizontal
-    scene.add(floor);
-// Creating a green cube
-let cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-let cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-let cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-cube.position.set(0, 0, -5); // Position the cube in front of the camera
-scene.add(cube);
+    let geometry = new THREE.BoxGeometry(1, 1, 1);
+    let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    let cube = new THREE.Mesh(geometry, material);
+    cube.position.set(0, 0, -5);
+    scene.add(cube);
 
     let ambientLight = new THREE.AmbientLight(0x404040);
     scene.add(ambientLight);
