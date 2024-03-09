@@ -79,6 +79,7 @@ function init() {
     scene = new THREE.Scene();
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 2, 0); // Adjusted camera position to be above the floor level
     scene.add(camera);
 
     renderer = new THREE.WebGLRenderer();
@@ -90,11 +91,19 @@ function init() {
 
     // Create orange floor
     let floorGeometry = new THREE.PlaneGeometry(2000, 2000, 100, 100);
-    let floorMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500, side: THREE.DoubleSide });
+    let floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffa500, side: THREE.DoubleSide }); // Changed material to MeshStandardMaterial
     let floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1;
+    floor.receiveShadow = true; // Enable shadows on the floor
     scene.add(floor);
+
+    let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    let directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(0, 1, 0);
+    directionalLight.castShadow = true; // Enable shadows for directional light
+    scene.add(directionalLight);
 
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
