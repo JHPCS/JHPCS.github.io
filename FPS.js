@@ -29,3 +29,24 @@ function isColliding(rect1, rect2) {
              rect1.bottom < rect2.top || 
              rect1.top > rect2.bottom);
 }
+
+// Function to check if the target hits the edge
+function hitEdge(target) {
+    const targetRect = target.getBoundingClientRect();
+    const gameContainerRect = document.querySelector(".game-container").getBoundingClientRect();
+    return targetRect.right >= gameContainerRect.right;
+}
+
+// Function to handle target hitting the edge
+function handleEdgeHit(target) {
+    if (hitEdge(target)) {
+        target.style.backgroundColor = "red"; // Change color to red
+        target.shootable = true; // Make the target shootable again
+    }
+}
+
+// Check if the target hits the edge on an interval
+setInterval(() => {
+    const target = document.querySelector(".target");
+    handleEdgeHit(target);
+}, 100); // Adjust interval as needed
