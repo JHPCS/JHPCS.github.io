@@ -17,17 +17,18 @@ document.addEventListener("click", function(event) {
         const crosshairRect = crosshair.getBoundingClientRect();
 
         if (isColliding(targetRect, crosshairRect)) {
-            target.style.backgroundColor = "green";
-            setTimeout(() => {
-                target.style.backgroundColor = "red"; // Reset color to red after some time
-            }, 1000); // Adjust this time delay as needed
+            if (target.style.backgroundColor !== "green") { // Check if the target is not already hit
+                target.style.backgroundColor = "green";
+                setTimeout(() => {
+                    target.style.backgroundColor = "red"; // Reset color to red after some time
+                }, 1000); // Adjust this time delay as needed
 
+                // Increment score
+                score++;
+                document.getElementById("score").innerText = "Score: " + score;
+            }
             // Reset target position
             target.style.left = "0";
-
-            // Increment score
-            score++;
-            document.getElementById("score").innerText = "Score: " + score;
 
             // Reset target shootable state
             target.shootable = true;
