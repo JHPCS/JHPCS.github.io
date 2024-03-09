@@ -36,16 +36,16 @@ function init() {
     let onKeyDown = function (event) {
         switch (event.code) {
             case 'KeyW':
-                controls.moveForward(0.1);
+                controls.getObject().translateZ(-0.1);
                 break;
             case 'KeyA':
-                controls.moveRight(-0.1);
+                controls.getObject().translateX(-0.1);
                 break;
             case 'KeyS':
-                controls.moveForward(-0.1);
+                controls.getObject().translateZ(0.1);
                 break;
             case 'KeyD':
-                controls.moveRight(0.1);
+                controls.getObject().translateX(0.1);
                 break;
         }
     };
@@ -93,9 +93,6 @@ function animate() {
 
     // Calculate delta time
     let deltaTime = clock.getDelta();
-
-    // Update controls
-    controls.update(deltaTime);
 
     renderer.render(scene, camera);
 }
