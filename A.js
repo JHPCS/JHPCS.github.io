@@ -60,4 +60,27 @@ function init() {
 
     let onMouseMove = function (event) {
         if (controls.enabled && isMouseDown) {
-            let movementX = event.movementX || event.mozMovementX || even
+            let movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+            let movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+            controls.getObject().rotation.y -= movementX * 0.002;
+            controls.getObject().rotation.x -= movementY * 0.002;
+
+            controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
+        }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onMouseMove);
+
+    animate();
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+}
+
+init();
