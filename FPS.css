@@ -26,7 +26,7 @@ body, html {
 }
 
 .target-bottom {
-    bottom: 5%;
+    top: 80%;
     animation-duration: 7s; /* Adjust the duration for the bottom target */
     
 }
