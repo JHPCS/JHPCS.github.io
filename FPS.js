@@ -62,16 +62,17 @@ document.addEventListener("click", function(event) {
     });
 });
 
-// Function to display game over screen with final score
+// Function to display game over screen with final score and play again button
 function showGameOverScreen() {
     const gameContainer = document.querySelector(".game-container");
     gameContainer.innerHTML = ""; // Clear the game container
 
     const gameOverScreen = document.createElement("div");
     gameOverScreen.classList.add("game-over-screen");
-    gameOverScreen.innerHTML = "<h1>Time's Up!</h1><p>Final Score: " + score + "</p>";
+    gameOverScreen.innerHTML = "<h1>Time's Up!</h1><p>Final Score: " + score + "</p><button onclick='window.location.href=\"https://arfg.space/FPS.html\"'>Play Again</button>";
     gameContainer.appendChild(gameOverScreen);
 }
+
 
 function isColliding(rect1, rect2) {
     return !(rect1.right < rect2.left || 
