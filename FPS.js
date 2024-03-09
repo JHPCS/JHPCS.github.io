@@ -1,40 +1,60 @@
-document.addEventListener("click", function() {
-    const target = document.querySelector(".target");
+document.addEventListener("mousemove", function(event) {
     const crosshair = document.querySelector(".crosshair");
+    crosshair.style.left = event.clientX + "px";
+    crosshair.style.top = event.clientY + "px";
+});
 
-    const targetRect = target.getBoundingClientRect();
-    const crosshairRect = crosshair.getBoundingClientRect();
+let canShoot = true; // Variable to control shooting delay
+document.addEventListener("click", function() {
+    if (canShoot) {
+        const target = document.querySelector(".target");
+        const crosshair = document.querySelector(".crosshair");
+        const bullet = document.querySelector(".bullet");
 
-    if (isColliding(targetRect, crosshairRect)) {
-        // Change target color immediately
-        target.style.backgroundColor = "green";
+        const targetRect = target.getBoundingClientRect();
+        const crosshairRect = crosshair.getBoundingClientRect();
 
-        // Create bullet element
-        const bullet = document.createElement("div");
-        bullet.classList.add("bullet");
-        
-        // Calculate bullet position ahead of the target
-        const delay = 500; // Adjust the delay time as needed
-        const bulletStartX = crosshairRect.left + (targetRect.left - crosshairRect.left) * delay / 1000;
-        const bulletStartY = crosshairRect.top + (targetRect.top - crosshairRect.top) * delay / 1000;
-        
-        bullet.style.left = bulletStartX + "px";
-        bullet.style.top = bulletStartY + "px";
-        document.querySelector(".game-container").appendChild(bullet);
+        // Calculate bullet position
+        const bulletX = crosshairRect.left + crosshairRect.width / 2;
+        const bulletY = crosshairRect.top + crosshairRect.height / 2;
+        bullet.style.left = bulletX + "px";
+        bullet.style.top = bulletY + "px";
 
-        // Calculate bullet movement
-        const bulletMovementX = targetRect.left - bulletStartX;
-        const bulletMovementY = targetRect.top - bulletStartY;
+        // Move bullet towards target
+        const targetX = targetRect.left + targetRect.width / 2;
+        const targetY = targetRect.top + targetRect.height / 2;
+        const dx = targetX - bulletX;
+        const dy = targetY - bulletY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const speed = 5; // Adjust bullet speed as needed
+        const time = distance / speed;
 
-        // Move bullet towards target after the delay
+        bullet.style.transition = `left ${time}s linear, top ${time}s linear`;
+        bullet.style.left = targetX + "px";
+        bullet.style.top = targetY + "px";
+
+        canShoot = false; // Disable shooting temporarily
+
+        // After bullet reaches the target, turn the target green
         setTimeout(() => {
-            moveBullet(bullet, bulletMovementX, bulletMovementY);
-        }, delay);
-        
-        // Reset target color and position after some time
+            if (isColliding(targetRect, bullet.getBoundingClientRect())) {
+                target.style.backgroundColor = "green";
+                canShoot = true; // Enable shooting again
+            }
+        }, time * 1000); // Convert time to milliseconds
+
+        // Reset bullet position after bullet reaches the target
         setTimeout(() => {
-            target.style.backgroundColor = "red";
-            target.style.left = "0";
-        }, 1000); // Adjust this time delay as needed
+            bullet.style.transition = "";
+            bullet.style.left = "-100px";
+            bullet.style.top = "-100px";
+        }, time * 1000 + 100); // Add some extra time for the bullet to fully reach the target
     }
 });
+
+function isColliding(rect1, rect2) {
+    return !(rect1.right < rect2.left || 
+             rect1.left > rect2.right || 
+             rect1.bottom < rect2.top || 
+             rect1.top > rect2.bottom);
+}
