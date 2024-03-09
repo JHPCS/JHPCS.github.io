@@ -50,9 +50,18 @@ body, html {
     transform: translate(-50%, -50%);
 }
 
-.score-overlay, .timer-overlay {
+.score-overlay {
     position: absolute;
     top: 10px;
+    left: 10px;
+    color: white;
+    font-size: 20px;
+    z-index: 1; /* Ensure the overlay is above other elements */
+}
+
+.timer-overlay {
+    position: absolute;
+    bottom: 10px;
     left: 10px;
     color: white;
     font-size: 20px;
@@ -68,4 +77,3 @@ body, html {
     color: white;
     font-size: 32px;
 }
-
