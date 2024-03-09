@@ -1,4 +1,24 @@
 let score = 0; // Initialize score variable
+let timeLeft = 60; // Initialize time left in seconds
+
+// Function to update the timer display
+function updateTimer() {
+    document.getElementById("timer").innerText = "Time Left: " + timeLeft + "s";
+}
+
+// Function to handle the timer countdown
+function countdown() {
+    if (timeLeft > 0) {
+        timeLeft--;
+        updateTimer();
+    } else {
+        clearInterval(timerInterval); // Stop the timer when time is up
+        showGameOverScreen();
+    }
+}
+
+// Start the timer countdown
+const timerInterval = setInterval(countdown, 1000);
 
 document.addEventListener("mousemove", function(event) {
     const crosshair = document.querySelector(".crosshair");
@@ -25,7 +45,7 @@ document.addEventListener("click", function(event) {
 
                 // Increment score
                 score++;
-                document.getElementById("score").innerText = score;
+                document.getElementById("score").innerText = "Score: " + score;
             }
             // Reset target position
             target.style.left = "0";
@@ -36,9 +56,23 @@ document.addEventListener("click", function(event) {
     });
 });
 
+// Function to display game over screen with final score
+function showGameOverScreen() {
+    const gameContainer = document.querySelector(".game-container");
+    gameContainer.innerHTML = ""; // Clear the game container
+
+    const gameOverScreen = document.createElement("div");
+    gameOverScreen.classList.add("game-over-screen");
+    gameOverScreen.innerHTML = "<h1>Time's Up!</h1><p>Final Score: " + score + "</p>";
+    gameContainer.appendChild(gameOverScreen);
+}
+
 function isColliding(rect1, rect2) {
     return !(rect1.right < rect2.left || 
              rect1.left > rect2.right || 
              rect1.bottom < rect2.top || 
              rect1.top > rect2.bottom);
 }
+
+// Initialize and update the timer display
+updateTimer();
