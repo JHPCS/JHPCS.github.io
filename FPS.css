@@ -2,6 +2,7 @@ body, html {
     margin: 0;
     padding: 0;
     height: 100%;
+    font-family: Arial, sans-serif;
 }
 
 .game-container {
@@ -24,11 +25,9 @@ body, html {
     top: 20%; /* Adjust the percentage to position it above */
     animation-duration: 3s;
 }
-
 .target-bottom {
     top: 80%;
     animation-duration: 7s; /* Adjust the duration for the bottom target */
-    
 }
 
 @keyframes moveTarget {
@@ -51,11 +50,22 @@ body, html {
     transform: translate(-50%, -50%);
 }
 
-.score-overlay {
+.score-overlay, .timer-overlay {
     position: absolute;
     top: 10px;
     left: 10px;
     color: white;
-    font-size: 24px;
-    z-index: 1; /* Ensure the score is above other elements */
+    font-size: 20px;
+    z-index: 1; /* Ensure the overlay is above other elements */
 }
+
+.game-over-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    font-size: 32px;
+}
+
