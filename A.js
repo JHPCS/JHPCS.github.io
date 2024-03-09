@@ -1,5 +1,7 @@
 let scene, camera, renderer, controls;
 let isMouseDown = false;
+let sensitivity = 0.002;
+let pitch = 0;
 
 function init() {
     scene = new THREE.Scene();
@@ -63,10 +65,10 @@ function init() {
             let movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
             let movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
-            controls.getObject().rotation.y -= movementX * 0.002;
-            controls.getObject().rotation.x -= movementY * 0.002;
-
-            controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
+            controls.getObject().rotation.y -= movementX * sensitivity;
+            pitch -= movementY * sensitivity;
+            pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
+            controls.getObject().rotation.x = pitch;
         }
     };
 
