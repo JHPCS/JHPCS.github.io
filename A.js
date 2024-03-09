@@ -8,7 +8,7 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    controls = new THREE.PointerLockControls(camera);
+    controls = new THREE.PointerLockControls(camera, document.body);
     scene.add(controls.getObject());
 
     let geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -17,14 +17,6 @@ function init() {
     scene.add(cube);
 
     camera.position.set(0, 1.5, 0);
-
-    controls.addEventListener('lock', () => {
-        console.log('Pointer locked');
-    });
-
-    controls.addEventListener('unlock', () => {
-        console.log('Pointer unlocked');
-    });
 
     let onKeyDown = function (event) {
         switch (event.code) {
