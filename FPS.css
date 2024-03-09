@@ -40,12 +40,3 @@ body, html {
     top: 50%;
     transform: translate(-50%, -50%);
 }
-.bullet {
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    background-color: yellow; /* You can adjust the color as needed */
-    border-radius: 50%;
-    z-index: 1; /* Ensure the bullet appears above other elements */
-    pointer-events: none; /* Make the bullet non-clickable */
-}
