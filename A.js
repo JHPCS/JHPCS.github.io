@@ -1,4 +1,5 @@
 let scene, camera, renderer, controls;
+let isMouseDown = false;
 
 function init() {
     scene = new THREE.Scene();
@@ -45,23 +46,18 @@ function init() {
         }
     };
 
-    document.addEventListener('keydown', onKeyDown);
-
-    let onMouseMove = function (event) {
-        if (controls.enabled) {
-            let movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-            controls.getObject().rotation.y -= movementX * 0.002;
+    let onMouseDown = function (event) {
+        if (event.button === 0) { // Left mouse button
+            isMouseDown = true;
         }
     };
 
-    document.addEventListener('mousemove', onMouseMove);
+    let onMouseUp = function (event) {
+        if (event.button === 0) { // Left mouse button
+            isMouseDown = false;
+        }
+    };
 
-    animate();
-}
-
-function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-}
-
-init();
+    let onMouseMove = function (event) {
+        if (controls.enabled && isMouseDown) {
+            let movementX = event.movementX || event.mozMovementX || even
