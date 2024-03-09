@@ -5,10 +5,12 @@ document.addEventListener("mousemove", function(event) {
 });
 
 document.addEventListener("click", function(event) {
-    const target = event.target.closest('.target'); // Find the closest target element
     const crosshair = document.querySelector(".crosshair");
 
-    if (target) {
+    // Get all target elements
+    const targets = document.querySelectorAll('.target');
+
+    targets.forEach(target => {
         const targetRect = target.getBoundingClientRect();
         const crosshairRect = crosshair.getBoundingClientRect();
 
@@ -24,8 +26,9 @@ document.addEventListener("click", function(event) {
             // Reset target shootable state
             target.shootable = true;
         }
-    }
+    });
 });
+
 
 
 function isColliding(rect1, rect2) {
