@@ -76,8 +76,10 @@
         const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
         controls.getObject().rotation.y -= movementX * MOUSE_SENSITIVITY;
-        controls.getObject().rotation.x -= movementY * MOUSE_SENSITIVITY;
-        controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
+        controls.getObject().rotation.y = (controls.getObject().rotation.y + Math.PI * 2) % (Math.PI * 2); // Wrap around for full rotation
+
+        const verticalRotation = controls.getObject().rotation.x - movementY * MOUSE_SENSITIVITY;
+        controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, verticalRotation));
     }
 
     function animate() {
@@ -87,16 +89,15 @@
             const deltaTime = clock.getDelta();
             const moveDirection = new THREE.Vector3();
 
-            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-            const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-
-            if (keyState.KeyW) moveDirection.add(forward);
-            if (keyState.KeyS) moveDirection.sub(forward);
-            if (keyState.KeyA) moveDirection.sub(right);
-            if (keyState.KeyD) moveDirection.add(right);
+            if (keyState.KeyW) moveDirection.z -= 1;
+            if (keyState.KeyS) moveDirection.z += 1;
+            if (keyState.KeyA) moveDirection.x -= 1;
+            if (keyState.KeyD) moveDirection.x += 1;
 
             moveDirection.normalize();
-            controls.getObject().position.add(moveDirection.multiplyScalar(MOVE_SPEED * deltaTime));
+            const moveDistance = moveDirection.multiplyScalar(MOVE_SPEED * deltaTime);
+            controls.getObject().translateX(moveDistance.x);
+            controls.getObject().translateZ(moveDistance.z);
 
             renderer.render(scene, camera);
         } catch (error) {
