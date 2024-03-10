@@ -88,7 +88,7 @@ function onMouseUp(event) {
 let previousMouseX = 0;
 let previousMouseY = 0;
 
-function onMouseMove(event) {
+ffunction onMouseMove(event) {
     if (isMouseDown) {
         const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
         const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
@@ -101,12 +101,13 @@ function onMouseMove(event) {
 
         // Apply the change in rotation gradually
         controls.getObject().rotation.y -= deltaX;
-        controls.getObject().rotation.x -= deltaY;
+        controls.getObject().rotation.x += deltaY; // Invert deltaY to reverse vertical rotation
 
         // Clamp vertical rotation to avoid flipping upside down
         controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
     }
 }
+
 
 
 function animate() {
