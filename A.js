@@ -18,6 +18,13 @@ function init() {
     controls = new THREE.PointerLockControls(camera, document.body);
     scene.add(controls.getObject());
 
+    // Add a green box as a light source
+    const lightGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const lightMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const light = new THREE.Mesh(lightGeometry, lightMaterial);
+    light.position.set(0, 5, 0); // Adjust position as needed
+    scene.add(light);
+
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
 
