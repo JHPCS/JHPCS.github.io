@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let moveBackward = false;
     let moveLeft = false;
     let moveRight = false;
+    let mouseDown = false;
 
     function init() {
         scene = new THREE.Scene();
@@ -23,22 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.addEventListener('keydown', onKeyDown);
         document.addEventListener('keyup', onKeyUp);
-        
-        document.addEventListener('mousemove', onMouseMove);
-
-function onMouseMove(event) {
-    const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-    const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-
-    const sensitivity = 0.002;
-
-    controls.getObject().rotation.y -= movementX * sensitivity;
-    controls.getObject().rotation.x -= movementY * sensitivity;
-
-    // Limit vertical rotation to avoid flipping
-    controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
-}
-
+        document.addEventListener('mousedown', onMouseDown);
+        document.addEventListener('mouseup', onMouseUp);
 
         animate();
         
@@ -92,6 +79,33 @@ function onMouseMove(event) {
             case 'KeyD':
                 moveRight = false;
                 break;
+        }
+    }
+
+    function onMouseDown(event) {
+        if (event.button === 0) {
+            mouseDown = true;
+        }
+    }
+
+    function onMouseUp(event) {
+        if (event.button === 0) {
+            mouseDown = false;
+        }
+    }
+
+    function onMouseMove(event) {
+        if (mouseDown) {
+            const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+            const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+            const sensitivity = 0.002;
+
+            controls.getObject().rotation.y -= movementX * sensitivity;
+            controls.getObject().rotation.x -= movementY * sensitivity;
+
+            // Limit vertical rotation to avoid flipping
+            controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
         }
     }
 
