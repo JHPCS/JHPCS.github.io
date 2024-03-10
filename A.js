@@ -23,6 +23,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.addEventListener('keydown', onKeyDown);
         document.addEventListener('keyup', onKeyUp);
+        
+        document.addEventListener('mousemove', onMouseMove);
+
+function onMouseMove(event) {
+    const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+    const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+    const sensitivity = 0.002;
+
+    controls.getObject().rotation.y -= movementX * sensitivity;
+    controls.getObject().rotation.x -= movementY * sensitivity;
+
+    // Limit vertical rotation to avoid flipping
+    controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
+}
+
 
         animate();
         
