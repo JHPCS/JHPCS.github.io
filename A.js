@@ -91,8 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (moveRight) moveDirection.x = 1;
 
         moveDirection.normalize();
-        controls.getObject().translateOnAxis(new THREE.Vector3(0, 0, -1), moveDirection.z * deltaTime * 5); // move forward/backward
-        controls.getObject().translateOnAxis(new THREE.Vector3(-1, 0, 0), moveDirection.x * deltaTime * 5); // move left/right
+        controls.getObject().translateOnAxis(new THREE.Vector3(0, 0, 1), moveDirection.z * deltaTime * 5); // move forward/backward
+        controls.getObject().translateOnAxis(new THREE.Vector3(1, 0, 0), moveDirection.x * deltaTime * 5); // move left/right
 
         renderer.render(scene, camera);
     }
