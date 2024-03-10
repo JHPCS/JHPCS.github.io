@@ -30,9 +30,10 @@
 
             document.addEventListener('keydown', onKeyDown);
             document.addEventListener('keyup', onKeyUp);
-            document.addEventListener('mousedown', onMouseDown);
-            document.addEventListener('mouseup', onMouseUp);
             document.addEventListener('mousemove', onMouseMove);
+
+            // Hide cursor
+            document.body.style.cursor = 'none';
 
             animate();
         } catch (error) {
@@ -70,29 +71,11 @@
         }
     }
 
-    function onMouseDown(event) {
-        if (event.button === 0) { // Left mouse button
-            isMouseDown = true;
-            document.body.requestPointerLock();
-        }
-    }
-
-    function onMouseUp(event) {
-        if (event.button === 0) { // Left mouse button
-            isMouseDown = false;
-            document.exitPointerLock();
-        }
-    }
-
     function onMouseMove(event) {
-        if (isMouseDown) {
-            const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-            const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+        const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
 
-            controls.getObject().rotation.y -= movementX * MOUSE_SENSITIVITY;
-            controls.getObject().rotation.x += movementY * MOUSE_SENSITIVITY;
-            controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
-        }
+        controls.getObject().rotation.y -= movementX * MOUSE_SENSITIVITY;
+        controls.getObject().rotation.y = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.y));
     }
 
     function animate() {
