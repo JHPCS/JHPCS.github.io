@@ -26,6 +26,7 @@
             scene.add(controls.getObject());
 
             addLightSource();
+            addFloor();
 
             document.addEventListener('keydown', onKeyDown);
             document.addEventListener('keyup', onKeyUp);
@@ -45,6 +46,14 @@
         const light = new THREE.Mesh(lightGeometry, lightMaterial);
         light.position.set(0, 5, 0); // Adjust position as needed
         scene.add(light);
+    }
+
+    function addFloor() {
+        const floorGeometry = new THREE.PlaneGeometry(100, 100); // Adjust size as needed
+        const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red color
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2; // Rotate to make it a floor
+        scene.add(floor);
     }
 
     function onKeyDown(event) {
