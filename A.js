@@ -4,6 +4,7 @@ let moveForward = false;
 let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
+let isMouseDown = false;
 
 function init() {
     scene = new THREE.Scene();
@@ -27,6 +28,11 @@ function init() {
 
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
+
+    // Event listeners for mouse events
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onMouseMove);
 
     animate();
 }
@@ -62,6 +68,33 @@ function onKeyUp(event) {
         case 'KeyD':
             moveRight = false;
             break;
+    }
+}
+
+function onMouseDown(event) {
+    if (event.button === 0) { // Check if left mouse button is pressed
+        isMouseDown = true;
+        document.body.requestPointerLock();
+    }
+}
+
+function onMouseUp(event) {
+    if (event.button === 0) { // Check if left mouse button is released
+        isMouseDown = false;
+        document.exitPointerLock();
+    }
+}
+
+function onMouseMove(event) {
+    if (isMouseDown) {
+        const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+        const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+        controls.getObject().rotation.y -= movementX * 0.002; // Adjust sensitivity as needed
+        controls.getObject().rotation.x -= movementY * 0.002; // Adjust sensitivity as needed
+
+        // Clamp vertical rotation to avoid flipping upside down
+        controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
     }
 }
 
