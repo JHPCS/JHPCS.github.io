@@ -5,6 +5,8 @@ let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
 let isMouseDown = false;
+let previousMouseX = 0;
+let previousMouseY = 0;
 
 function init() {
     scene = new THREE.Scene();
@@ -85,10 +87,7 @@ function onMouseUp(event) {
     }
 }
 
-let previousMouseX = 0;
-let previousMouseY = 0;
-
-ffunction onMouseMove(event) {
+function onMouseMove(event) {
     if (isMouseDown) {
         const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
         const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
@@ -107,8 +106,6 @@ ffunction onMouseMove(event) {
         controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
     }
 }
-
-
 
 function animate() {
     try {
