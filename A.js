@@ -1,3 +1,6 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // Your code here
+    
 let scene, camera, renderer, controls;
 let clock = new THREE.Clock();
 let moveForward = false;
@@ -77,3 +80,5 @@ function animate() {
 }
 
 init();
+init();
+});
