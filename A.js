@@ -73,13 +73,9 @@
 
     function onMouseMove(event) {
         const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-        const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
         controls.getObject().rotation.y -= movementX * MOUSE_SENSITIVITY;
         controls.getObject().rotation.y = (controls.getObject().rotation.y + Math.PI * 2) % (Math.PI * 2); // Wrap around for full rotation
-
-        const verticalRotation = controls.getObject().rotation.x - movementY * MOUSE_SENSITIVITY;
-        controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, verticalRotation));
     }
 
     function animate() {
