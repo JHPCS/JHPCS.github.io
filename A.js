@@ -85,18 +85,29 @@ function onMouseUp(event) {
     }
 }
 
+let previousMouseX = 0;
+let previousMouseY = 0;
+
 function onMouseMove(event) {
     if (isMouseDown) {
         const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
         const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
-        controls.getObject().rotation.y -= movementX * 0.002; // Adjust sensitivity as needed
-        controls.getObject().rotation.x -= movementY * 0.002; // Adjust sensitivity as needed
+        const sensitivity = 0.002; // Adjust sensitivity as needed
+
+        // Calculate the change in rotation based on mouse movement
+        const deltaX = movementX * sensitivity;
+        const deltaY = movementY * sensitivity;
+
+        // Apply the change in rotation gradually
+        controls.getObject().rotation.y -= deltaX;
+        controls.getObject().rotation.x -= deltaY;
 
         // Clamp vertical rotation to avoid flipping upside down
         controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
     }
 }
+
 
 function animate() {
     try {
