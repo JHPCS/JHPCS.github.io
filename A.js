@@ -1,133 +1,111 @@
-let scene, camera, renderer, controls;
-let clock = new THREE.Clock();
-let moveForward = false;
-let moveBackward = false;
-let moveLeft = false;
-let moveRight = false;
-let isMouseDown = false;
-let previousMouseX = 0;
-let previousMouseY = 0;
+(function() {
+    let scene, camera, renderer, controls;
+    let clock = new THREE.Clock();
+    const MOVE_SPEED = 5;
+    const MOUSE_SENSITIVITY = 0.002;
 
-function init() {
-    scene = new THREE.Scene();
+    const keyState = {
+        KeyW: false,
+        KeyA: false,
+        KeyS: false,
+        KeyD: false
+    };
 
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    scene.add(camera);
+    function init() {
+        try {
+            scene = new THREE.Scene();
 
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.querySelector('.world').appendChild(renderer.domElement);
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            scene.add(camera);
 
-    controls = new THREE.PointerLockControls(camera, document.body);
-    scene.add(controls.getObject());
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.querySelector('.world').appendChild(renderer.domElement);
 
-    // Add a green box as a light source
-    const lightGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const lightMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const light = new THREE.Mesh(lightGeometry, lightMaterial);
-    light.position.set(0, 5, 0); // Adjust position as needed
-    scene.add(light);
+            controls = new THREE.PointerLockControls(camera, document.body);
+            scene.add(controls.getObject());
 
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
+            addLightSource();
 
-    // Event listeners for mouse events
-    document.addEventListener('mousedown', onMouseDown);
-    document.addEventListener('mouseup', onMouseUp);
-    document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+            document.addEventListener('mousedown', onMouseDown);
+            document.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('mousemove', onMouseMove);
 
-    animate();
-}
-
-function onKeyDown(event) {
-    switch (event.code) {
-        case 'KeyW':
-            moveForward = true;
-            break;
-        case 'KeyA':
-            moveLeft = true;
-            break;
-        case 'KeyS':
-            moveBackward = true;
-            break;
-        case 'KeyD':
-            moveRight = true;
-            break;
+            animate();
+        } catch (error) {
+            console.error('An error occurred during initialization:', error);
+        }
     }
-}
 
-function onKeyUp(event) {
-    switch (event.code) {
-        case 'KeyW':
-            moveForward = false;
-            break;
-        case 'KeyA':
-            moveLeft = false;
-            break;
-        case 'KeyS':
-            moveBackward = false;
-            break;
-        case 'KeyD':
-            moveRight = false;
-            break;
+    function addLightSource() {
+        const lightGeometry = new THREE.BoxGeometry(1, 1, 1);
+        const lightMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const light = new THREE.Mesh(lightGeometry, lightMaterial);
+        light.position.set(0, 5, 0); // Adjust position as needed
+        scene.add(light);
     }
-}
 
-function onMouseDown(event) {
-    if (event.button === 0) { // Check if left mouse button is pressed
-        isMouseDown = true;
-        document.body.requestPointerLock();
+    function onKeyDown(event) {
+        const key = event.code;
+        if (key in keyState) {
+            keyState[key] = true;
+        }
     }
-}
 
-function onMouseUp(event) {
-    if (event.button === 0) { // Check if left mouse button is released
-        isMouseDown = false;
-        document.exitPointerLock();
+    function onKeyUp(event) {
+        const key = event.code;
+        if (key in keyState) {
+            keyState[key] = false;
+        }
     }
-}
 
-function onMouseMove(event) {
-    if (isMouseDown) {
-        const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-        const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-
-        const sensitivity = 0.002; // Adjust sensitivity as needed
-
-        // Calculate the change in rotation based on mouse movement
-        const deltaX = movementX * sensitivity;
-        const deltaY = movementY * sensitivity;
-
-        // Apply the change in rotation gradually
-        controls.getObject().rotation.y -= deltaX;
-        controls.getObject().rotation.x += deltaY; // Invert deltaY to reverse vertical rotation
-
-        // Clamp vertical rotation to avoid flipping upside down
-        controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
+    function onMouseDown(event) {
+        if (event.button === 0) { // Left mouse button
+            isMouseDown = true;
+            document.body.requestPointerLock();
+        }
     }
-}
 
-function animate() {
-    try {
-        requestAnimationFrame(animate);
-
-        let deltaTime = clock.getDelta();
-        let moveDirection = new THREE.Vector3();
-
-        if (moveForward) moveDirection.z -= 1;
-        if (moveBackward) moveDirection.z += 1;
-        if (moveLeft) moveDirection.x -= 1;
-        if (moveRight) moveDirection.x += 1;
-
-        moveDirection.normalize();
-        let speed = 5; // Adjust speed as needed
-        controls.getObject().position.x += moveDirection.x * speed * deltaTime;
-        controls.getObject().position.z += moveDirection.z * speed * deltaTime;
-
-        renderer.render(scene, camera);
-    } catch (error) {
-        console.error('An error occurred during animation:', error);
+    function onMouseUp(event) {
+        if (event.button === 0) { // Left mouse button
+            isMouseDown = false;
+            document.exitPointerLock();
+        }
     }
-}
 
-init();
+    function onMouseMove(event) {
+        if (isMouseDown) {
+            const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+            const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+            controls.getObject().rotation.y -= movementX * MOUSE_SENSITIVITY;
+            controls.getObject().rotation.x += movementY * MOUSE_SENSITIVITY;
+            controls.getObject().rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, controls.getObject().rotation.x));
+        }
+    }
+
+    function animate() {
+        try {
+            requestAnimationFrame(animate);
+
+            const deltaTime = clock.getDelta();
+            const moveDirection = new THREE.Vector3();
+
+            if (keyState.KeyW) moveDirection.z -= 1;
+            if (keyState.KeyS) moveDirection.z += 1;
+            if (keyState.KeyA) moveDirection.x -= 1;
+            if (keyState.KeyD) moveDirection.x += 1;
+
+            moveDirection.normalize();
+            controls.getObject().position.add(moveDirection.multiplyScalar(MOVE_SPEED * deltaTime));
+
+            renderer.render(scene, camera);
+        } catch (error) {
+            console.error('An error occurred during animation:', error);
+        }
+    }
+
+    init();
+})();
