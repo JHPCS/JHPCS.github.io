@@ -71,15 +71,17 @@
         }
     }
 
-    function onMouseMove(event) {
+    ffunction onMouseMove(event) {
     const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+    const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
     controls.getObject().rotation.y -= movementX * MOUSE_SENSITIVITY;
-    
-    // Restrict the vertical rotation within certain limits
+    controls.getObject().rotation.x -= movementY * MOUSE_SENSITIVITY;
+
+    // Limit vertical rotation within certain limits
     const maxVerticalAngle = Math.PI / 4;
     const minVerticalAngle = -Math.PI / 4;
-    controls.getObject().rotation.y = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, controls.getObject().rotation.y));
+    controls.getObject().rotation.x = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, controls.getObject().rotation.x));
 }
 
 
