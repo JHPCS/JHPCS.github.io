@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>First-Person Walking with Gravity</title>
+    <title>First-Person Movement Demo with Collision Detection</title>
     <style>
         body {
             margin: 0;
@@ -49,10 +49,6 @@
             'd': false
         };
 
-        // Gravity settings
-        const gravity = 0.01;
-        let isGrounded = false;
-
         // Keyboard event listeners
         document.addEventListener('keydown', (event) => {
             if (event.key in keyboardState) {
@@ -80,25 +76,19 @@
             isDragging = false;
         });
 
-        // Check for collisions with the platform using raycasting
+        // Check for collisions with the platform
         function checkCollision() {
-            const raycaster = new THREE.Raycaster(camera.position, new THREE.Vector3(0, -1, 0));
-            const intersects = raycaster.intersectObject(platform);
-            return intersects.length > 0;
+            const cameraBox = new THREE.Box3().setFromObject(camera);
+            const platformBox = new THREE.Box3().setFromObject(platform);
+            return cameraBox.intersectsBox(platformBox);
         }
 
         // Main loop
         function animate() {
             requestAnimationFrame(animate);
 
-            // Update camera position based on user input and gravity
+            // Update camera position based on user input
             const moveSpeed = 0.1;
-            const jumpSpeed = 0.2;
-
-            // Apply gravity
-            if (!isGrounded) {
-                camera.position.y -= gravity;
-            }
 
             // Move forward/backward and left/right relative to camera orientation
             const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
@@ -109,15 +99,6 @@
             if (keyboardState['s'] && !checkCollision()) camera.position.add(forward.clone().multiplyScalar(-moveSpeed));
             if (keyboardState['a'] && !checkCollision()) camera.position.add(right.clone().multiplyScalar(-moveSpeed));
             if (keyboardState['d'] && !checkCollision()) camera.position.add(right.clone().multiplyScalar(moveSpeed));
-
-            // Check if camera is grounded
-            isGrounded = checkCollision();
-
-            // Jump
-            if (isGrounded && keyboardState[' ']) {
-                camera.position.y += jumpSpeed;
-                isGrounded = false;
-            }
 
             renderer.render(scene, camera);
         }
