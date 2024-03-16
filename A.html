@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>First-Person Movement Demo</title>
+    <title>First-Person Movement Demo with Collision Detection</title>
     <style>
         body {
             margin: 0;
@@ -76,6 +76,13 @@
             isDragging = false;
         });
 
+        // Check for collisions with the platform
+        function checkCollision() {
+            const cameraBox = new THREE.Box3().setFromObject(camera);
+            const platformBox = new THREE.Box3().setFromObject(platform);
+            return cameraBox.intersectsBox(platformBox);
+        }
+
         // Main loop
         function animate() {
             requestAnimationFrame(animate);
@@ -87,10 +94,11 @@
             const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
             const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
 
-            if (keyboardState['w']) camera.position.add(forward.clone().multiplyScalar(moveSpeed));
-            if (keyboardState['s']) camera.position.add(forward.clone().multiplyScalar(-moveSpeed));
-            if (keyboardState['a']) camera.position.add(right.clone().multiplyScalar(-moveSpeed));
-            if (keyboardState['d']) camera.position.add(right.clone().multiplyScalar(moveSpeed));
+            // Check collisions before moving
+            if (keyboardState['w'] && !checkCollision()) camera.position.add(forward.clone().multiplyScalar(moveSpeed));
+            if (keyboardState['s'] && !checkCollision()) camera.position.add(forward.clone().multiplyScalar(-moveSpeed));
+            if (keyboardState['a'] && !checkCollision()) camera.position.add(right.clone().multiplyScalar(-moveSpeed));
+            if (keyboardState['d'] && !checkCollision()) camera.position.add(right.clone().multiplyScalar(moveSpeed));
 
             renderer.render(scene, camera);
         }
