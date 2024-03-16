@@ -73,6 +73,14 @@
                 event.preventDefault();
             });
 
+            // Create a gun model (simple box shape)
+const gunGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.5); // Adjust the size as needed
+const gunMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 }); // Adjust the color as needed
+const gun = new THREE.Mesh(gunGeometry, gunMaterial);
+gun.position.set(0, -0.05, -0.2); // Adjust the position relative to the camera
+camera.add(gun); // Attach the gun to the camera
+
+
             // Main loop
             function animate() {
                 requestAnimationFrame(animate);
