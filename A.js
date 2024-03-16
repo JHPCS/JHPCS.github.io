@@ -1,111 +1,27 @@
-function init() {
-    try {
-        scene = new THREE.Scene();
+// Create a scene
+const scene = new THREE.Scene();
 
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        scene.add(camera);
+// Create a camera
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 5;
 
-        renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.querySelector('.world').appendChild(renderer.domElement);
+// Create a renderer
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-        controls = new THREE.PointerLockControls(camera, document.body);
-        scene.add(controls.getObject());
+// Create a bright orange cube
+const geometry = new THREE.BoxGeometry();
+const material = new THREE.MeshBasicMaterial({ color: 0xffa500 }); // Orange color
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
 
-        addLightSource();
-        addFloor();
+// Animation loop
+const animate = () => {
+    requestAnimationFrame(animate);
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+    renderer.render(scene, camera);
+};
 
-        document.addEventListener('keydown', onKeyDown);
-        document.addEventListener('keyup', onKeyUp);
-        document.addEventListener('mousemove', onMouseMove);
-
-        // Hide cursor
-        document.body.style.cursor = 'none';
-
-        function onMouseMove(event) {
-            const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-            const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-
-            controls.getObject().rotation.y -= movementX * MOUSE_SENSITIVITY;
-            controls.getObject().rotation.x -= movementY * MOUSE_SENSITIVITY;
-
-            // Limit vertical rotation within certain limits
-            const maxVerticalAngle = Math.PI / 4;
-            const minVerticalAngle = -Math.PI / 4;
-            controls.getObject().rotation.x = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, controls.getObject().rotation.x));
-        }
-
-        animate();
-    } catch (error) {
-        console.error('An error occurred during initialization:', error);
-    }
-}
-
-
-    function addLightSource() {
-        const lightGeometry = new THREE.BoxGeometry(1, 1, 1);
-        const lightMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const light = new THREE.Mesh(lightGeometry, lightMaterial);
-        light.position.set(0, 5, 0); // Adjust position as needed
-        scene.add(light);
-    }
-
-    function addFloor() {
-        const floorGeometry = new THREE.PlaneGeometry(100, 100); // Adjust size as needed
-        const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red color
-        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        floor.rotation.x = -Math.PI / 2; // Rotate to make it a floor
-        scene.add(floor);
-    }
-
-    function onKeyDown(event) {
-        const key = event.code;
-        if (key in keyState) {
-            keyState[key] = true;
-        }
-    }
-
-    function onKeyUp(event) {
-        const key = event.code;
-        if (key in keyState) {
-            keyState[key] = false;
-        }
-    }
-
-    function onMouseMove(event) {
-    const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-
-    controls.getObject().rotation.y -= movementX * MOUSE_SENSITIVITY;
-    
-    // Restrict the vertical rotation within certain limits
-    const maxVerticalAngle = Math.PI / 4;
-    const minVerticalAngle = -Math.PI / 4;
-    controls.getObject().rotation.y = Math.max(minVerticalAngle, Math.min(maxVerticalAngle, controls.getObject().rotation.y));
-}
-
-
-    function animate() {
-        try {
-            requestAnimationFrame(animate);
-
-            const deltaTime = clock.getDelta();
-            const moveDirection = new THREE.Vector3();
-
-            if (keyState.KeyW) moveDirection.z -= 1;
-            if (keyState.KeyS) moveDirection.z += 1;
-            if (keyState.KeyA) moveDirection.x -= 1;
-            if (keyState.KeyD) moveDirection.x += 1;
-
-            moveDirection.normalize();
-            const moveDistance = moveDirection.multiplyScalar(MOVE_SPEED * deltaTime);
-            controls.getObject().translateX(moveDistance.x);
-            controls.getObject().translateZ(moveDistance.z);
-
-            renderer.render(scene, camera);
-        } catch (error) {
-            console.error('An error occurred during animation:', error);
-        }
-    }
-
-    init();
-})();
+animate();
