@@ -37,14 +37,23 @@
         // Initialize camera position
         camera.position.set(0, 1.5, 5);
 
-        // Handle user input for movement
-        const moveSpeed = 0.1;
-        const keyboardState = {};
-        document.addEventListener('keydown', (event) => {
-            keyboardState[event.key] = true;
+        // Initialize mouse movement variables
+        let isDragging = false;
+        let previousMouseX = 0;
+
+        // Handle mouse movement for turning
+        document.addEventListener('mousedown', (event) => {
+            isDragging = true;
+            previousMouseX = event.clientX;
         });
-        document.addEventListener('keyup', (event) => {
-            keyboardState[event.key] = false;
+        document.addEventListener('mousemove', (event) => {
+            if (!isDragging) return;
+            const delta = event.clientX - previousMouseX;
+            camera.rotation.y += (delta * 0.01);
+            previousMouseX = event.clientX;
+        });
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
         });
 
         // Main loop
