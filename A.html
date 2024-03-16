@@ -94,8 +94,10 @@
             }
 
             function handleMouseDown(event) {
-                isDragging = true;
-                previousMouseX = event.clientX;
+                if (event.button === 2) { // Check if right mouse button is clicked
+                    isDragging = true;
+                    previousMouseX = event.clientX;
+                }
             }
 
             function handleMouseMove(event) {
@@ -105,8 +107,10 @@
                 previousMouseX = event.clientX;
             }
 
-            function handleMouseUp() {
-                isDragging = false;
+            function handleMouseUp(event) {
+                if (event.button === 2) { // Check if right mouse button is released
+                    isDragging = false;
+                }
             }
         });
     </script>
