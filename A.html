@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>First-Person Movement Demo with Gravity and Walking</title>
+    <title>First-Person Movement Demo</title>
     <style>
         body {
             margin: 0;
@@ -34,10 +34,8 @@
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
 
-        // Initialize camera position and velocity
-        camera.position.set(0, 3, 5);
-        const cameraVelocity = new THREE.Vector3(0, 0, 0);
-        const gravity = new THREE.Vector3(0, -0.05, 0); // adjust gravity as needed
+        // Initialize camera position
+        camera.position.set(0, 1.5, 5);
 
         // Initialize mouse movement variables
         let isDragging = false;
@@ -78,13 +76,6 @@
             isDragging = false;
         });
 
-        // Check for collisions with the platform
-        function checkCollision() {
-            const raycaster = new THREE.Raycaster(camera.position, new THREE.Vector3(0, -1, 0), 0, 2); // adjust the ray length as needed
-            const intersects = raycaster.intersectObject(platform);
-            return intersects.length > 0;
-        }
-
         // Main loop
         function animate() {
             requestAnimationFrame(animate);
@@ -92,30 +83,14 @@
             // Update camera position based on user input
             const moveSpeed = 0.1;
 
-            // Apply gravity
-            cameraVelocity.add(gravity);
-
             // Move forward/backward and left/right relative to camera orientation
             const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
             const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
 
-            // Check collisions before moving
-            if (keyboardState['w'] && checkCollision()) cameraVelocity.add(forward.clone().multiplyScalar(moveSpeed));
-            if (keyboardState['s'] && checkCollision()) cameraVelocity.add(forward.clone().multiplyScalar(-moveSpeed));
-            if (keyboardState['a'] && checkCollision()) cameraVelocity.add(right.clone().multiplyScalar(-moveSpeed));
-            if (keyboardState['d'] && checkCollision()) cameraVelocity.add(right.clone().multiplyScalar(moveSpeed));
-
-            // Apply velocity to camera position
-            camera.position.add(cameraVelocity);
-
-            // Limit camera velocity (optional)
-            cameraVelocity.clampScalar(-0.1, 0.1); // adjust the clamping values as needed
-
-            // Keep camera above the platform
-            if (camera.position.y < 1.5) {
-                camera.position.y = 1.5;
-                cameraVelocity.y = 0; // stop vertical movement
-            }
+            if (keyboardState['w']) camera.position.add(forward.clone().multiplyScalar(moveSpeed));
+            if (keyboardState['s']) camera.position.add(forward.clone().multiplyScalar(-moveSpeed));
+            if (keyboardState['a']) camera.position.add(right.clone().multiplyScalar(-moveSpeed));
+            if (keyboardState['d']) camera.position.add(right.clone().multiplyScalar(moveSpeed));
 
             renderer.render(scene, camera);
         }
