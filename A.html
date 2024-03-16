@@ -78,14 +78,13 @@ const gunGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.5); // Adjust the size as 
 const gunMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 }); // Adjust the color as needed
 const gun = new THREE.Mesh(gunGeometry, gunMaterial);
 
-// Position the gun relative to the camera's viewport
-gun.position.set(
-    Math.tan(Math.PI / 8) * 0.5 * camera.aspect, // Adjust X position for bottom right corner
-    -0.5, // Adjust Y position to be closer to the bottom
-    -0.5 // Adjust Z position to be in front of the camera
-);
+// Position the gun in the scene
+gun.position.set(0, -0.5, -2); // Adjust the position as needed
 
-camera.add(gun); // Attach the gun to the camera
+// Rotate the gun to match the camera's orientation
+gun.rotation.set(0, Math.PI, 0); // Rotate 180 degrees around the Y-axis
+
+scene.add(gun); // Add the gun to the scene
 
 
 
