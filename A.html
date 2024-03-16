@@ -108,10 +108,12 @@
             }
 
             function handleMouseUp(event) {
-                if (event.button === 2) { // Check if right mouse button is released
-                    isDragging = false;
-                }
-            }
+    if (event.button === 2) { // Check if right mouse button is released
+        isDragging = false;
+        event.preventDefault(); // Prevent default context menu
+    }
+}
+
         });
     </script>
 </body>
