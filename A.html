@@ -3,55 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>First-Person Movement</title>
+    <title>First-Person Movement Demo</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
+        }
+        canvas {
+            display: block;
         }
     </style>
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // Initialize Three.js
+        // Set up Three.js scene
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Create a simple floor
-        const floorGeometry = new THREE.PlaneGeometry(10, 10);
-        const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
-        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        scene.add(floor);
+        // Create a cube as our platform
+        const platformGeometry = new THREE.BoxGeometry(10, 1, 10);
+        const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+        scene.add(platform);
 
-        // Set up camera position
+        // Add lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        // Initialize camera position
         camera.position.set(0, 1.5, 5);
 
-        // Handle user input (arrow keys)
+        // Handle user input for movement
         const moveSpeed = 0.1;
-        const rotationSpeed = 0.02;
-        const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
-
-        document.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
+        const keyboardState = {};
+        document.addEventListener('keydown', (event) => {
+            keyboardState[event.key] = true;
+        });
+        document.addEventListener('keyup', (event) => {
+            keyboardState[event.key] = false;
         });
 
-        document.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
-
-        // Rendering loop
+        // Main loop
         function animate() {
             requestAnimationFrame(animate);
 
             // Update camera position based on user input
-            if (keys.ArrowUp) camera.translateZ(-moveSpeed);
-            if (keys.ArrowDown) camera.translateZ(moveSpeed);
-            if (keys.ArrowLeft) camera.rotation.y += rotationSpeed;
-            if (keys.ArrowRight) camera.rotation.y -= rotationSpeed;
+            if (keyboardState['w']) camera.translateZ(-moveSpeed);
+            if (keyboardState['s']) camera.translateZ(moveSpeed);
+            if (keyboardState['a']) camera.translateX(-moveSpeed);
+            if (keyboardState['d']) camera.translateX(moveSpeed);
 
             renderer.render(scene, camera);
         }
