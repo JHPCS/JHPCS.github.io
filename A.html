@@ -12,13 +12,14 @@
         canvas {
             display: block;
         }
-        #gun-image {
+       #gun-image {
     position: fixed;
     bottom: 0px; /* Adjust the distance from the bottom */
     right: 0px; /* Adjust the distance from the right */
     width: 650px; /* Increase the width of the image */
     height: auto; /* Maintain aspect ratio */
     z-index: 9999; /* Ensure the image appears on top of other elements */
+    pointer-events: none; /* Disable pointer events for the image */
 }
 
 
