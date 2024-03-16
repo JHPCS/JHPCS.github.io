@@ -17,85 +17,98 @@
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // Set up Three.js scene
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+        document.addEventListener("DOMContentLoaded", function() {
+            // Set up Three.js scene
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
 
-        // Create a cube as our platform
-        const platformGeometry = new THREE.BoxGeometry(10, 1, 10);
-        const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const platform = new THREE.Mesh(platformGeometry, platformMaterial);
-        scene.add(platform);
+            // Create a cube as our platform
+            const platformGeometry = new THREE.BoxGeometry(10, 1, 10);
+            const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+            scene.add(platform);
 
-        // Add lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
 
-        // Initialize camera position
-        camera.position.set(0, 1.5, 5);
+            // Initialize camera position
+            camera.position.set(0, 1.5, 5);
 
-        // Initialize mouse movement variables
-        let isDragging = false;
-        let previousMouseX = 0;
+            // Initialize mouse movement variables
+            let isDragging = false;
+            let previousMouseX = 0;
 
-        // Keyboard state
-        const keyboardState = {
-            'w': false,
-            's': false,
-            'a': false,
-            'd': false
-        };
+            // Keyboard state
+            const keyboardState = {
+                'w': false,
+                's': false,
+                'a': false,
+                'd': false
+            };
 
-        // Keyboard event listeners
-        document.addEventListener('keydown', (event) => {
-            if (event.key in keyboardState) {
-                keyboardState[event.key] = true;
+            // Keyboard event listeners
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+
+            // Handle mouse movement for turning
+            document.addEventListener('mousedown', handleMouseDown);
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+
+            // Main loop
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Update camera position based on user input
+                const movementSpeed = 0.1;
+
+                // Move forward/backward and left/right relative to camera orientation
+                const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+                const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+
+                if (keyboardState['w']) camera.position.add(forward.clone().multiplyScalar(movementSpeed));
+                if (keyboardState['s']) camera.position.add(forward.clone().multiplyScalar(-movementSpeed));
+                if (keyboardState['a']) camera.position.add(right.clone().multiplyScalar(-movementSpeed));
+                if (keyboardState['d']) camera.position.add(right.clone().multiplyScalar(movementSpeed));
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+            // Event handlers
+            function handleKeyDown(event) {
+                if (event.key in keyboardState) {
+                    keyboardState[event.key] = true;
+                }
+            }
+
+            function handleKeyUp(event) {
+                if (event.key in keyboardState) {
+                    keyboardState[event.key] = false;
+                }
+            }
+
+            function handleMouseDown(event) {
+                isDragging = true;
+                previousMouseX = event.clientX;
+            }
+
+            function handleMouseMove(event) {
+                if (!isDragging) return;
+                const delta = event.clientX - previousMouseX;
+                camera.rotation.y += (delta * 0.01);
+                previousMouseX = event.clientX;
+            }
+
+            function handleMouseUp() {
+                isDragging = false;
             }
         });
-        document.addEventListener('keyup', (event) => {
-            if (event.key in keyboardState) {
-                keyboardState[event.key] = false;
-            }
-        });
-
-        // Handle mouse movement for turning
-        document.addEventListener('mousedown', (event) => {
-            isDragging = true;
-            previousMouseX = event.clientX;
-        });
-        document.addEventListener('mousemove', (event) => {
-            if (!isDragging) return;
-            const delta = event.clientX - previousMouseX;
-            camera.rotation.y += (delta * 0.01);
-            previousMouseX = event.clientX;
-        });
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        // Main loop
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Update camera position based on user input
-            const moveSpeed = 0.1;
-
-            // Move forward/backward and left/right relative to camera orientation
-            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-            const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-
-            if (keyboardState['w']) camera.position.add(forward.clone().multiplyScalar(moveSpeed));
-            if (keyboardState['s']) camera.position.add(forward.clone().multiplyScalar(-moveSpeed));
-            if (keyboardState['a']) camera.position.add(right.clone().multiplyScalar(-moveSpeed));
-            if (keyboardState['d']) camera.position.add(right.clone().multiplyScalar(moveSpeed));
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
     </script>
 </body>
 </html>
