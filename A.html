@@ -31,6 +31,15 @@
             const platform = new THREE.Mesh(platformGeometry, platformMaterial);
             scene.add(platform);
 
+            // Create a red target
+            const targetGeometry = new THREE.BoxGeometry(1, 1, 1);
+            const targetMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const target = new THREE.Mesh(targetGeometry, targetMaterial);
+            scene.add(target);
+
+            // Position the target
+            target.position.set(0, 2, -5); // Adjust the position as needed
+
             // Add lighting
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
             scene.add(ambientLight);
