@@ -3,10 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello Cube</title>
+    <title>First-Person Movement</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="helloCube.js"></script>
+    <script>
+        // Initialize Three.js
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create a simple floor
+        const floorGeometry = new THREE.PlaneGeometry(10, 10);
+        const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        scene.add(floor);
+
+        // Set up camera position
+        camera.position.set(0, 1.5, 5);
+
+        // Handle user input (arrow keys)
+        const moveSpeed = 0.1;
+        const rotationSpeed = 0.02;
+        const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
+
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Rendering loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update camera position based on user input
+            if (keys.ArrowUp) camera.translateZ(-moveSpeed);
+            if (keys.ArrowDown) camera.translateZ(moveSpeed);
+            if (keys.ArrowLeft) camera.rotation.y += rotationSpeed;
+            if (keys.ArrowRight) camera.rotation.y -= rotationSpeed;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
 </body>
 </html>
