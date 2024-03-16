@@ -59,6 +59,11 @@
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
 
+            // Prevent default context menu
+            document.addEventListener('contextmenu', function(event) {
+                event.preventDefault();
+            });
+
             // Main loop
             function animate() {
                 requestAnimationFrame(animate);
@@ -108,12 +113,11 @@
             }
 
             function handleMouseUp(event) {
-    if (event.button === 2) { // Check if right mouse button is released
-        isDragging = false;
-        event.preventDefault(); // Prevent default context menu
-    }
-}
-
+                if (event.button === 2) { // Check if right mouse button is released
+                    isDragging = false;
+                    event.preventDefault(); // Prevent default context menu
+                }
+            }
         });
     </script>
 </body>
