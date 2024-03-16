@@ -41,12 +41,7 @@
         let isDragging = false;
         let previousMouseX = 0;
         let previousMouseY = 0;
-        let horizontalRotation = 0;
         let verticalRotation = 0;
-
-        // Mouse sensitivity settings
-        const mouseSensitivityX = 0.001;
-        const mouseSensitivityY = 0.001;
 
         // Keyboard state
         const keyboardState = {
@@ -70,6 +65,7 @@
 
         // Handle mouse movement for turning
         document.addEventListener('mousedown', (event) => {
+            if(event.button === 2) event.preventDefault(); // Prevent right-click default behavior
             isDragging = true;
             previousMouseX = event.clientX;
             previousMouseY = event.clientY;
@@ -79,13 +75,12 @@
             const deltaX = event.clientX - previousMouseX;
             const deltaY = event.clientY - previousMouseY;
 
-            // Update horizontal rotation
-            horizontalRotation -= deltaX * mouseSensitivityX;
-            camera.rotation.y = horizontalRotation;
+            camera.rotation.y += (deltaX * 0.01);
+            verticalRotation -= (deltaY * 0.01);
 
-            // Update vertical rotation
-            verticalRotation -= deltaY * mouseSensitivityY;
+            // Clamp vertical rotation
             verticalRotation = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, verticalRotation));
+
             camera.rotation.x = verticalRotation;
 
             previousMouseX = event.clientX;
