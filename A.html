@@ -42,14 +42,38 @@
         let previousMouseX = 0;
 
         // Keyboard state
-        const keyboardState = {};
+        const keyboardState = {
+            'w': false,
+            's': false,
+            'a': false,
+            'd': false
+        };
 
         // Keyboard event listeners
         document.addEventListener('keydown', (event) => {
-            keyboardState[event.key] = true;
+            if (event.key in keyboardState) {
+                keyboardState[event.key] = true;
+            }
         });
         document.addEventListener('keyup', (event) => {
-            keyboardState[event.key] = false;
+            if (event.key in keyboardState) {
+                keyboardState[event.key] = false;
+            }
+        });
+
+        // Handle mouse movement for turning
+        document.addEventListener('mousedown', (event) => {
+            isDragging = true;
+            previousMouseX = event.clientX;
+        });
+        document.addEventListener('mousemove', (event) => {
+            if (!isDragging) return;
+            const delta = event.clientX - previousMouseX;
+            camera.rotation.y += (delta * 0.01);
+            previousMouseX = event.clientX;
+        });
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
         });
 
         // Main loop
@@ -58,10 +82,15 @@
 
             // Update camera position based on user input
             const moveSpeed = 0.1;
-            if (keyboardState['w']) camera.translateZ(-moveSpeed);
-            if (keyboardState['s']) camera.translateZ(moveSpeed);
-            if (keyboardState['a']) camera.translateX(-moveSpeed);
-            if (keyboardState['d']) camera.translateX(moveSpeed);
+
+            // Move forward/backward and left/right relative to camera orientation
+            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+            const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+
+            if (keyboardState['w']) camera.position.add(forward.clone().multiplyScalar(moveSpeed));
+            if (keyboardState['s']) camera.position.add(forward.clone().multiplyScalar(-moveSpeed));
+            if (keyboardState['a']) camera.position.add(right.clone().multiplyScalar(-moveSpeed));
+            if (keyboardState['d']) camera.position.add(right.clone().multiplyScalar(moveSpeed));
 
             renderer.render(scene, camera);
         }
