@@ -3,7 +3,7 @@ const scene = new THREE.Scene();
 
 // Create a camera
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 5;
+camera.position.set(0, 1.6, 5); // Adjust the camera height
 
 // Create a renderer
 const renderer = new THREE.WebGLRenderer();
@@ -16,11 +16,15 @@ const material = new THREE.MeshBasicMaterial({ color: 0xffa500 }); // Orange col
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
+// First-person controls
+const controls = new THREE.FirstPersonControls(camera, renderer.domElement);
+controls.lookSpeed = 0.1;
+controls.movementSpeed = 10;
+
 // Animation loop
 const animate = () => {
     requestAnimationFrame(animate);
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
+    controls.update(); // Update controls
     renderer.render(scene, camera);
 };
 
