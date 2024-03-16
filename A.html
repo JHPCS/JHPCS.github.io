@@ -41,19 +41,15 @@
         let isDragging = false;
         let previousMouseX = 0;
 
-        // Handle mouse movement for turning
-        document.addEventListener('mousedown', (event) => {
-            isDragging = true;
-            previousMouseX = event.clientX;
+        // Keyboard state
+        const keyboardState = {};
+
+        // Keyboard event listeners
+        document.addEventListener('keydown', (event) => {
+            keyboardState[event.key] = true;
         });
-        document.addEventListener('mousemove', (event) => {
-            if (!isDragging) return;
-            const delta = event.clientX - previousMouseX;
-            camera.rotation.y += (delta * 0.01);
-            previousMouseX = event.clientX;
-        });
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
+        document.addEventListener('keyup', (event) => {
+            keyboardState[event.key] = false;
         });
 
         // Main loop
@@ -61,6 +57,7 @@
             requestAnimationFrame(animate);
 
             // Update camera position based on user input
+            const moveSpeed = 0.1;
             if (keyboardState['w']) camera.translateZ(-moveSpeed);
             if (keyboardState['s']) camera.translateZ(moveSpeed);
             if (keyboardState['a']) camera.translateX(-moveSpeed);
