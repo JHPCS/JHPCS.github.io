@@ -12,9 +12,19 @@
         canvas {
             display: block;
         }
+        #gun-image {
+    position: fixed;
+    bottom: 10px; /* Adjust the distance from the bottom */
+    right: 10px; /* Adjust the distance from the right */
+    width: 100px; /* Adjust the width of the image */
+    height: auto; /* Maintain aspect ratio */
+    z-index: 9999; /* Ensure the image appears on top of other elements */
+}
+
     </style>
 </head>
 <body>
+    <img src="https://thypix.com/wp-content/uploads/2020/12/call-of-duty-weapons-117.png" id="gun-image">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -73,18 +83,7 @@
                 event.preventDefault();
             });
 
-           // Create a gun model (simple box shape)
-const gunGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.5); // Adjust the size as needed
-const gunMaterial = new THREE.MeshBasicMaterial({ color: 0x555555 }); // Adjust the color as needed
-const gun = new THREE.Mesh(gunGeometry, gunMaterial);
-
-// Position the gun in the scene
-gun.position.set(0, -0.5, -2); // Adjust the position as needed
-
-// Rotate the gun to match the camera's orientation
-gun.rotation.set(0, Math.PI, 0); // Rotate 180 degrees around the Y-axis
-
-scene.add(gun); // Add the gun to the scene
+           
 
 
 
@@ -145,5 +144,6 @@ scene.add(gun); // Add the gun to the scene
             }
         });
     </script>
+    
 </body>
 </html>
