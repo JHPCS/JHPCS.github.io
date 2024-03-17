@@ -145,19 +145,20 @@
             }
 
             function handleShootParticles(event) {
-                if (event.button === 2) { // Check if right mouse button is clicked
-                    const particleCount = 50;
-                    const positions = [];
-                    for (let i = 0; i < particleCount; i++) {
-                        positions.push(
-                            (Math.random() - 0.5) * 0.2, // X
-                            Math.random() * 0.1, // Y
-                            (Math.random() - 0.5) * 0.2 // Z
-                        );
-                    }
-                    particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-                }
-            }
+    if (event.button === 2) { // Check if right mouse button is clicked
+        const particleCount = 50;
+        const positions = [];
+        for (let i = 0; i < particleCount; i++) {
+            positions.push(
+                (Math.random() - 0.5) * 0.2, // X
+                Math.random() * 0.1, // Y
+                (Math.random() - 0.5) * 0.2 // Z
+            );
+        }
+        particleSystem.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    }
+}
+
         });
     </script>
 </body>
