@@ -82,16 +82,13 @@
             document.addEventListener('mouseup', handleMouseUp);
 
             // Handle shooting particles on left mouse button click
-document.addEventListener('mousedown', function(event) {
-    if (event.button === 0) { // Check if left mouse button is clicked
-        handleShootParticles(event);
-    }
-});
+            document.addEventListener('mousedown', handleShootParticles);
 
-// Prevent default context menu
-document.addEventListener('contextmenu', function(event) {
-    event.preventDefault();
-});
+            // Prevent default context menu
+            document.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+            });
+
 
 
             // Main loop
