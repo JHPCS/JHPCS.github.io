@@ -81,8 +81,8 @@
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
 
-            // Handle shooting particles on right mouse button click
-            document.addEventListener('contextmenu', handleShootParticles);
+            // Handle shooting particles on left mouse button click
+            document.addEventListener('mousedown', handleShootParticles);
 
             // Prevent default context menu
             document.addEventListener('contextmenu', function(event) {
