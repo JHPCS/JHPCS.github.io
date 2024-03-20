@@ -147,11 +147,11 @@
             }
 
             function handleShootParticles(event) {
-    if (event.button === 2) { // Check if right mouse button is clicked
+    if (event.button === 0) { // Check if left mouse button is clicked
         const particleCount = 50;
         const positions = [];
         const direction = new THREE.Vector3();
-        
+
         // Calculate direction based on camera orientation
         camera.getWorldDirection(direction);
 
@@ -178,6 +178,7 @@
         particleSystem.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     }
 }
+
 
 
         });
