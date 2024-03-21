@@ -96,7 +96,7 @@
             function animate() {
                 requestAnimationFrame(animate);
                 // Update particle positions based on velocities
-                if (particleSystem.geometry.attributes) {
+                if (particleSystem.geometry.attributes.position !== undefined) {
                     const positions = particleSystem.geometry.attributes.position.array;
                     const velocities = particleSystem.geometry.attributes.velocity.array;
 
