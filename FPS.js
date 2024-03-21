@@ -3,7 +3,7 @@ let timeLeft = 60; // Initialize time left in seconds
 
 // Function to update the timer display
 function updateTimer() {
-    document.getElementById("timer").innerText = "Time Left: " + timeLeft + "s";
+    document.getElementById("timer").innerText = timeLeft + "s";
 }
 
 // Function to handle the timer countdown
