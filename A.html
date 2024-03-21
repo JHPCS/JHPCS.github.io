@@ -161,31 +161,34 @@
             }
 
             function handleShootParticles(event) {
-                if (event.button === 0) { // Check if left mouse button is clicked
-                    const particleCount = 50;
-                    const positions = [];
-                    const velocities = [];
+    if (event.button === 0) { // Check if left mouse button is clicked
+        const particleCount = 50;
+        const positions = [];
+        const velocities = [];
 
-                    // Calculate direction based on camera orientation
-                    const direction = new THREE.Vector3();
-                    camera.getWorldDirection(direction);
+        // Calculate direction based on camera orientation
+        const direction = new THREE.Vector3();
+        camera.getWorldDirection(direction);
 
-                    // Define initial velocity for the particles
-                    const bulletSpeed = 10; // Adjust bullet speed as needed
+        // Define initial velocity for the particles
+        const bulletSpeed = 10; // Adjust bullet speed as needed
 
-                    for (let i = 0; i < particleCount; i++) {
-                        // Start particles from camera position
-                        positions.push(
-                            camera.position.x,
-                            camera.position.y,
-                            camera.position.z
-                        );
+        for (let i = 0; i < particleCount; i++) {
+            // Start particles from camera position
+            positions.push(
+                camera.position.x,
+                camera.position.y,
+                camera.position.z
+            );
 
-                       
+            // Calculate random spread for bullets to create a spread pattern
+            const spreadFactor = 0.02;
+            const spreadX = (Math.random() - 0.5) * spreadFactor;
+            const spreadY = (Math.random() - 0.5) * spreadFactor;
+            const spreadZ = (Math.random() - 0.5) * spreadFactor;
 
-
-            // Calculate initial velocity in the direction the camera is facing
-            const velocity = direction.clone().multiplyScalar(bulletSpeed);
+            // Calculate initial velocity in the direction the camera is facing with spread
+            const velocity = direction.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
             velocities.push(velocity.x, velocity.y, velocity.z);
         }
 
@@ -194,6 +197,7 @@
         particleSystem.geometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
     }
 }
+
 
 
 
