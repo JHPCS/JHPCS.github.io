@@ -163,24 +163,20 @@
             function handleShootParticles(event) {
     if (event.button === 0) { // Check if left mouse button is clicked
         const particleCount = 50;
-        const positions = [];
-        const velocities = [];
+        const positions = particleSystem.geometry.attributes.position.array;
+        const velocities = particleSystem.geometry.attributes.velocity.array;
 
         // Calculate direction based on camera orientation
         const direction = new THREE.Vector3();
         camera.getWorldDirection(direction);
 
-        // Define initial velocity for the particles
+        // Define initial velocity for the new particles
         const bulletSpeed = 10; // Adjust bullet speed as needed
 
-        for (let i = 0; i < particleCount; i++) {
-            // Start particles from camera position
-            positions.push(
-                camera.position.x,
-                camera.position.y,
-                camera.position.z
-            );
+        // Calculate the starting index for the new particles
+        const startIndex = particleSystem.geometry.attributes.position.count * 3;
 
+        for (let i = 0; i < particleCount; i++) {
             // Calculate random spread for bullets to create a spread pattern
             const spreadFactor = 0.02;
             const spreadX = (Math.random() - 0.5) * spreadFactor;
@@ -189,14 +185,22 @@
 
             // Calculate initial velocity in the direction the camera is facing with spread
             const velocity = direction.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
-            velocities.push(velocity.x, velocity.y, velocity.z);
+
+            // Add new particle position and velocity to the arrays
+            positions[startIndex + i * 3] = camera.position.x;
+            positions[startIndex + i * 3 + 1] = camera.position.y;
+            positions[startIndex + i * 3 + 2] = camera.position.z;
+            velocities[startIndex + i * 3] = velocity.x;
+            velocities[startIndex + i * 3 + 1] = velocity.y;
+            velocities[startIndex + i * 3 + 2] = velocity.z;
         }
 
-        // Set the positions and velocities of particles
-        particleSystem.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        particleSystem.geometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+        // Update the particle position and velocity attributes
+        particleSystem.geometry.attributes.position.needsUpdate = true;
+        particleSystem.geometry.attributes.velocity.needsUpdate = true;
     }
 }
+
 
 
 
