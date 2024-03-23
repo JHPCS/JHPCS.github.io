@@ -166,18 +166,29 @@ function animateParticles() {
             function animate() {
                 requestAnimationFrame(animate);
                 // Update particle positions based on velocities
-                if (particleSystem.geometry.attributes.position !== undefined) {
-                    const positions = particleSystem.geometry.attributes.position.array;
-                    const velocities = particleSystem.geometry.attributes.velocity.array;
+    if (particleSystem.geometry.attributes.position !== undefined) {
+        const positions = particleSystem.geometry.attributes.position.array;
+        const velocities = particleSystem.geometry.attributes.velocity.array;
 
-                    for (let i = 0; i < positions.length; i += 3) {
-                        positions[i] += velocities[i] * 0.1; // Adjust speed multiplier as needed
-                        positions[i + 1] += velocities[i + 1] * 0.1;
-                        positions[i + 2] += velocities[i + 2] * 0.1;
-                    }
+        for (let i = 0; i < positions.length; i += 3) {
+            positions[i] += velocities[i] * 0.1; // Adjust speed multiplier as needed
+            positions[i + 1] += velocities[i + 1] * 0.1;
+            positions[i + 2] += velocities[i + 2] * 0.1;
+        }
 
-                    particleSystem.geometry.attributes.position.needsUpdate = true;
-                }
+        particleSystem.geometry.attributes.position.needsUpdate = true;
+    }
+
+    // Update particle positions for active particles
+    animateParticles();
+
+    // Update camera position based on user input
+    // (Unchanged code)
+
+    renderer.render(scene, camera);
+}
+
+animate();
 
                 // Update camera position based on user input
                 const movementSpeed = 0.1;
