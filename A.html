@@ -173,6 +173,7 @@
 
         // Define initial velocity for the particles
         const bulletSpeed = 10; // Adjust bullet speed as needed
+        const bulletSpread = 0.1; // Adjust bullet spread as needed
 
         for (let i = 0; i < particleCount; i++) {
             // Start particles from camera position
@@ -183,20 +184,30 @@
             );
 
             // Calculate random spread for bullets to create a spread pattern
-            const spreadFactor = 0.02;
-            const spreadX = (Math.random() - 0.5) * spreadFactor;
-            const spreadY = (Math.random() - 0.5) * spreadFactor;
-            const spreadZ = (Math.random() - 0.5) * spreadFactor;
+            const spreadX = (Math.random() - 0.5) * bulletSpread;
+            const spreadY = (Math.random() - 0.5) * bulletSpread;
+            const spreadZ = (Math.random() - 0.5) * bulletSpread;
 
-            // Calculate initial velocity in the direction the camera is facing with spread
-            const velocity = direction.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
+            // Apply spread to bullet direction
+            const bulletDirection = direction.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).normalize();
+
+            // Calculate initial velocity with spread
+            const velocity = bulletDirection.multiplyScalar(bulletSpeed);
             velocities.push(velocity.x, velocity.y, velocity.z);
         }
 
         // Set the positions and velocities of particles
         particleSystem.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
         particleSystem.geometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+
+        // Play shooting sound effect
+        playShootSound();
     }
+}
+
+function playShootSound() {
+    // Implement code to play shooting sound effect
+    // You can use libraries like Howler.js or Web Audio API for this purpose
 }
 
 
