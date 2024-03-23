@@ -161,7 +161,7 @@
             }
 
             function handleShootParticles(event) {
-    if (event.button === 0) { // Check if left mouse button is clicked
+    if (event.button === 0 && particleSystem.geometry && particleSystem.geometry.attributes.position && particleSystem.geometry.attributes.velocity) {
         const particleCount = 50;
         const positions = particleSystem.geometry.attributes.position.array;
         const velocities = particleSystem.geometry.attributes.velocity.array;
@@ -200,6 +200,7 @@
         particleSystem.geometry.attributes.velocity.needsUpdate = true;
     }
 }
+
 
 
 
