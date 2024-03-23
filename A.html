@@ -56,7 +56,12 @@
             target.position.set(0, 2, -5); // Adjust the position as needed
             // Create a particle system
             const particleCount = 50; // Set the desired number of particles
-            const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, vertexColors: true, size: 0.05 });
+            // Change the particle material color to red
+const particleMaterial = new THREE.PointsMaterial({ color: 0xff0000, vertexColors: true, size: 0.05 });
+
+// Reset particle colors after shooting
+particleGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
             const particleGeometry = new THREE.BufferGeometry();
             const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
             scene.add(particleSystem);
