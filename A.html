@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>First-Person Movement Demo</title>
     <style>
-        body {
+         body {
             margin: 0;
             overflow: hidden;
         }
@@ -54,11 +54,23 @@
 
             // Position the target
             target.position.set(0, 2, -5); // Adjust the position as needed
-
             // Create a particle system
-            const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05 });
-            const particleSystem = new THREE.Points(new THREE.BufferGeometry(), particleMaterial);
+            const particleCount = 50; // Set the desired number of particles
+            const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, vertexColors: true, size: 0.05 });
+            const particleGeometry = new THREE.BufferGeometry();
+            const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
             scene.add(particleSystem);
+
+            // Add particle age attribute
+            const ages = new Float32Array(particleCount);
+            particleGeometry.setAttribute('age', new THREE.BufferAttribute(ages, 1));
+
+            // Add particle size attribute
+            const sizes = new Float32Array(particleCount);
+            for (let i = 0; i < particleCount; i++) {
+                sizes[i] = Math.random() * 0.1 + 0.01; // Random size between 0.01 and 0.11
+            }
+            particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
             // Initialize camera position
             camera.position.set(0, 1.5, 5);
@@ -95,70 +107,50 @@
             // Main loop
             function animate() {
                 requestAnimationFrame(animate);
+
                 // Update particle positions based on velocities
-if (particleSystem.geometry.attributes.position !== undefined) {
-    const positions = particleSystem.geometry.attributes.position.array;
-    const velocities = particleSystem.geometry.attributes.velocity.array;
-    const gravity = 0.01; // Adjust gravity strength as needed
+                if (particleSystem.geometry.attributes.position !== undefined) {
+                    const positions = particleSystem.geometry.attributes.position.array;
+                    const velocities = particleSystem.geometry.attributes.velocity.array;
+                    const gravity = 0.01; // Adjust gravity strength as needed
 
-    for (let i = 0; i < positions.length; i += 3) {
-        // Apply gravity to the vertical velocity
-        velocities[i + 1] -= gravity;
+                    for (let i = 0; i < positions.length; i += 3) {
+                        // Apply gravity to the vertical velocity
+                        velocities[i + 1] -= gravity;
 
-        positions[i] += velocities[i] * 0.1; // Adjust speed multiplier as needed
-        positions[i + 1] += velocities[i + 1] * 0.1;
-        positions[i + 2] += velocities[i + 2] * 0.1;
-    }
+                        positions[i] += velocities[i] * 0.1; // Adjust speed multiplier as needed
+                        positions[i + 1] += velocities[i + 1] * 0.1;
+                        positions[i + 2] += velocities[i + 2] * 0.1;
+                    }
 
-    particleSystem.geometry.attributes.position.needsUpdate = true;
-    particleSystem.geometry.attributes.velocity.needsUpdate = true;
-}
-                // Add a new attribute to track particle age
-const ages = new Float32Array(particleCount);
-particleSystem.geometry.setAttribute('age', new THREE.BufferAttribute(ages, 1));
+                    particleSystem.geometry.attributes.position.needsUpdate = true;
+                    particleSystem.geometry.attributes.velocity.needsUpdate = true;
+                }
 
-// Update particle ages in the animate function
-if (particleSystem.geometry.attributes.age !== undefined) {
-    const ages = particleSystem.geometry.attributes.age.array;
-    const maxAge = 2.0; // Adjust particle lifetime as needed
+                // Update particle ages
+                if (particleSystem.geometry.attributes.age !== undefined) {
+                    const ages = particleSystem.geometry.attributes.age.array;
+                    const maxAge = 2.0; // Adjust particle lifetime as needed
 
-    for (let i = 0; i < ages.length; i++) {
-        ages[i] += 0.01; // Increment age by a small amount each frame
+                    for (let i = 0; i < ages.length; i++) {
+                        ages[i] += 0.01; // Increment age by a small amount each frame
 
-        // Remove particles that have exceeded the maximum age
-        if (ages[i] > maxAge) {
-            ages[i] = 0; // Reset age to 0 for reuse
-            // You can also reset the particle's position and velocity here
-        }
-    }
+                        // Remove particles that have exceeded the maximum age
+                        if (ages[i] > maxAge) {
+                            ages[i] = 0; // Reset age to 0 for reuse
+                            // You can also reset the particle's position and velocity here
+                        }
+                    }
 
-    particleSystem.geometry.attributes.age.needsUpdate = true;
-}
-                const particleCount = 50; // Set the desired number of particles
+                    particleSystem.geometry.attributes.age.needsUpdate = true;
+                }
 
-// Create a particle system
-const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05 });
-const particleGeometry = new THREE.BufferGeometry();
-const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-scene.add(particleSystem);
-
-// Add particle age attribute
-const ages = new Float32Array(particleCount);
-particleGeometry.setAttribute('age', new THREE.BufferAttribute(ages, 1));
-
-// Add particle size attribute
-const sizes = new Float32Array(particleCount);
-for (let i = 0; i < particleCount; i++) {
-    sizes[i] = Math.random() * 0.1 + 0.01; // Random size between 0.01 and 0.11
-}
-particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-// Update particle size in the animate function
-if (particleSystem.geometry.attributes.size !== undefined) {
-    const sizes = particleSystem.geometry.attributes.size.array;
-    particleMaterial.size = sizes; // Assign the size array to the material's size property
-    particleMaterial.needsUpdate = true;
-}
+                // Update particle size
+                if (particleSystem.geometry.attributes.size !== undefined) {
+                    const sizes = particleSystem.geometry.attributes.size.array;
+                    particleMaterial.size = sizes; // Assign the size array to the material's size property
+                    particleMaterial.needsUpdate = true;
+                }
 
                 // Update camera position based on user input
                 const movementSpeed = 0.1;
@@ -248,14 +240,6 @@ if (particleSystem.geometry.attributes.size !== undefined) {
         particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
     }
 }
-
-
-
-
-
-
-
-        });
     </script>
 </body>
 </html>
