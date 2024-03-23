@@ -96,18 +96,60 @@
             function animate() {
                 requestAnimationFrame(animate);
                 // Update particle positions based on velocities
-                if (particleSystem.geometry.attributes.position !== undefined) {
-                    const positions = particleSystem.geometry.attributes.position.array;
-                    const velocities = particleSystem.geometry.attributes.velocity.array;
+if (particleSystem.geometry.attributes.position !== undefined) {
+    const positions = particleSystem.geometry.attributes.position.array;
+    const velocities = particleSystem.geometry.attributes.velocity.array;
+    const gravity = 0.01; // Adjust gravity strength as needed
 
-                    for (let i = 0; i < positions.length; i += 3) {
-                        positions[i] += velocities[i] * 0.1; // Adjust speed multiplier as needed
-                        positions[i + 1] += velocities[i + 1] * 0.1;
-                        positions[i + 2] += velocities[i + 2] * 0.1;
-                    }
+    for (let i = 0; i < positions.length; i += 3) {
+        // Apply gravity to the vertical velocity
+        velocities[i + 1] -= gravity;
 
-                    particleSystem.geometry.attributes.position.needsUpdate = true;
-                }
+        positions[i] += velocities[i] * 0.1; // Adjust speed multiplier as needed
+        positions[i + 1] += velocities[i + 1] * 0.1;
+        positions[i + 2] += velocities[i + 2] * 0.1;
+    }
+
+    particleSystem.geometry.attributes.position.needsUpdate = true;
+    particleSystem.geometry.attributes.velocity.needsUpdate = true;
+}
+                // Add a new attribute to track particle age
+const ages = new Float32Array(particleCount);
+particleSystem.geometry.setAttribute('age', new THREE.BufferAttribute(ages, 1));
+
+// Update particle ages in the animate function
+if (particleSystem.geometry.attributes.age !== undefined) {
+    const ages = particleSystem.geometry.attributes.age.array;
+    const maxAge = 2.0; // Adjust particle lifetime as needed
+
+    for (let i = 0; i < ages.length; i++) {
+        ages[i] += 0.01; // Increment age by a small amount each frame
+
+        // Remove particles that have exceeded the maximum age
+        if (ages[i] > maxAge) {
+            ages[i] = 0; // Reset age to 0 for reuse
+            // You can also reset the particle's position and velocity here
+        }
+    }
+
+    particleSystem.geometry.attributes.age.needsUpdate = true;
+}
+                // Modify the particle material to use a size attribute
+const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, vertexColors: true, size: 0.05 });
+
+// Add a new attribute to track particle sizes
+const sizes = new Float32Array(particleCount);
+for (let i = 0; i < particleCount; i++) {
+    sizes[i] = Math.random() * 0.1 + 0.01; // Random size between 0.01 and 0.11
+}
+particleSystem.geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+// Update particle size in the animate function
+if (particleSystem.geometry.attributes.size !== undefined) {
+    const sizes = particleSystem.geometry.attributes.size.array;
+    particleMaterial.size = sizes; // Assign the size array to the material's size property
+    particleMaterial.needsUpdate = true;
+}
 
                 // Update camera position based on user input
                 const movementSpeed = 0.1;
