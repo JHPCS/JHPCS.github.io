@@ -56,22 +56,34 @@
             target.position.set(0, 2, -5); // Adjust the position as needed
 
             // Create a particle system
-            const particleCount = 50; // Set the desired number of particles
-            const particleGeometry = new THREE.BufferGeometry(); // Moved up here
-            const particleMaterial = new THREE.PointsMaterial({ color: 0xff0000, vertexColors: true, size: 0.05 });
-            const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-            scene.add(particleSystem);
+const particleCount = 500; // Increase the number of particles for more density
+const particleGeometry = new THREE.BufferGeometry(); // Use BufferGeometry for better performance
+const particleMaterial = new THREE.PointsMaterial({
+    color: 0xff0000,
+    size: 0.05,
+    map: new THREE.TextureLoader().load('https://imagetolink.com/ib/373xnqcmX1.png'), // Load a custom particle texture
+    blending: THREE.AdditiveBlending, // Additive blending for brighter particles
+    transparent: true, // Make particles transparent
+    depthWrite: false // Disable depth write to prevent overlapping particles from being hidden
+});
+const particles = new Float32Array(particleCount * 3); // Store positions of particles in a Float32Array
 
-            // Add particle age attribute
-            const ages = new Float32Array(particleCount);
-            particleGeometry.setAttribute('age', new THREE.BufferAttribute(ages, 1));
+// Set random positions for particles within a sphere
+for (let i = 0; i < particles.length; i += 3) {
+    const radius = 5; // Adjust the radius of the sphere
+    const theta = Math.random() * Math.PI * 2; // Random angle in radians
+    const phi = Math.random() * Math.PI; // Random angle in radians
 
-            // Add particle size attribute
-            const sizes = new Float32Array(particleCount);
-            for (let i = 0; i < particleCount; i++) {
-                sizes[i] = Math.random() * 0.1 + 0.01; // Random size between 0.01 and 0.11
-            }
-            particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    particles[i] = radius * Math.sin(phi) * Math.cos(theta); // x-coordinate
+    particles[i + 1] = radius * Math.cos(phi); // y-coordinate
+    particles[i + 2] = radius * Math.sin(phi) * Math.sin(theta); // z-coordinate
+}
+
+particleGeometry.setAttribute('position', new THREE.BufferAttribute(particles, 3));
+
+// Create the particle system
+const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+scene.add(particleSystem);
 
             // Initialize camera position
             camera.position.set(0, 1.5, 5);
