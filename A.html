@@ -122,23 +122,24 @@ scene.add(particleSystem);
                 requestAnimationFrame(animate);
 
                 // Update particle positions based on velocities
-                if (particleSystem.geometry.attributes.position !== undefined) {
-                    const positions = particleSystem.geometry.attributes.position.array;
-                    const velocities = particleSystem.geometry.attributes.velocity.array;
-                    const gravity = 0.01; // Adjust gravity strength as needed
+if (particleSystem.geometry.attributes.position !== undefined && particleSystem.geometry.attributes.velocity !== undefined) {
+    const positions = particleSystem.geometry.attributes.position.array;
+    const velocities = particleSystem.geometry.attributes.velocity.array;
+    const gravity = 0.01; // Adjust gravity strength as needed
 
-                    for (let i = 0; i < positions.length; i += 3) {
-                        // Apply gravity to the vertical velocity
-                        velocities[i + 1] -= gravity;
+    for (let i = 0; i < positions.length; i += 3) {
+        // Apply gravity to the vertical velocity
+        velocities[i + 1] -= gravity;
 
-                        positions[i] += velocities[i] * 0.1; // Adjust speed multiplier as needed
-                        positions[i + 1] += velocities[i + 1] * 0.1;
-                        positions[i + 2] += velocities[i + 2] * 0.1;
-                    }
+        positions[i] += velocities[i] * 0.1; // Adjust speed multiplier as needed
+        positions[i + 1] += velocities[i + 1] * 0.1;
+        positions[i + 2] += velocities[i + 2] * 0.1;
+    }
 
-                    particleSystem.geometry.attributes.position.needsUpdate = true;
-                    particleSystem.geometry.attributes.velocity.needsUpdate = true;
-                }
+    particleSystem.geometry.attributes.position.needsUpdate = true;
+    particleSystem.geometry.attributes.velocity.needsUpdate = true;
+}
+
 
                 // Update particle ages
                 if (particleSystem.geometry.attributes.age !== undefined) {
