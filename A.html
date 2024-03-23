@@ -92,6 +92,76 @@
                 event.preventDefault();
             });
 
+            // Define maximum number of active particles
+const MAX_PARTICLES = 500;
+
+// Array to store all active particles
+const activeParticles = [];
+
+function handleShootParticles(event) {
+    if (event.button === 0) { // Check if left mouse button is clicked
+        if (activeParticles.length < MAX_PARTICLES) {
+            const particleCount = 50;
+            const positions = [];
+            const velocities = [];
+
+            // Calculate direction based on camera orientation
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction);
+
+            // Define initial velocity for the particles
+            const bulletSpeed = 10; // Adjust bullet speed as needed
+            const bulletSpread = 0.1; // Adjust bullet spread as needed
+
+            for (let i = 0; i < particleCount; i++) {
+                // Calculate random spread for bullets to create a spread pattern
+                const spreadX = (Math.random() - 0.5) * bulletSpread;
+                const spreadY = (Math.random() - 0.5) * bulletSpread;
+                const spreadZ = (Math.random() - 0.5) * bulletSpread;
+
+                // Apply spread to bullet direction
+                const bulletDirection = direction.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).normalize();
+
+                // Calculate initial velocity with spread
+                const velocity = bulletDirection.multiplyScalar(bulletSpeed);
+
+                // Store particle properties
+                activeParticles.push({
+                    position: camera.position.clone(),
+                    velocity: velocity.clone(),
+                    life: 100 // Set a life span for the particle
+                });
+            }
+
+            // Play shooting sound effect
+            playShootSound();
+        }
+    }
+}
+
+function animateParticles() {
+    // Update existing particles
+    activeParticles.forEach((particle, index) => {
+        // Update position based on velocity
+        particle.position.add(particle.velocity);
+
+        // Decrease particle life
+        particle.life--;
+
+        // Remove dead particles
+        if (particle.life <= 0) {
+            activeParticles.splice(index, 1);
+        }
+    });
+
+    // Update particle system geometry
+    const positions = [];
+    activeParticles.forEach(particle => {
+        positions.push(particle.position.x, particle.position.y, particle.position.z);
+    });
+    particleSystem.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+}
+            
             // Main loop
             function animate() {
                 requestAnimationFrame(animate);
@@ -161,54 +231,7 @@
                 }
             }
 
-            function handleShootParticles(event) {
-    if (event.button === 0) { // Check if left mouse button is clicked
-        const particleCount = 50;
-        const positions = [];
-        const velocities = [];
-
-        // Calculate direction based on camera orientation
-        const direction = new THREE.Vector3();
-        camera.getWorldDirection(direction);
-
-        // Define initial velocity for the particles
-        const bulletSpeed = 10; // Adjust bullet speed as needed
-        const bulletSpread = 0.1; // Adjust bullet spread as needed
-
-        for (let i = 0; i < particleCount; i++) {
-            // Start particles from camera position
-            positions.push(
-                camera.position.x,
-                camera.position.y,
-                camera.position.z
-            );
-
-            // Calculate random spread for bullets to create a spread pattern
-            const spreadX = (Math.random() - 0.5) * bulletSpread;
-            const spreadY = (Math.random() - 0.5) * bulletSpread;
-            const spreadZ = (Math.random() - 0.5) * bulletSpread;
-
-            // Apply spread to bullet direction
-            const bulletDirection = direction.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).normalize();
-
-            // Calculate initial velocity with spread
-            const velocity = bulletDirection.multiplyScalar(bulletSpeed);
-            velocities.push(velocity.x, velocity.y, velocity.z);
-        }
-
-        // Set the positions and velocities of particles
-        particleSystem.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        particleSystem.geometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
-
-        // Play shooting sound effect
-        playShootSound();
-    }
-}
-
-function playShootSound() {
-    // Implement code to play shooting sound effect
-    // You can use libraries like Howler.js or Web Audio API for this purpose
-}
+            
 
 
 
