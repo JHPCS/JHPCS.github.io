@@ -134,15 +134,24 @@ if (particleSystem.geometry.attributes.age !== undefined) {
 
     particleSystem.geometry.attributes.age.needsUpdate = true;
 }
-                // Modify the particle material to use a size attribute
-const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, vertexColors: true, size: 0.05 });
+                const particleCount = 50; // Set the desired number of particles
 
-// Add a new attribute to track particle sizes
+// Create a particle system
+const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05 });
+const particleGeometry = new THREE.BufferGeometry();
+const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+scene.add(particleSystem);
+
+// Add particle age attribute
+const ages = new Float32Array(particleCount);
+particleGeometry.setAttribute('age', new THREE.BufferAttribute(ages, 1));
+
+// Add particle size attribute
 const sizes = new Float32Array(particleCount);
 for (let i = 0; i < particleCount; i++) {
     sizes[i] = Math.random() * 0.1 + 0.01; // Random size between 0.01 and 0.11
 }
-particleSystem.geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
 // Update particle size in the animate function
 if (particleSystem.geometry.attributes.size !== undefined) {
@@ -205,7 +214,6 @@ if (particleSystem.geometry.attributes.size !== undefined) {
 
             function handleShootParticles(event) {
     if (event.button === 0) { // Check if left mouse button is clicked
-        const particleCount = 50;
         const positions = [];
         const velocities = [];
 
@@ -236,11 +244,10 @@ if (particleSystem.geometry.attributes.size !== undefined) {
         }
 
         // Set the positions and velocities of particles
-        particleSystem.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        particleSystem.geometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
     }
 }
-
 
 
 
