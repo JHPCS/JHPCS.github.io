@@ -63,7 +63,7 @@ const particleMaterial = new THREE.PointsMaterial({
     size: 0.05,
     map: new THREE.TextureLoader().load('https://imagetolink.com/ib/373xnqcmX1.png'), // Load a custom particle texture
     blending: THREE.AdditiveBlending, // Additive blending for brighter particles
-    transparent: true, // Make particles transparent
+    transparent: false, // Make particles transparent
     depthWrite: false // Disable depth write to prevent overlapping particles from being hidden
 });
 const particles = new Float32Array(particleCount * 3); // Store positions of particles in a Float32Array
