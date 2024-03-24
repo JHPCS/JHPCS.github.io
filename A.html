@@ -152,7 +152,7 @@ scene.add(particleSystem);
 if (particleSystem.geometry.attributes.position !== undefined && particleSystem.geometry.attributes.velocity !== undefined) {
     const positions = particleSystem.geometry.attributes.position.array;
     const velocities = particleSystem.geometry.attributes.velocity.array;
-    const gravity = 0.01; // Adjust gravity strength as needed
+    const gravity = 0.001; // Adjust gravity strength as needed
 
     for (let i = 0; i < positions.length; i += 3) {
         // Apply gravity to the vertical velocity
@@ -255,7 +255,8 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
         playerDirection.applyQuaternion(camera.quaternion);
 
         // Define initial velocity for the particles
-        const bulletSpeed = 10; // Adjust bullet speed as needed
+        const bulletSpeed = 5; // Adjust bullet speed as needed
+        
 
         for (let i = 0; i < particleCount; i++) {
             // Start particles from player's position
