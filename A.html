@@ -67,7 +67,16 @@ const particleMaterial = new THREE.PointsMaterial({
 });
 const particles = new Float32Array(particleCount * 3); // Store positions of particles in a Float32Array
 
+// Set random positions for particles within a sphere
+for (let i = 0; i < particles.length; i += 3) {
+    const radius = 5; // Adjust the radius of the sphere
+    const theta = Math.random() * Math.PI * 2; // Random angle in radians
+    const phi = Math.random() * Math.PI; // Random angle in radians
 
+    particles[i] = radius * Math.sin(phi) * Math.cos(theta); // x-coordinate
+    particles[i + 1] = radius * Math.cos(phi); // y-coordinate
+    particles[i + 2] = radius * Math.sin(phi) * Math.sin(theta); // z-coordinate
+}
 
 particleGeometry.setAttribute('position', new THREE.BufferAttribute(particles, 3));
 
