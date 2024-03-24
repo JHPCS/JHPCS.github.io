@@ -32,7 +32,7 @@
     <img src="https://JHPCS.github.io/bwom.png" id="gun-image">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", async function() {
+        document.addEventListener("DOMContentLoaded", function() {
             // Set up Three.js scene
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -58,26 +58,13 @@
             // Create a particle system
 const particleCount = 500; // Increase the number of particles for more density
 const particleGeometry = new THREE.BufferGeometry(); // Use BufferGeometry for better performance
-// Convert your image to Base64 encoding
-const imageUrl = 'https://JHPCS.github.io/bwom.png';
-const base64Image = await fetch(imageUrl).then(response => response.blob())
-                                            .then(blob => new Promise((resolve, reject) => {
-                                                const reader = new FileReader();
-                                                reader.onloadend = () => resolve(reader.result);
-                                                reader.onerror = reject;
-                                                reader.readAsDataURL(blob);
-                                            }));
-
-// Use the Base64-encoded image as a texture
 const particleMaterial = new THREE.PointsMaterial({
     color: 0xff0000,
     size: 0.05,
-    map: new THREE.TextureLoader().load(base64Image), // Use the Base64 string directly
-    blending: THREE.AdditiveBlending,
-    transparent: false,
-    depthWrite: false
+    blending: THREE.AdditiveBlending, // Additive blending for brighter particles
+    transparent: false, // Make particles transparent
+    depthWrite: false // Disable depth write to prevent overlapping particles from being hidden
 });
-
 const particles = new Float32Array(particleCount * 3); // Store positions of particles in a Float32Array
 
 // Set random positions for particles within a sphere
