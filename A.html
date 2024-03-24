@@ -68,7 +68,7 @@ const particleMaterial = new THREE.PointsMaterial({
 const particles = new Float32Array(particleCount * 3); // Store positions of particles in a Float32Array
 
 // Calculate the position to spawn particles
-const spawnPosition = new THREE.Vector3(0, 0, -50); // Adjust the Z coordinate to move the particles further away
+const spawnPosition = new THREE.Vector3(0, 0, -5000); // Adjust the Z coordinate to move the particles further away
 
 for (let i = 0; i < particles.length; i += 3) {
     const radius = 5; // Adjust the radius of the sphere if needed
