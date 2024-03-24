@@ -247,42 +247,46 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
 
             function handleShootParticles(event) {
     if (event.button === 0) { // Check if left mouse button is clicked
-        const positions = particleGeometry.attributes.position.array;
-        const velocities = particleGeometry.attributes.velocity.array;
-        const bulletSpeed = 5; // Adjust bullet speed as needed
-        const spreadFactor = 0.02;
+        // Check if particleGeometry and its attributes are defined
+        if (particleGeometry && particleGeometry.attributes.position && particleGeometry.attributes.velocity) {
+            const positions = particleGeometry.attributes.position.array;
+            const velocities = particleGeometry.attributes.velocity.array;
+            const bulletSpeed = 5; // Adjust bullet speed as needed
+            const spreadFactor = 0.02;
 
-        // Calculate shooting direction based on player's orientation
-        const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
-        playerDirection.applyQuaternion(camera.quaternion);
+            // Calculate shooting direction based on player's orientation
+            const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
+            playerDirection.applyQuaternion(camera.quaternion);
 
-        for (let i = 0; i < particleCount; i++) {
-            // Calculate random spread for bullets to create a spread pattern
-            const spreadX = (Math.random() - 0.5) * spreadFactor;
-            const spreadY = (Math.random() - 0.5) * spreadFactor;
-            const spreadZ = (Math.random() - 0.5) * spreadFactor;
+            for (let i = 0; i < particleCount; i++) {
+                // Calculate random spread for bullets to create a spread pattern
+                const spreadX = (Math.random() - 0.5) * spreadFactor;
+                const spreadY = (Math.random() - 0.5) * spreadFactor;
+                const spreadZ = (Math.random() - 0.5) * spreadFactor;
 
-            // Calculate initial velocity in the direction the player is facing with spread
-            const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
+                // Calculate initial velocity in the direction the player is facing with spread
+                const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
 
-            // Find the index to insert new particles
-            const index = i * 3;
+                // Find the index to insert new particles
+                const index = i * 3;
 
-            // Append new positions and velocities to existing arrays
-            positions[index] = camera.position.x;
-            positions[index + 1] = camera.position.y;
-            positions[index + 2] = camera.position.z;
+                // Append new positions and velocities to existing arrays
+                positions[index] = camera.position.x;
+                positions[index + 1] = camera.position.y;
+                positions[index + 2] = camera.position.z;
 
-            velocities[index] = velocity.x;
-            velocities[index + 1] = velocity.y;
-            velocities[index + 2] = velocity.z;
+                velocities[index] = velocity.x;
+                velocities[index + 1] = velocity.y;
+                velocities[index + 2] = velocity.z;
+            }
+
+            // Mark the attributes as needing an update
+            particleGeometry.attributes.position.needsUpdate = true;
+            particleGeometry.attributes.velocity.needsUpdate = true;
         }
-
-        // Mark the attributes as needing an update
-        particleGeometry.attributes.position.needsUpdate = true;
-        particleGeometry.attributes.velocity.needsUpdate = true;
     }
 }
+
 
 })
     </script>
