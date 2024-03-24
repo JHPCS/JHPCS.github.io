@@ -136,12 +136,8 @@ scene.add(particleSystem);
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
 
-            // Handle shooting particles only on left mouse button click
-document.addEventListener('mousedown', function(event) {
-    if (event.button === 0) { // Check if left mouse button is clicked
-        handleShootParticles(event);
-    }
-});
+            // Handle shooting particles on left mouse button click
+            document.addEventListener('mousedown', handleShootParticles);
 
             // Prevent default context menu
             document.addEventListener('contextmenu', function(event) {
@@ -251,46 +247,40 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
 
             function handleShootParticles(event) {
     if (event.button === 0) { // Check if left mouse button is clicked
-        // Check if particleGeometry and its attributes are defined
-        if (particleGeometry && particleGeometry.attributes.position && particleGeometry.attributes.velocity) {
-            const positions = particleGeometry.attributes.position.array;
-            const velocities = particleGeometry.attributes.velocity.array;
-            const bulletSpeed = 5; // Adjust bullet speed as needed
+        const positions = [];
+        const velocities = [];
+
+        // Calculate shooting direction based on player's orientation
+        const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
+        playerDirection.applyQuaternion(camera.quaternion);
+
+        // Define initial velocity for the particles
+        const bulletSpeed = 10; // Adjust bullet speed as needed
+
+        for (let i = 0; i < particleCount; i++) {
+            // Start particles from player's position
+            positions.push(
+                camera.position.x,
+                camera.position.y,
+                camera.position.z
+            );
+
+            // Calculate random spread for bullets to create a spread pattern
             const spreadFactor = 0.02;
+            const spreadX = (Math.random() - 0.5) * spreadFactor;
+            const spreadY = (Math.random() - 0.5) * spreadFactor;
+            const spreadZ = (Math.random() - 0.5) * spreadFactor;
 
-            // Calculate shooting direction based on player's orientation
-            const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
-            playerDirection.applyQuaternion(camera.quaternion);
-
-            for (let i = 0; i < particleCount; i++) {
-                // Calculate random spread for bullets to create a spread pattern
-                const spreadX = (Math.random() - 0.5) * spreadFactor;
-                const spreadY = (Math.random() - 0.5) * spreadFactor;
-                const spreadZ = (Math.random() - 0.5) * spreadFactor;
-
-                // Calculate initial velocity in the direction the player is facing with spread
-                const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
-
-                // Find the index to insert new particles
-                const index = i * 3;
-
-                // Append new positions and velocities to existing arrays
-                positions[index] = camera.position.x;
-                positions[index + 1] = camera.position.y;
-                positions[index + 2] = camera.position.z;
-
-                velocities[index] = velocity.x;
-                velocities[index + 1] = velocity.y;
-                velocities[index + 2] = velocity.z;
-            }
-
-            // Mark the attributes as needing an update
-            particleGeometry.attributes.position.needsUpdate = true;
-            particleGeometry.attributes.velocity.needsUpdate = true;
+            // Calculate initial velocity in the direction the player is facing with spread
+            const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
+            velocities.push(velocity.x, velocity.y, velocity.z);
         }
+
+        // Set the positions and velocities of particles
+        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
     }
 }
-
 
 })
     </script>
