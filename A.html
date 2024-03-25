@@ -121,7 +121,7 @@ const particleMaterial = new THREE.PointsMaterial({
     transparent: false, // Make particles transparent
     depthWrite: false // Disable depth write to prevent overlapping particles from being hidden
 });
-const particles = new Float32Array(particleCount * 3); // Store positions of particles in a Float32Array
+
 
 // Set random positions for particles within a sphere
 for (let i = 0; i < particles.length; i += 3) {
