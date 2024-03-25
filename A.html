@@ -59,181 +59,182 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-    // Set up Three.js scene
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+            // Set up Three.js scene
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
 
-    // Create a cube as our platform
-    const platformGeometry = new THREE.BoxGeometry(10, 1, 10);
-    const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const platform = new THREE.Mesh(platformGeometry, platformMaterial);
-    scene.add(platform);
+            // Create a cube as our platform
+            const platformGeometry = new THREE.BoxGeometry(10, 1, 10);
+            const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+            scene.add(platform);
 
-    // Create a red target
-    const targetGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const targetMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const target = new THREE.Mesh(targetGeometry, targetMaterial);
-    scene.add(target);
+            // Create a red target
+            const targetGeometry = new THREE.BoxGeometry(1, 1, 1);
+            const targetMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const target = new THREE.Mesh(targetGeometry, targetMaterial);
+            scene.add(target);
 
-    // Position the target
-    target.position.set(0, 2, -5); // Adjust the position as needed
+            // Position the target
+            target.position.set(0, 2, -5); // Adjust the position as needed
 
-    // Create a particle system
-    const particleCount = 500;
-    const particles = [];
+            // Create a particle system
+const particleCount = 500; // Increase the number of particles for more density
+const particleGeometry = new THREE.BufferGeometry(); // Use BufferGeometry for better performance
+const particleMaterial = new THREE.PointsMaterial({
+    color: 0xBD3F00,
+    size: 0.05,
+    blending: THREE.AdditiveBlending, // Additive blending for brighter particles
+    transparent: false, // Make particles transparent
+    depthWrite: false // Disable depth write to prevent overlapping particles from being hidden
+});
+const particles = new Float32Array(particleCount * 3); // Store positions of particles in a Float32Array
 
-    // Initialize particle array
-    for (let i = 0; i < particleCount; i++) {
-        particles.push({
-            position: new THREE.Vector3(),
-            velocity: new THREE.Vector3()
-        });
+// Set random positions for particles within a sphere
+for (let i = 0; i < particles.length; i += 3) {
+    const radius = 1000; // Adjust the radius of the sphere
+    const theta = Math.random() * Math.PI * 2; // Random angle in radians
+    const phi = Math.random() * Math.PI; // Random angle in radians
+
+    particles[i] = radius * Math.sin(phi) * Math.cos(theta); // x-coordinate
+    particles[i + 1] = radius * Math.cos(phi); // y-coordinate
+    particles[i + 2] = radius * Math.sin(phi) * Math.sin(theta); // z-coordinate
+}
+
+
+
+particleGeometry.setAttribute('position', new THREE.BufferAttribute(particles, 3));
+
+// Create the particle system
+const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+scene.add(particleSystem);
+
+            // Initialize camera position
+            camera.position.set(0, 1.5, 5);
+
+            // Initialize mouse movement variables
+            let isDragging = false;
+            let previousMouseX = 0;
+
+            // Keyboard state
+            const keyboardState = {
+                'w': false,
+                's': false,
+                'a': false,
+                'd': false
+            };
+
+            // Keyboard event listeners
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+
+            // Handle mouse movement for turning
+            document.addEventListener('mousedown', handleMouseDown);
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+
+            // Handle shooting particles on left mouse button click
+            document.addEventListener('mousedown', handleShootParticles);
+
+            // Prevent default context menu
+            document.addEventListener('contextmenu', function(event) {
+                event.preventDefault();
+            });
+
+            // Main loop
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Update particle positions based on velocities
+if (particleSystem.geometry.attributes.position !== undefined && particleSystem.geometry.attributes.velocity !== undefined) {
+    const positions = particleSystem.geometry.attributes.position.array;
+    const velocities = particleSystem.geometry.attributes.velocity.array;
+    const gravity = 0.001; // Adjust gravity strength as needed
+
+    for (let i = 0; i < positions.length; i += 3) {
+        // Apply gravity to the vertical velocity
+        velocities[i + 1] -= gravity;
+
+        positions[i] += velocities[i] * 0.1; // Adjust speed multiplier as needed
+        positions[i + 1] += velocities[i + 1] * 0.1;
+        positions[i + 2] += velocities[i + 2] * 0.1;
     }
 
-    // Event handler for shooting particles
-    function handleMouseDown(event) {
-        if (event.button === 0) { // Check if left mouse button is clicked
-            const bulletSpeed = 10;
-            const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-            const index = particles.findIndex(particle => particle.position.x === 0 && particle.position.y === 0 && particle.position.z === 0);
+    particleSystem.geometry.attributes.position.needsUpdate = true;
+    particleSystem.geometry.attributes.velocity.needsUpdate = true;
+}
 
-            if (index !== -1) {
-                const spreadFactor = 0.02;
-                const spreadX = (Math.random() - 0.5) * spreadFactor;
-                const spreadY = (Math.random() - 0.5) * spreadFactor;
-                const spreadZ = (Math.random() - 0.5) * spreadFactor;
 
-                particles[index].position.copy(camera.position);
-                particles[index].velocity.copy(direction).add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
+                // Update particle ages
+                if (particleSystem.geometry.attributes.age !== undefined) {
+                    const ages = particleSystem.geometry.attributes.age.array;
+                    const maxAge = 2.0; // Adjust particle lifetime as needed
+
+                    for (let i = 0; i < ages.length; i++) {
+                        ages[i] += 0.01; // Increment age by a small amount each frame
+
+                        // Remove particles that have exceeded the maximum age
+                        if (ages[i] > maxAge) {
+                            ages[i] = 0; // Reset age to 0 for reuse
+                            // You can also reset the particle's position and velocity here
+                        }
+                    }
+
+                    particleSystem.geometry.attributes.age.needsUpdate = true;
+                }
+
+                // Update particle size
+                if (particleSystem.geometry.attributes.size !== undefined) {
+                    const sizes = particleSystem.geometry.attributes.size.array;
+                    particleMaterial.size = sizes; // Assign the size array to the material's size property
+                    particleMaterial.needsUpdate = true;
+                }
+
+                // Update camera position based on user input
+                const movementSpeed = 0.1;
+
+                // Move forward/backward and left/right relative to camera orientation
+                const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+                const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+
+                if (keyboardState['w']) camera.position.add(forward.clone().multiplyScalar(movementSpeed));
+                if (keyboardState['s']) camera.position.add(forward.clone().multiplyScalar(-movementSpeed));
+                if (keyboardState['a']) camera.position.add(right.clone().multiplyScalar(-movementSpeed));
+                if (keyboardState['d']) camera.position.add(right.clone().multiplyScalar(movementSpeed));
+
+                renderer.render(scene, camera);
             }
-        }
-    }
 
-    const particleGeometry = new THREE.BufferGeometry(); // Use BufferGeometry for better performance
-    const particleMaterial = new THREE.PointsMaterial({
-        color: 0xBD3F00,
-        size: 0.05,
-        blending: THREE.AdditiveBlending, // Additive blending for brighter particles
-        transparent: false, // Make particles transparent
-        depthWrite: false // Disable depth write to prevent overlapping particles from being hidden
-    });
+            animate();
 
-    // Set random positions for particles within a sphere
-    const positions = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount * 3; i += 3) {
-        const radius = 1000; // Adjust the radius of the sphere
-        const theta = Math.random() * Math.PI * 2; // Random angle in radians
-        const phi = Math.random() * Math.PI; // Random angle in radians
-
-        positions[i] = radius * Math.sin(phi) * Math.cos(theta); // x-coordinate
-        positions[i + 1] = radius * Math.cos(phi); // y-coordinate
-        positions[i + 2] = radius * Math.sin(phi) * Math.sin(theta); // z-coordinate
-    }
-
-    // Assign the positions to the particleGeometry
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-    // Create the particle system
-    const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-    scene.add(particleSystem);
-
-    // Initialize camera position
-    camera.position.set(0, 1.5, 5);
-
-    // Initialize mouse movement variables
-    let isDragging = false;
-    let previousMouseX = 0;
-
-    // Keyboard state
-    const keyboardState = {
-        'w': false,
-        's': false,
-        'a': false,
-        'd': false
-    };
-
-    // Keyboard event listeners
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-
-    // Handle mouse movement for turning
-    document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-
-    // Prevent default context menu
-    document.addEventListener('contextmenu', function(event) {
-        event.preventDefault();
-    });
-
-    // Main loop
-    function animate() {
-        requestAnimationFrame(animate);
-
-        // Update particle positions based on velocities
-        if (particleSystem.geometry.attributes.position !== undefined && particleSystem.geometry.attributes.velocity !== undefined) {
-            const positions = particleSystem.geometry.attributes.position.array;
-            const velocities = particleSystem.geometry.attributes.velocity.array;
-            const gravity = 0.001; // Adjust gravity strength as needed
-
-            for (let i = 0; i < positions.length; i += 3) {
-                // Apply gravity to the vertical velocity
-                velocities[i + 1] -= gravity;
-
-                positions[i] += velocities[i] * 0.1; // Adjust speed multiplier as needed
-                positions[i + 1] += velocities[i + 1] * 0.1;
-                positions[i + 2] += velocities[i + 2] * 0.1;
+            // Event handlers
+            function handleKeyDown(event) {
+                if (event.key in keyboardState) {
+                    keyboardState[event.key] = true;
+                }
             }
 
-            particleSystem.geometry.attributes.position.needsUpdate = true;
-            particleSystem.geometry.attributes.velocity.needsUpdate = true;
-        }
+            function handleKeyUp(event) {
+                if (event.key in keyboardState) {
+                    keyboardState[event.key] = false;
+                }
+            }
 
-        // Update camera position based on user input
-        const movementSpeed = 0.1;
+            function handleMouseDown(event) {
+                if (event.button === 2) { // Check if right mouse button is clicked
+                    isDragging = true;
+                    previousMouseX = event.clientX;
+                }
+            }
 
-        // Move forward/backward and left/right relative to camera orientation
-        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-        const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-
-        if (keyboardState['w']) camera.position.add(forward.clone().multiplyScalar(movementSpeed));
-        if (keyboardState['s']) camera.position.add(forward.clone().multiplyScalar(-movementSpeed));
-        if (keyboardState['a']) camera.position.add(right.clone().multiplyScalar(-movementSpeed));
-        if (keyboardState['d']) camera.position.add(right.clone().multiplyScalar(movementSpeed));
-
-        renderer.render(scene, camera);
-    }
-
-    animate();
-
-    // Event handlers
-    function handleKeyDown(event) {
-        if (event.key in keyboardState) {
-            keyboardState[event.key] = true;
-        }
-    }
-
-    function handleKeyUp(event) {
-        if (event.key in keyboardState) {
-            keyboardState[event.key] = false;
-        }
-    }
-
-    function handleMouseDown(event) {
-        if (event.button === 2) { // Check if right mouse button is clicked
-            isDragging = true;
-            previousMouseX = event.clientX;
-        }
-    }
-
-    function handleMouseMove(event) {
-        if (!isDragging) return;
-        const delta = event.clientX - previousMouseX;
-        camera.rotation.y -= (delta * 0.01); 
-        previousMouseX = event.clientX;
+            function handleMouseMove(event) {
+    if (!isDragging) return;
+    const delta = event.clientX - previousMouseX;
+    camera.rotation.y -= (delta * 0.01); // Subtract instead of adding
+    previousMouseX = event.clientX;
 }
 
 
@@ -244,7 +245,43 @@
                 }
             }
 
-            
+            function handleShootParticles(event) {
+    if (event.button === 0) { // Check if left mouse button is clicked
+        const positions = [];
+        const velocities = [];
+
+        // Calculate shooting direction based on player's orientation
+        const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
+        playerDirection.applyQuaternion(camera.quaternion);
+
+        // Define initial velocity for the particles
+        const bulletSpeed = 10; // Adjust bullet speed as needed
+
+        for (let i = 0; i < particleCount; i++) {
+            // Start particles from player's position
+            positions.push(
+                camera.position.x,
+                camera.position.y,
+                camera.position.z
+            );
+
+            // Calculate random spread for bullets to create a spread pattern
+            const spreadFactor = 0.02;
+            const spreadX = (Math.random() - 0.5) * spreadFactor;
+            const spreadY = (Math.random() - 0.5) * spreadFactor;
+            const spreadZ = (Math.random() - 0.5) * spreadFactor;
+
+            // Calculate initial velocity in the direction the player is facing with spread
+            const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
+            velocities.push(velocity.x, velocity.y, velocity.z);
+        }
+
+        // Set the positions and velocities of particles
+        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+    }
+}
+
 })
     </script>
 </body>
