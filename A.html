@@ -82,7 +82,37 @@
             target.position.set(0, 2, -5); // Adjust the position as needed
 
             // Create a particle system
-const particleCount = 500; // Increase the number of particles for more density
+// Create a particle system
+const particleCount = 500;
+const particles = [];
+
+// Initialize particle array
+for (let i = 0; i < particleCount; i++) {
+    particles.push({
+        position: new THREE.Vector3(),
+        velocity: new THREE.Vector3()
+    });
+}
+
+// Event handler for shooting particles
+function handleMouseDown(event) {
+    if (event.button === 0) { // Check if left mouse button is clicked
+        const bulletSpeed = 10;
+        const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+        const index = particles.findIndex(particle => particle.position.x === 0 && particle.position.y === 0 && particle.position.z === 0);
+
+        if (index !== -1) {
+            const spreadFactor = 0.02;
+            const spreadX = (Math.random() - 0.5) * spreadFactor;
+            const spreadY = (Math.random() - 0.5) * spreadFactor;
+            const spreadZ = (Math.random() - 0.5) * spreadFactor;
+
+            particles[index].position.copy(camera.position);
+            particles[index].velocity.copy(direction).add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
+        }
+    }
+}
+
 const particleGeometry = new THREE.BufferGeometry(); // Use BufferGeometry for better performance
 const particleMaterial = new THREE.PointsMaterial({
     color: 0xBD3F00,
