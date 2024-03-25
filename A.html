@@ -247,44 +247,47 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
 
             function handleShootParticles(event) {
     if (event.button === 0) { // Check if left mouse button is clicked
-        const positions = particleSystem.geometry.attributes.position.array;
-        const velocities = particleSystem.geometry.attributes.velocity.array;
+        if (particleSystem && particleSystem.geometry.attributes.position && particleSystem.geometry.attributes.velocity) {
+            const positions = particleSystem.geometry.attributes.position.array;
+            const velocities = particleSystem.geometry.attributes.velocity.array;
 
-        // Calculate shooting direction based on player's orientation
-        const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
-        playerDirection.applyQuaternion(camera.quaternion);
+            // Calculate shooting direction based on player's orientation
+            const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
+            playerDirection.applyQuaternion(camera.quaternion);
 
-        // Define initial velocity for the particles
-        const bulletSpeed = 10; // Adjust bullet speed as needed
+            // Define initial velocity for the particles
+            const bulletSpeed = 10; // Adjust bullet speed as needed
 
-        for (let i = 0; i < particleCount; i++) {
-            const index = i * 3;
-            if (positions[index] === 0 && positions[index + 1] === 0 && positions[index + 2] === 0) { // Check if particle slot is empty
-                // Start particles from player's position
-                positions[index] = camera.position.x;
-                positions[index + 1] = camera.position.y;
-                positions[index + 2] = camera.position.z;
+            for (let i = 0; i < particleCount; i++) {
+                const index = i * 3;
+                if (positions[index] === 0 && positions[index + 1] === 0 && positions[index + 2] === 0) { // Check if particle slot is empty
+                    // Start particles from player's position
+                    positions[index] = camera.position.x;
+                    positions[index + 1] = camera.position.y;
+                    positions[index + 2] = camera.position.z;
 
-                // Calculate random spread for bullets to create a spread pattern
-                const spreadFactor = 0.02;
-                const spreadX = (Math.random() - 0.5) * spreadFactor;
-                const spreadY = (Math.random() - 0.5) * spreadFactor;
-                const spreadZ = (Math.random() - 0.5) * spreadFactor;
+                    // Calculate random spread for bullets to create a spread pattern
+                    const spreadFactor = 0.02;
+                    const spreadX = (Math.random() - 0.5) * spreadFactor;
+                    const spreadY = (Math.random() - 0.5) * spreadFactor;
+                    const spreadZ = (Math.random() - 0.5) * spreadFactor;
 
-                // Calculate initial velocity in the direction the player is facing with spread
-                const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
-                velocities[index] = velocity.x;
-                velocities[index + 1] = velocity.y;
-                velocities[index + 2] = velocity.z;
-                break; // Exit loop after adding a new particle
+                    // Calculate initial velocity in the direction the player is facing with spread
+                    const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
+                    velocities[index] = velocity.x;
+                    velocities[index + 1] = velocity.y;
+                    velocities[index + 2] = velocity.z;
+                    break; // Exit loop after adding a new particle
+                }
             }
-        }
 
-        // Update the positions and velocities of particles
-        particleSystem.geometry.attributes.position.needsUpdate = true;
-        particleSystem.geometry.attributes.velocity.needsUpdate = true;
+            // Update the positions and velocities of particles
+            particleSystem.geometry.attributes.position.needsUpdate = true;
+            particleSystem.geometry.attributes.velocity.needsUpdate = true;
+        }
     }
 }
+
 
 
 })
