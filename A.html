@@ -245,11 +245,12 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
                 }
             }
 
-            function handleShootParticles(event) {
-    if (event.button === 0) { // Check if left mouse button is clicked
-        const positions = [];
-        const velocities = [];
+            // Define arrays to store positions and velocities of particles
+const allPositions = [];
+const allVelocities = [];
 
+function handleShootParticles(event) {
+    if (event.button === 0) { // Check if left mouse button is clicked
         // Calculate shooting direction based on player's orientation
         const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
         playerDirection.applyQuaternion(camera.quaternion);
@@ -258,13 +259,6 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
         const bulletSpeed = 10; // Adjust bullet speed as needed
 
         for (let i = 0; i < particleCount; i++) {
-            // Start particles from player's position
-            positions.push(
-                camera.position.x,
-                camera.position.y,
-                camera.position.z
-            );
-
             // Calculate random spread for bullets to create a spread pattern
             const spreadFactor = 0.02;
             const spreadX = (Math.random() - 0.5) * spreadFactor;
@@ -273,14 +267,18 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
 
             // Calculate initial velocity in the direction the player is facing with spread
             const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
-            velocities.push(velocity.x, velocity.y, velocity.z);
+
+            // Store the positions and velocities of particles
+            allPositions.push(camera.position.clone());
+            allVelocities.push(velocity);
         }
 
         // Set the positions and velocities of particles
-        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(allPositions.flat(), 3));
+        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(allVelocities.flat(), 3));
     }
 }
+
 
 })
     </script>
