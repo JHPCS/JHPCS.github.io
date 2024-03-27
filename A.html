@@ -258,6 +258,9 @@ function handleShootParticles(event) {
         // Define initial velocity for the particles
         const bulletSpeed = 10; // Adjust bullet speed as needed
 
+        const newPositions = [];
+        const newVelocities = [];
+
         for (let i = 0; i < particleCount; i++) {
             // Calculate random spread for bullets to create a spread pattern
             const spreadFactor = 0.02;
@@ -268,14 +271,25 @@ function handleShootParticles(event) {
             // Calculate initial velocity in the direction the player is facing with spread
             const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
 
-            // Store the positions and velocities of particles
-            allPositions.push(camera.position.clone());
-            allVelocities.push(velocity);
+            // Store the new positions and velocities of particles
+            newPositions.push(
+                camera.position.x,
+                camera.position.y,
+                camera.position.z
+            );
+            newVelocities.push(velocity.x, velocity.y, velocity.z);
         }
 
-        // Set the positions and velocities of particles
-        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(allPositions.flat(), 3));
-        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(allVelocities.flat(), 3));
+        // Combine existing positions and velocities with new ones
+        const allPositions = Array.from(particleGeometry.attributes.position.array);
+        const allVelocities = Array.from(particleGeometry.attributes.velocity.array);
+
+        allPositions.push(...newPositions);
+        allVelocities.push(...newVelocities);
+
+        // Update particle geometry attributes
+        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(allPositions, 3));
+        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(allVelocities, 3));
     }
 }
 
