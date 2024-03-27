@@ -262,10 +262,6 @@ function handleShootParticles(event) {
         // Define initial velocity for the particles
         const bulletSpeed = 10; // Adjust bullet speed as needed
 
-        // Clear existing particles array for the current shot
-        existingParticlesAllShots.positions = [];
-        existingParticlesAllShots.velocities = [];
-
         // Calculate spread pattern for bullets
         const spreadFactor = 0.02;
         for (let i = 0; i < particleCount; i++) {
