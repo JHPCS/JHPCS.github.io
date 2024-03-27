@@ -247,18 +247,14 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
 
 
 
-// Array to store existing particle positions and velocities for each shot
-let existingParticlesPerShot = [];
+// Array to store existing particle positions and velocities for all shots
+let existingParticlesAllShots = {
+    positions: [],
+    velocities: []
+};
 
 function handleShootParticles(event) {
     if (event.button === 0) { // Check if left mouse button is clicked
-        // Clear existing particles array for this shot
-        const currentShotIndex = existingParticlesPerShot.length;
-        existingParticlesPerShot[currentShotIndex] = {
-            positions: [],
-            velocities: []
-        };
-
         // Calculate shooting direction based on player's orientation
         const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
         playerDirection.applyQuaternion(camera.quaternion);
@@ -270,7 +266,7 @@ function handleShootParticles(event) {
         const spreadFactor = 0.02;
         for (let i = 0; i < particleCount; i++) {
             // Start particles from player's position
-            existingParticlesPerShot[currentShotIndex].positions.push(
+            existingParticlesAllShots.positions.push(
                 camera.position.x,
                 camera.position.y,
                 camera.position.z
@@ -283,14 +279,15 @@ function handleShootParticles(event) {
 
             // Calculate initial velocity in the direction the player is facing with spread
             const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
-            existingParticlesPerShot[currentShotIndex].velocities.push(velocity.x, velocity.y, velocity.z);
+            existingParticlesAllShots.velocities.push(velocity.x, velocity.y, velocity.z);
         }
 
         // Update the positions and velocities of particles
-        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(existingParticlesPerShot.flatMap(shot => shot.positions), 3));
-        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(existingParticlesPerShot.flatMap(shot => shot.velocities), 3));
+        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(existingParticlesAllShots.positions, 3));
+        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(existingParticlesAllShots.velocities, 3));
     }
 }
+
 
 
 
