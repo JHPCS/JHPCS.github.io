@@ -95,7 +95,7 @@ const particles = new Float32Array(particleCount * 3); // Store positions of par
 
 // Set random positions for particles within a sphere
 for (let i = 0; i < particles.length; i += 3) {
-    const radius = 1000; // Adjust the radius of the sphere
+    const radius = 1000000; // Adjust the radius of the sphere
     const theta = Math.random() * Math.PI * 2; // Random angle in radians
     const phi = Math.random() * Math.PI; // Random angle in radians
 
@@ -247,8 +247,8 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
 
             function handleShootParticles(event) {
     if (event.button === 0) { // Check if left mouse button is clicked
-        const positions = [];
-        const velocities = [];
+        const positions = particleSystem.geometry.attributes.position.array;
+        const velocities = particleSystem.geometry.attributes.velocity.array;
 
         // Calculate shooting direction based on player's orientation
         const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
@@ -257,30 +257,31 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
         // Define initial velocity for the particles
         const bulletSpeed = 10; // Adjust bullet speed as needed
 
-        for (let i = 0; i < particleCount; i++) {
-            // Start particles from player's position
-            positions.push(
-                camera.position.x,
-                camera.position.y,
-                camera.position.z
-            );
+        // Calculate random spread for bullets to create a spread pattern
+        const spreadFactor = 0.02;
+        const spreadX = (Math.random() - 0.5) * spreadFactor;
+        const spreadY = (Math.random() - 0.5) * spreadFactor;
+        const spreadZ = (Math.random() - 0.5) * spreadFactor;
 
-            // Calculate random spread for bullets to create a spread pattern
-            const spreadFactor = 0.02;
-            const spreadX = (Math.random() - 0.5) * spreadFactor;
-            const spreadY = (Math.random() - 0.5) * spreadFactor;
-            const spreadZ = (Math.random() - 0.5) * spreadFactor;
+        for (let i = 0; i < particleCount * 3; i += 3) {
+            // Start particles from player's position
+            positions[i] = camera.position.x;
+            positions[i + 1] = camera.position.y;
+            positions[i + 2] = camera.position.z;
 
             // Calculate initial velocity in the direction the player is facing with spread
             const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
-            velocities.push(velocity.x, velocity.y, velocity.z);
+            velocities[i] = velocity.x;
+            velocities[i + 1] = velocity.y;
+            velocities[i + 2] = velocity.z;
         }
 
-        // Set the positions and velocities of particles
-        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+        // Update the positions and velocities of particles
+        particleSystem.geometry.attributes.position.needsUpdate = true;
+        particleSystem.geometry.attributes.velocity.needsUpdate = true;
     }
 }
+
 
 })
     </script>
