@@ -247,44 +247,50 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
 
             function handleShootParticles(event) {
     if (event.button === 0) { // Check if left mouse button is clicked
-        const particlePosition = particleSystem.geometry.attributes.position;
-        const particleVelocity = particleSystem.geometry.attributes.velocity;
+        // Ensure the particle system and its attributes are initialized
+        if (particleSystem && particleSystem.geometry && particleSystem.geometry.attributes) {
+            const particlePosition = particleSystem.geometry.attributes.position;
+            const particleVelocity = particleSystem.geometry.attributes.velocity;
 
-        // Calculate shooting direction based on player's orientation
-        const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
-        playerDirection.applyQuaternion(camera.quaternion);
+            // Calculate shooting direction based on player's orientation
+            const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
+            playerDirection.applyQuaternion(camera.quaternion);
 
-        // Define initial velocity for the particles
-        const bulletSpeed = 10; // Adjust bullet speed as needed
+            // Define initial velocity for the particles
+            const bulletSpeed = 10; // Adjust bullet speed as needed
 
-        // Calculate random spread for bullets to create a spread pattern
-        const spreadFactor = 0.02;
-        const spreadX = (Math.random() - 0.5) * spreadFactor;
-        const spreadY = (Math.random() - 0.5) * spreadFactor;
-        const spreadZ = (Math.random() - 0.5) * spreadFactor;
+            // Calculate random spread for bullets to create a spread pattern
+            const spreadFactor = 0.02;
+            const spreadX = (Math.random() - 0.5) * spreadFactor;
+            const spreadY = (Math.random() - 0.5) * spreadFactor;
+            const spreadZ = (Math.random() - 0.5) * spreadFactor;
 
-        for (let i = 0; i < particleCount; i++) {
-            const index = i * 3;
+            for (let i = 0; i < particleCount; i++) {
+                const index = i * 3;
 
-            // Start particles from player's position
-            particlePosition.setX(index, camera.position.x);
-            particlePosition.setY(index, camera.position.y);
-            particlePosition.setZ(index, camera.position.z);
+                // Start particles from player's position
+                particlePosition.setX(index, camera.position.x);
+                particlePosition.setY(index, camera.position.y);
+                particlePosition.setZ(index, camera.position.z);
 
-            // Calculate initial velocity in the direction the player is facing with spread
-            const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
+                // Calculate initial velocity in the direction the player is facing with spread
+                const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
 
-            // Update velocity components
-            particleVelocity.setX(index, velocity.x);
-            particleVelocity.setY(index, velocity.y);
-            particleVelocity.setZ(index, velocity.z);
+                // Update velocity components
+                particleVelocity.setX(index, velocity.x);
+                particleVelocity.setY(index, velocity.y);
+                particleVelocity.setZ(index, velocity.z);
+            }
+
+            // Mark the position and velocity attributes as needing updates
+            particlePosition.needsUpdate = true;
+            particleVelocity.needsUpdate = true;
+        } else {
+            console.error('Particle system or its attributes are not initialized.');
         }
-
-        // Mark the position and velocity attributes as needing updates
-        particlePosition.needsUpdate = true;
-        particleVelocity.needsUpdate = true;
     }
 }
+
 
 
 
