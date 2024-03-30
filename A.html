@@ -95,7 +95,7 @@ const particles = new Float32Array(particleCount * 3); // Store positions of par
 
 // Set random positions for particles within a sphere
 for (let i = 0; i < particles.length; i += 3) {
-    const radius = 1000000; // Adjust the radius of the sphere
+    const radius = 1000; // Adjust the radius of the sphere
     const theta = Math.random() * Math.PI * 2; // Random angle in radians
     const phi = Math.random() * Math.PI; // Random angle in radians
 
@@ -245,14 +245,11 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
                 }
             }
 
-            let isFirstCall = true;
-
-// Define positions and velocities arrays outside the function scope
-const positions = [];
-const velocities = [];
-
-function handleShootParticles(event) {
+            function handleShootParticles(event) {
     if (event.button === 0) { // Check if left mouse button is clicked
+        const positions = [];
+        const velocities = [];
+
         // Calculate shooting direction based on player's orientation
         const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
         playerDirection.applyQuaternion(camera.quaternion);
@@ -279,16 +276,11 @@ function handleShootParticles(event) {
             velocities.push(velocity.x, velocity.y, velocity.z);
         }
 
-        // Update the positions and velocities of particles
+        // Set the positions and velocities of particles
         particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
         particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
     }
 }
-
-
-
-
-
 
 })
     </script>
