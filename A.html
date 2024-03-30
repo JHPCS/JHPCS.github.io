@@ -247,8 +247,8 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
 
             function handleShootParticles(event) {
     if (event.button === 0) { // Check if left mouse button is clicked
-        const positions = [];
-        const velocities = [];
+        const positions = particleSystem.geometry.attributes.position.array;
+        const velocities = particleSystem.geometry.attributes.velocity.array;
 
         // Calculate shooting direction based on player's orientation
         const playerDirection = new THREE.Vector3(0, 0, -1); // Assuming player faces along the negative z-axis initially
@@ -257,13 +257,25 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
         // Define initial velocity for the particles
         const bulletSpeed = 10; // Adjust bullet speed as needed
 
+        // Find an available index to start adding new particles
+        let startIndex = 0;
         for (let i = 0; i < particleCount; i++) {
+            const age = particleSystem.geometry.attributes.age.array[i];
+            if (age === 0) {
+                startIndex = i;
+                break;
+            }
+        }
+
+        // Shoot particles from the available startIndex
+        for (let i = startIndex; i < startIndex + particleCount; i++) {
+            const index = i % particleCount;
+            const baseIndex = index * 3;
+
             // Start particles from player's position
-            positions.push(
-                camera.position.x,
-                camera.position.y,
-                camera.position.z
-            );
+            positions[baseIndex] = camera.position.x;
+            positions[baseIndex + 1] = camera.position.y;
+            positions[baseIndex + 2] = camera.position.z;
 
             // Calculate random spread for bullets to create a spread pattern
             const spreadFactor = 0.02;
@@ -273,14 +285,18 @@ if (particleSystem.geometry.attributes.position !== undefined && particleSystem.
 
             // Calculate initial velocity in the direction the player is facing with spread
             const velocity = playerDirection.clone().add(new THREE.Vector3(spreadX, spreadY, spreadZ)).multiplyScalar(bulletSpeed);
-            velocities.push(velocity.x, velocity.y, velocity.z);
+            velocities[baseIndex] = velocity.x;
+            velocities[baseIndex + 1] = velocity.y;
+            velocities[baseIndex + 2] = velocity.z;
         }
 
-        // Set the positions and velocities of particles
-        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+        // Update the positions and velocities of particles
+        particleSystem.geometry.attributes.position.needsUpdate = true;
+        particleSystem.geometry.attributes.velocity.needsUpdate = true;
     }
 }
+
+
 
 })
     </script>
