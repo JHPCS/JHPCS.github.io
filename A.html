@@ -99,6 +99,9 @@
             // Shooting state
             let isShooting = false;
 
+            // Array to hold particles
+            const particles = [];
+
             // Keyboard event listeners
             document.addEventListener('keydown', handleKeyDown);
             document.addEventListener('keyup', handleKeyUp);
@@ -134,6 +137,15 @@
                     createParticleEffect();
                     isShooting = false;
                 }
+
+                // Update particle positions and remove them if they travel too far
+                particles.forEach(particle => {
+                    particle.position.add(particle.userData.velocity);
+                    if (particle.position.distanceTo(camera.position) > 10) {
+                        scene.remove(particle);
+                        particles.splice(particles.indexOf(particle), 1);
+                    }
+                });
 
                 renderer.render(scene, camera);
             }
@@ -184,17 +196,13 @@
                 const particle = new THREE.Mesh(particleGeometry, particleMaterial);
                 particle.position.copy(camera.position); // Position particle at camera
                 scene.add(particle);
+                particles.push(particle);
 
                 const velocity = new THREE.Vector3(0, 0, -1);
                 velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
 
                 const speed = 0.5;
                 particle.userData.velocity = velocity.multiplyScalar(speed);
-
-                // Remove particle after a certain duration
-                setTimeout(() => {
-                    scene.remove(particle);
-                }, 1000);
             }
         });
     </script>
