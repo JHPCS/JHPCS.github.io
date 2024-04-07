@@ -115,8 +115,8 @@
             });
 
             // Main loop
-            function animate() {
-                requestAnimationFrame(animate);
+            function animate(event) {
+                requestAnimationFrame(() => animate(event));
 
                 // Update camera position based on user input
                 const movementSpeed = 0.1;
