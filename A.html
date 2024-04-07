@@ -158,11 +158,12 @@
             }
 
             function handleMouseMove(event) {
-                if (!isDragging) return;
-                const delta = event.clientX - previousMouseX;
-                camera.rotation.y -= (delta * 0.01); // Subtract instead of adding
-                previousMouseX = event.clientX;
-            }
+    if (!isDragging) return;
+    const delta = event.clientX - previousMouseX;
+    camera.rotation.y -= (delta * 0.01); // Subtract instead of adding
+    previousMouseX = event.clientX;
+}
+
 
             function handleMouseUp(event) {
                 if (event.button === 0) { // Check if left mouse button is released
