@@ -141,7 +141,7 @@
                 // Update particle positions and remove them if they travel too far
                 particles.forEach(particle => {
                     particle.position.add(particle.userData.velocity);
-                    if (particle.position.distanceTo(particle.userData.initialPosition) > 10) {
+                    if (particle.position.distanceTo(particle.userData.initialPosition) > 50) {
                         scene.remove(particle);
                         particles.splice(particles.indexOf(particle), 1);
                     }
