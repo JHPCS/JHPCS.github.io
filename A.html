@@ -190,22 +190,41 @@
             }
 
             // Create particle effect when shooting
-            function createParticleEffect() {
-                const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-                const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
-                particle.position.copy(camera.position); // Position particle at camera
-                scene.add(particle);
-                particles.push(particle);
+function createParticleEffect() {
+    const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+    const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+    particle.position.copy(camera.position); // Position particle at camera
+    scene.add(particle);
+    particles.push(particle);
 
-                const velocity = new THREE.Vector3(0, 0, -1);
-                velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
+    const velocity = new THREE.Vector3(0, 0, -1);
+    velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
 
-                const speed = 0.5;
-                particle.userData.velocity = velocity.multiplyScalar(speed);
-                particle.userData.initialPosition = particle.position.clone(); // Store initial position
+    const speed = 0.5;
+    particle.userData.velocity = velocity.multiplyScalar(speed);
+    particle.userData.initialPosition = particle.position.clone(); // Store initial position
 
-            }
+    const gravity = new THREE.Vector3(0, -0.01, 0); // Adjust gravity as needed
+    const timeStep = 0.1; // Adjust time step as needed
+
+    // Update particle position considering bullet drop
+    function updatePosition() {
+        particle.userData.velocity.add(gravity.clone().multiplyScalar(timeStep));
+        particle.position.add(particle.userData.velocity.clone().multiplyScalar(timeStep));
+    }
+
+    // Simulate bullet drop
+    const dropInterval = setInterval(() => {
+        updatePosition();
+        if (particle.position.y <= 0) {
+            clearInterval(dropInterval);
+            scene.remove(particle);
+            particles.splice(particles.indexOf(particle), 1);
+        }
+    }, timeStep * 1000);
+}
+
         });
     </script>
 </body>
