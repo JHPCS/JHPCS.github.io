@@ -140,12 +140,10 @@
 
                 // Update particle positions and remove them if they travel too far
                 particles.forEach(particle => {
-                    if (particle) {
-                        particle.position.add(particle.userData.velocity);
-                        if (particle.position.distanceTo(particle.userData.initialPosition) > 50) {
-                            scene.remove(particle);
-                            particles.splice(particles.indexOf(particle), 1);
-                        }
+                    particle.position.add(particle.userData.velocity);
+                    if (particle.position.distanceTo(particle.userData.initialPosition) > 50) {
+                        scene.remove(particle);
+                        particles.splice(particles.indexOf(particle), 1);
                     }
                 });
 
@@ -205,46 +203,8 @@
 
                 const speed = 0.5;
                 particle.userData.velocity = velocity.multiplyScalar(speed);
+                particle.userData.initialPosition = particle.position.clone(); // Store initial position
 
-                const gravity = new THREE.Vector3(0, -0.01, 0); // Define gravity
-                const bulletDrop = new THREE.Vector3(0, -0.005, 0); // Define bullet drop 
-
-                // Update particle positions and apply physics
-                function updatePosition(delta) {
-                    if (!particle) return; // Check if particle exists
-
-                    // Apply gravity and bullet drop
-                    particle.userData.velocity.add(gravity.clone().multiplyScalar(delta)); // Apply gravity over time
-                    particle.userData.velocity.add(bulletDrop.clone().multiplyScalar(delta)); // Apply bullet drop over time
-                    particle.position.add(particle.userData.velocity.clone().multiplyScalar(delta)); // Move particle
-                }
-
-                // Update function
-                function update(delta) {
-                    if (!particle) return; // Check if particle exists
-
-                    updatePosition(delta);
-
-                    // Remove particle if it goes below the ground level or travels too far
-                    if (particle.position.y < 0 || particle.position.distanceTo(particle.userData.initialPosition) > 50) {
-                        scene.remove(particle);
-                        particles.splice(particles.indexOf(particle), 1);
-                        particle.geometry.dispose(); // Dispose of geometry to prevent memory leaks
-                        particle.material.dispose(); // Dispose of material to prevent memory leaks
-                        particle = null; // Reset particle to avoid further processing
-                    }
-                }
-
-                // Use the Three.js clock to ensure consistent frame rates
-                const clock = new THREE.Clock();
-                function animate() {
-                    requestAnimationFrame(animate);
-                    const delta = clock.getDelta();
-                    update(delta);
-                    renderer.render(scene, camera);
-                }
-
-                animate();
             }
         });
     </script>
