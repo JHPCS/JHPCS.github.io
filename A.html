@@ -87,10 +87,6 @@
             // Initialize mouse movement variables
             let isDragging = false;
             let previousMouseX = 0;
-            let rightMousePressed = false; // Track if the right mouse button is pressed
-
-            // Initialize shooting variable
-            let isShooting = false;
 
             // Keyboard state
             const keyboardState = {
@@ -106,8 +102,8 @@
 
             // Handle mouse movement for turning
             document.addEventListener('mousedown', handleMouseDown);
-            document.addEventListener('mouseup', handleMouseUp);
             document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
 
             // Prevent default context menu
             document.addEventListener('contextmenu', function(event) {
@@ -115,8 +111,8 @@
             });
 
             // Main loop
-            function animate(event) {
-                requestAnimationFrame(() => animate(event));
+            function animate() {
+                requestAnimationFrame(animate);
 
                 // Update camera position based on user input
                 const movementSpeed = 0.1;
@@ -129,17 +125,6 @@
                 if (keyboardState['s']) camera.position.add(forward.clone().multiplyScalar(-movementSpeed));
                 if (keyboardState['a']) camera.position.add(right.clone().multiplyScalar(-movementSpeed));
                 if (keyboardState['d']) camera.position.add(right.clone().multiplyScalar(movementSpeed));
-
-                if (isShooting) {
-                    shoot();
-                }
-
-                // Rotate the camera if right mouse button is pressed
-                if (rightMousePressed && isDragging) {
-                    const delta = event.clientX - previousMouseX;
-                    camera.rotation.y -= (delta * 0.01);
-                    previousMouseX = event.clientX;
-                }
 
                 renderer.render(scene, camera);
             }
@@ -160,43 +145,23 @@
             }
 
             function handleMouseDown(event) {
-                if (event.button === 0) { // Left mouse button
-                    isShooting = true;
-                } else if (event.button === 2) { // Right mouse button
-                    rightMousePressed = true;
+                if (event.button === 2) { // Check if right mouse button is clicked
                     isDragging = true;
                     previousMouseX = event.clientX;
                 }
             }
 
             function handleMouseMove(event) {
-                if (rightMousePressed && isDragging) {
-                    const delta = event.clientX - previousMouseX;
-                    camera.rotation.y -= (delta * 0.01);
-                    previousMouseX = event.clientX;
-                }
+                if (!isDragging) return;
+                const delta = event.clientX - previousMouseX;
+                camera.rotation.y -= (delta * 0.01); // Subtract instead of adding
+                previousMouseX = event.clientX;
             }
 
             function handleMouseUp(event) {
-                if (event.button === 0) { // Left mouse button
-                    isShooting = false;
-                } else if (event.button === 2) { // Right mouse button
-                    rightMousePressed = false;
+                if (event.button === 2) { // Check if right mouse button is released
                     isDragging = false;
-                }
-            }
-
-            function shoot() {
-                const maxShootDistance = 10; // Maximum shooting distance
-                const shootDirection = new THREE.Vector3(); // Direction to shoot
-                camera.getWorldDirection(shootDirection); // Get camera's forward direction
-                const raycaster = new THREE.Raycaster(camera.position, shootDirection);
-                const intersects = raycaster.intersectObject(target); // Check if the ray intersects with the target
-                if (intersects.length > 0 && intersects[0].distance <= maxShootDistance) {
-                    console.log("Target hit!");
-                    // You can add further actions here when the target is hit
-                } else {
-                    console.log("Missed!");
+                    event.preventDefault(); // Prevent default context menu
                 }
             }
         });
