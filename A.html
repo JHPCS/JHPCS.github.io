@@ -190,22 +190,56 @@
             }
 
             // Create particle effect when shooting
-            function createParticleEffect() {
-                const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-                const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
-                particle.position.copy(camera.position); // Position particle at camera
-                scene.add(particle);
-                particles.push(particle);
+function createParticleEffect() {
+    const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+    const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+    particle.position.copy(camera.position); // Position particle at camera
+    scene.add(particle);
+    particles.push(particle);
 
-                const velocity = new THREE.Vector3(0, 0, -1);
-                velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
+    const velocity = new THREE.Vector3(0, 0, -1);
+    velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
 
-                const speed = 0.5;
-                particle.userData.velocity = velocity.multiplyScalar(speed);
-                particle.userData.initialPosition = particle.position.clone(); // Store initial position
+    const speed = 0.5;
+    particle.userData.velocity = velocity.multiplyScalar(speed);
 
-            }
+    const gravity = new THREE.Vector3(0, -0.01, 0); // Define gravity
+    const bulletDrop = new THREE.Vector3(0, -0.005, 0); // Define bullet drop (adjust as needed)
+
+    function updatePosition() {
+        // Apply gravity and bullet drop
+        particle.userData.velocity.add(gravity).add(bulletDrop);
+        particle.position.add(particle.userData.velocity);
+
+        // Remove particle if it goes below the ground level
+        if (particle.position.y < 0) {
+            scene.remove(particle);
+            particles.splice(particles.indexOf(particle), 1);
+        }
+    }
+
+    // Update particle positions and remove them if they travel too far or below the ground
+    function update() {
+        updatePosition();
+        if (particle.position.distanceTo(particle.userData.initialPosition) > 50) {
+            scene.remove(particle);
+            particles.splice(particles.indexOf(particle), 1);
+        }
+    }
+
+    // Use the Three.js clock to ensure consistent frame rates
+    const clock = new THREE.Clock();
+    function animate() {
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        update(delta);
+        renderer.render(scene, camera);
+    }
+
+    animate();
+}
+
         });
     </script>
 </body>
