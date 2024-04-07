@@ -141,7 +141,7 @@
                 // Update particle positions and remove them if they travel too far
                 particles.forEach(particle => {
                     particle.position.add(particle.userData.velocity);
-                    if (particle.position.distanceTo(camera.position) > 10) {
+                    if (particle.position.distanceTo(particle.userData.initialPosition) > 10) {
                         scene.remove(particle);
                         particles.splice(particles.indexOf(particle), 1);
                     }
@@ -190,27 +190,22 @@
             }
 
             // Create particle effect when shooting
-function createParticleEffect() {
-    const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-    const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
-    particle.position.copy(camera.position); // Position particle at camera
-    scene.add(particle);
-    particles.push(particle);
+            function createParticleEffect() {
+                const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+                const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                particle.position.copy(camera.position); // Position particle at camera
+                scene.add(particle);
+                particles.push(particle);
 
-    const velocity = new THREE.Vector3(0, 0, -1);
-    velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
+                const velocity = new THREE.Vector3(0, 0, -1);
+                velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
 
-    const speed = 0.5;
-    particle.userData.velocity = velocity.multiplyScalar(speed);
+                const speed = 0.5;
+                particle.userData.velocity = velocity.multiplyScalar(speed);
+                particle.userData.initialPosition = particle.position.clone(); // Store initial position
 
-    // Set duration for how long the particle should last before it's removed
-    setTimeout(() => {
-        scene.remove(particle);
-        particles.splice(particles.indexOf(particle), 1);
-    }, 3000); // 3 seconds
-}
-
+            }
         });
     </script>
 </body>
