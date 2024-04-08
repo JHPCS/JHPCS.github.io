@@ -189,8 +189,7 @@
                 }
             }
 
-            // Create particle effect when shooting
-function createParticleEffect() {
+            function createParticleEffect() {
     const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
     const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
     const particle = new THREE.Mesh(particleGeometry, particleMaterial);
@@ -201,12 +200,12 @@ function createParticleEffect() {
     const velocity = new THREE.Vector3(0, 0, -1);
     velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
 
-    const speed = 0.5;
+    const speed = 2.0; // Increase the speed of the bullets
     particle.userData.velocity = velocity.multiplyScalar(speed);
     particle.userData.initialPosition = particle.position.clone(); // Store initial position
 
     const gravity = new THREE.Vector3(0, -0.01, 0); // Adjust gravity as needed
-    const timeStep = 0.1; // Adjust time step as needed
+    const timeStep = 0.03; // Decrease time step for more frequent updates
 
     // Update particle position considering bullet drop
     function updatePosition() {
@@ -224,6 +223,7 @@ function createParticleEffect() {
         }
     }, timeStep * 1000);
 }
+
 
         });
     </script>
