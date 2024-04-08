@@ -58,174 +58,140 @@
     <img src="https://imagetolink.com/ib/g5qa0vmqby.png" id="gun-image">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Set up Three.js scene
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
+       document.addEventListener("DOMContentLoaded", function() {
+    // Set up Three.js scene
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-            // Create a cube as our platform
-            const platformGeometry = new THREE.BoxGeometry(10, 1, 10);
-            const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            const platform = new THREE.Mesh(platformGeometry, platformMaterial);
-            scene.add(platform);
+    // Create a cube as our platform
+    const platformGeometry = new THREE.BoxGeometry(10, 1, 10);
+    const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+    scene.add(platform);
 
-            // Create a red target
-            const targetGeometry = new THREE.BoxGeometry(1, 1, 1);
-            const targetMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-            const target = new THREE.Mesh(targetGeometry, targetMaterial);
-            scene.add(target);
+    // Create a red target
+    const targetGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const targetMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const target = new THREE.Mesh(targetGeometry, targetMaterial);
+    scene.add(target);
 
-            // Position the target
-            target.position.set(0, 2, -5); // Adjust the position as needed
+    // Position the target
+    target.position.set(0, 2, -5); // Adjust the position as needed
 
-            // Initialize camera position
-            camera.position.set(0, 1.5, 5);
+    // Initialize camera position
+    camera.position.set(0, 1.5, 5);
 
-            // Initialize mouse movement variables
-            let isDragging = false;
-            let previousMouseX = 0;
+    // Initialize mouse movement variables
+    let isDragging = false;
+    let previousMouseX = 0;
 
-            // Keyboard state
-            const keyboardState = {
-                'w': false,
-                's': false,
-                'a': false,
-                'd': false
-            };
+    // Keyboard state
+    const keyboardState = {
+        'w': false,
+        's': false,
+        'a': false,
+        'd': false
+    };
 
-            // Shooting state
-            let isShooting = false;
+    // Shooting state
+    let isShooting = false;
 
-            // Array to hold particles
-            const particles = [];
+    // Array to hold particles
+    const particles = [];
 
-            // Keyboard event listeners
-            document.addEventListener('keydown', handleKeyDown);
-            document.addEventListener('keyup', handleKeyUp);
+    // Keyboard event listeners
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
 
-            // Handle mouse movement for turning
-            document.addEventListener('mousedown', handleMouseDown);
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
+    // Handle mouse movement for turning
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
 
-            // Prevent default context menu
-            document.addEventListener('contextmenu', function(event) {
-                event.preventDefault();
-            });
+    // Prevent default context menu
+    document.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+    });
 
-            // Main loop
-            function animate() {
-                requestAnimationFrame(animate);
+    // Main loop to update particle positions and remove them when necessary
+    function updateParticles() {
+        particles.forEach(particle => {
+            particle.position.add(particle.userData.velocity);
 
-                // Update camera position based on user input
-                const movementSpeed = 0.1;
-
-                // Move forward/backward and left/right relative to camera orientation
-                const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-                const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-
-                if (keyboardState['w']) camera.position.add(forward.clone().multiplyScalar(movementSpeed));
-                if (keyboardState['s']) camera.position.add(forward.clone().multiplyScalar(-movementSpeed));
-                if (keyboardState['a']) camera.position.add(right.clone().multiplyScalar(-movementSpeed));
-                if (keyboardState['d']) camera.position.add(right.clone().multiplyScalar(movementSpeed));
-
-                // If shooting, create a particle effect
-                if (isShooting) {
-                    createParticleEffect();
-                    isShooting = false;
-                }
-
-                // Update particle positions and remove them if they travel too far
-                particles.forEach(particle => {
-                    particle.position.add(particle.userData.velocity);
-                    if (particle.position.distanceTo(particle.userData.initialPosition) > 50) {
-                        scene.remove(particle);
-                        particles.splice(particles.indexOf(particle), 1);
-                    }
-                });
-
-                renderer.render(scene, camera);
+            // Check if particle is too far from its initial position or below ground level
+            if (particle.position.distanceTo(particle.userData.initialPosition) > 50 || particle.position.y <= 0) {
+                scene.remove(particle);
+                particles.splice(particles.indexOf(particle), 1);
             }
-
-            animate();
-
-            // Event handlers
-            function handleKeyDown(event) {
-                if (event.key in keyboardState) {
-                    keyboardState[event.key] = true;
-                }
-            }
-
-            function handleKeyUp(event) {
-                if (event.key in keyboardState) {
-                    keyboardState[event.key] = false;
-                }
-            }
-
-            function handleMouseDown(event) {
-                if (event.button === 0) { // Check if left mouse button is clicked (0 for left, 1 for middle, 2 for right)
-                    isShooting = true;
-                }
-                else if (event.button === 2) { // Check if right mouse button is clicked
-                    isDragging = true;
-                    previousMouseX = event.clientX;
-                }
-            }
-
-            function handleMouseMove(event) {
-                if (!isDragging) return;
-                const delta = event.clientX - previousMouseX;
-                camera.rotation.y -= (delta * 0.01); // Subtract instead of adding
-                previousMouseX = event.clientX;
-            }
-
-            function handleMouseUp(event) {
-                if (event.button === 2) { // Check if right mouse button is released
-                    isDragging = false;
-                    event.preventDefault(); // Prevent default context menu
-                }
-            }
-
-            function createParticleEffect() {
-    const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-    const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
-    particle.position.copy(camera.position); // Position particle at camera
-    scene.add(particle);
-    particles.push(particle);
-
-    const velocity = new THREE.Vector3(0, 0, -1);
-    velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
-
-    const speed = 2.0; // Increase the speed of the bullets
-    particle.userData.velocity = velocity.multiplyScalar(speed);
-    particle.userData.initialPosition = particle.position.clone(); // Store initial position
-
-    const gravity = new THREE.Vector3(0, -0.01, 0); // Adjust gravity as needed
-    const timeStep = 0.03; // Decrease time step for more frequent updates
-
-    // Update particle position considering bullet drop
-    function updatePosition() {
-        particle.userData.velocity.add(gravity.clone().multiplyScalar(timeStep));
-        particle.position.add(particle.userData.velocity.clone().multiplyScalar(timeStep));
+        });
     }
 
-    // Simulate bullet drop
-    const dropInterval = setInterval(() => {
-        updatePosition();
-        if (particle.position.y <= 0) {
-            clearInterval(dropInterval);
-            scene.remove(particle);
-            particles.splice(particles.indexOf(particle), 1);
+    // Main loop
+    function animate() {
+        requestAnimationFrame(animate);
+        updateParticles();
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Event handlers
+    function handleKeyDown(event) {
+        if (event.key in keyboardState) {
+            keyboardState[event.key] = true;
         }
-    }, timeStep * 1000);
-}
+    }
 
+    function handleKeyUp(event) {
+        if (event.key in keyboardState) {
+            keyboardState[event.key] = false;
+        }
+    }
 
-        });
+    function handleMouseDown(event) {
+        if (event.button === 0) { // Check if left mouse button is clicked (0 for left, 1 for middle, 2 for right)
+            isShooting = true;
+        }
+        else if (event.button === 2) { // Check if right mouse button is clicked
+            isDragging = true;
+            previousMouseX = event.clientX;
+        }
+    }
+
+    function handleMouseMove(event) {
+        if (!isDragging) return;
+        const delta = event.clientX - previousMouseX;
+        camera.rotation.y -= (delta * 0.01); // Subtract instead of adding
+        previousMouseX = event.clientX;
+    }
+
+    function handleMouseUp(event) {
+        if (event.button === 2) { // Check if right mouse button is released
+            isDragging = false;
+            event.preventDefault(); // Prevent default context menu
+        }
+    }
+
+    function createParticleEffect() {
+        const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+        const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+        particle.position.copy(camera.position); // Position particle at camera
+        scene.add(particle);
+        particles.push(particle);
+
+        const velocity = new THREE.Vector3(0, 0, -1);
+        velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
+
+        const speed = 2.0; // Increase the speed of the bullets
+        particle.userData.velocity = velocity.multiplyScalar(speed);
+        particle.userData.initialPosition = particle.position.clone(); // Store initial position
+    }
+});
+
     </script>
 </body>
 </html>
