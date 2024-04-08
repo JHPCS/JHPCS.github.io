@@ -200,7 +200,7 @@
     const velocity = new THREE.Vector3(0, 0, -1);
     velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
 
-    const speed = 0.1; // Increase the speed of the bullets
+    const speed = 0.5; // Increase the speed of the bullets
     particle.userData.velocity = velocity.multiplyScalar(speed);
     particle.userData.initialPosition = particle.position.clone(); // Store initial position
 
