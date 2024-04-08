@@ -205,7 +205,7 @@
     particle.userData.initialPosition = particle.position.clone(); // Store initial position
 
     const gravity = new THREE.Vector3(0, -0.01, 0); // Adjust gravity as needed
-    const timeStep = 0.03; // Decrease time step for more frequent updates
+    const timeStep = 0.03333; // Decrease time step for more frequent updates
 
     // Update particle position considering bullet drop
     function updatePosition() {
