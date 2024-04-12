@@ -115,22 +115,7 @@
             document.addEventListener('contextmenu', function(event) {
                 event.preventDefault();
             });
-            const targetBoundingBox = new THREE.Box3().setFromObject(target);
 
-// Check for collision between camera and target bounding box
-function checkCollision() {
-    const cameraBoundingBox = new THREE.Box3().setFromObject(camera);
-    if (cameraBoundingBox.intersectsBox(targetBoundingBox)) {
-        // Collision detected, move the camera back to its previous position
-        camera.position.copy(previousCameraPosition);
-    }
-}
-
-            // Create a bounding box for the target
-const targetBoundingBox = new THREE.Box3().setFromObject(target);
-console.log("Target Bounding Box:", targetBoundingBox);
-
-let previousCameraPosition = new THREE.Vector3();
             // Main loop
             function animate() {
                 requestAnimationFrame(animate);
@@ -162,12 +147,19 @@ let previousCameraPosition = new THREE.Vector3();
                     }
                 });
 
-                // Update target's bounding box if the target moves
-    targetBoundingBox.setFromObject(target);
+                // Check for collision between camera and target bounding box
+                const cameraBoundingBox = new THREE.Box3().setFromObject(camera);
+                const targetBoundingBox = new THREE.Box3().setFromObject(target);
+                if (cameraBoundingBox.intersectsBox(targetBoundingBox)) {
+                    // Collision detected, move the camera back to its previous position
+                    camera.position.copy(previousCameraPosition);
+                }
 
-    // Store previous camera position
-    previousCameraPosition.copy(camera.position);
-                checkCollision();
+                // Update target's bounding box if the target moves
+                targetBoundingBox.setFromObject(target);
+
+                // Store previous camera position
+                previousCameraPosition.copy(camera.position);
 
                 renderer.render(scene, camera);
             }
@@ -212,40 +204,39 @@ let previousCameraPosition = new THREE.Vector3();
             }
 
             function createParticleEffect() {
-    const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-    const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
-    particle.position.copy(camera.position); // Position particle at camera
-    scene.add(particle);
-    particles.push(particle);
+                const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+                const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                particle.position.copy(camera.position); // Position particle at camera
+                scene.add(particle);
+                particles.push(particle);
 
-    const velocity = new THREE.Vector3(0, 0, -1);
-    velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
+                const velocity = new THREE.Vector3(0, 0, -1);
+                velocity.applyQuaternion(camera.quaternion); // Apply camera's rotation to velocity
 
-    const speed = 0.5; // Increase the speed of the bullets
-    particle.userData.velocity = velocity.multiplyScalar(speed);
-    particle.userData.initialPosition = particle.position.clone(); // Store initial position
+                const speed = 0.5; // Increase the speed of the bullets
+                particle.userData.velocity = velocity.multiplyScalar(speed);
+                particle.userData.initialPosition = particle.position.clone(); // Store initial position
 
-    const gravity = new THREE.Vector3(0, -0.01, 0); // Adjust gravity as needed
-    const timeStep = 0.000001; // Decrease time step for more frequent updates
+                const gravity = new THREE.Vector3(0, -0.01, 0); // Adjust gravity as needed
+                const timeStep = 0.000001; // Decrease time step for more frequent updates
 
-    // Update particle position considering bullet drop
-    function updatePosition() {
-        particle.userData.velocity.add(gravity.clone().multiplyScalar(timeStep));
-        particle.position.add(particle.userData.velocity.clone().multiplyScalar(timeStep));
-    }
+                // Update particle position considering bullet drop
+                function updatePosition() {
+                    particle.userData.velocity.add(gravity.clone().multiplyScalar(timeStep));
+                    particle.position.add(particle.userData.velocity.clone().multiplyScalar(timeStep));
+                }
 
-    // Simulate bullet drop
-    const dropInterval = setInterval(() => {
-        updatePosition();
-        if (particle.position.y <= 0) {
-            clearInterval(dropInterval);
-            scene.remove(particle);
-            particles.splice(particles.indexOf(particle), 1);
-        }
-    }, timeStep * 1000);
-}
-
+                // Simulate bullet drop
+                const dropInterval = setInterval(() => {
+                    updatePosition();
+                    if (particle.position.y <= 0) {
+                        clearInterval(dropInterval);
+                        scene.remove(particle);
+                        particles.splice(particles.indexOf(particle), 1);
+                    }
+                }, timeStep * 1000);
+            }
 
         });
     </script>
