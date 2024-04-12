@@ -179,12 +179,13 @@
 
             function handleMouseMove(event) {
     if (!isDragging) return;
-    const delta = event.clientY - previousMouseY; // Change in Y position
-    camera.rotation.x -= (delta * 0.01); // Adjust rotation along the x-axis (pitch)
+    const delta = event.clientY - previousMouseY; // Use clientY for vertical movement
+    camera.rotation.x -= (delta * 0.01); // Adjust rotation around the x-axis
+    camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x)); // Limit vertical rotation to prevent flipping
     const deltaHorizontal = event.clientX - previousMouseX;
-    camera.rotation.y -= (deltaHorizontal * 0.01); // Adjust rotation along the y-axis (yaw)
+    camera.rotation.y -= (deltaHorizontal * 0.01); // Update rotation around the y-axis as before
     previousMouseX = event.clientX;
-    previousMouseY = event.clientY;
+    previousMouseY = event.clientY; // Update previousMouseY for next movement
 }
 
 
