@@ -121,11 +121,12 @@
 function checkCollision() {
     const cameraBoundingBox = new THREE.Box3().setFromObject(camera);
     if (cameraBoundingBox.intersectsBox(targetBoundingBox)) {
-        // Collision detected, handle it here
-        console.log("Collision with target!");
+        // Collision detected, move the camera back to its previous position
+        camera.position.copy(previousCameraPosition);
     }
 }
 
+let previousCameraPosition = new THREE.Vector3();
             // Main loop
             function animate() {
                 requestAnimationFrame(animate);
@@ -156,6 +157,9 @@ function checkCollision() {
                         particles.splice(particles.indexOf(particle), 1);
                     }
                 });
+
+                // Store previous camera position
+    previousCameraPosition.copy(camera.position);
                 checkCollision();
 
                 renderer.render(scene, camera);
