@@ -87,6 +87,8 @@
             // Initialize mouse movement variables
             let isDragging = false;
             let previousMouseX = 0;
+            let previousMouseY = 0;
+
 
             // Keyboard state
             const keyboardState = {
@@ -176,11 +178,15 @@
             }
 
             function handleMouseMove(event) {
-                if (!isDragging) return;
-                const delta = event.clientX - previousMouseX;
-                camera.rotation.y -= (delta * 0.01); // Subtract instead of adding
-                previousMouseX = event.clientX;
-            }
+    if (!isDragging) return;
+    const delta = event.clientY - previousMouseY; // Change in Y position
+    camera.rotation.x -= (delta * 0.01); // Adjust rotation along the x-axis (pitch)
+    const deltaHorizontal = event.clientX - previousMouseX;
+    camera.rotation.y -= (deltaHorizontal * 0.01); // Adjust rotation along the y-axis (yaw)
+    previousMouseX = event.clientX;
+    previousMouseY = event.clientY;
+}
+
 
             function handleMouseUp(event) {
                 if (event.button === 2) { // Check if right mouse button is released
