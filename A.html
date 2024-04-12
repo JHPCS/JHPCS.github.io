@@ -115,6 +115,16 @@
             document.addEventListener('contextmenu', function(event) {
                 event.preventDefault();
             });
+            const targetBoundingBox = new THREE.Box3().setFromObject(target);
+
+// Check for collision between camera and target bounding box
+function checkCollision() {
+    const cameraBoundingBox = new THREE.Box3().setFromObject(camera);
+    if (cameraBoundingBox.intersectsBox(targetBoundingBox)) {
+        // Collision detected, handle it here
+        console.log("Collision with target!");
+    }
+}
 
             // Main loop
             function animate() {
@@ -146,6 +156,7 @@
                         particles.splice(particles.indexOf(particle), 1);
                     }
                 });
+                checkCollision();
 
                 renderer.render(scene, camera);
             }
