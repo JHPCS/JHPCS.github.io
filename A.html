@@ -126,6 +126,10 @@ function checkCollision() {
     }
 }
 
+            // Create a bounding box for the target
+const targetBoundingBox = new THREE.Box3().setFromObject(target);
+console.log("Target Bounding Box:", targetBoundingBox);
+
 let previousCameraPosition = new THREE.Vector3();
             // Main loop
             function animate() {
@@ -158,7 +162,10 @@ let previousCameraPosition = new THREE.Vector3();
                     }
                 });
 
-                // Store previous camera position
+                // Update target's bounding box if the target moves
+    targetBoundingBox.setFromObject(target);
+
+    // Store previous camera position
     previousCameraPosition.copy(camera.position);
                 checkCollision();
 
