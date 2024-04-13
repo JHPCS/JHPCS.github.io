@@ -127,12 +127,13 @@
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
         const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
 
-        // Check collision with floor
         const proposedPosition = camera.position.clone();
+
         if (keyboardState['w']) proposedPosition.add(forward.clone().multiplyScalar(movementSpeed));
-        if (keyboardState['s']) proposedPosition.add(forward.clone().multiplyScalar(-movementSpeed));
-        if (keyboardState['a']) proposedPosition.add(right.clone().multiplyScalar(-movementSpeed));
+        if (keyboardState['s']) proposedPosition.sub(forward.clone().multiplyScalar(movementSpeed));
+        if (keyboardState['a']) proposedPosition.sub(right.clone().multiplyScalar(movementSpeed));
         if (keyboardState['d']) proposedPosition.add(right.clone().multiplyScalar(movementSpeed));
+
         if (!checkCollisionWithFloor(proposedPosition)) {
             camera.position.copy(proposedPosition);
         }
@@ -234,6 +235,7 @@
         return position.y >= 0;
     }
 });
+
 
         
     </script>
