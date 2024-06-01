@@ -8,12 +8,14 @@ const firebaseConfig = {
     appId: "YOUR_APP_ID"
 };
 
-// Initialize Firebase
+// Initialize Firebase (Compatibility version)
 firebase.initializeApp(firebaseConfig);
 
 // Now you can use Firebase services
 const db = firebase.firestore();
 const storage = firebase.storage();
+
+
 
 // Rest of your code
 document.addEventListener('DOMContentLoaded', loadScrapbook);
