@@ -9,12 +9,11 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
 
 document.addEventListener('DOMContentLoaded', loadScrapbook);
-
 document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
 
 async function loadScrapbook() {
@@ -85,8 +84,4 @@ function addPageElement(element) {
     page.className = 'page';
     page.appendChild(element);
     document.getElementById('pages').appendChild(page);
-}
-
-async function saveItem(item) {
-    await db.collection('scrapbookItems').add(item);
 }
