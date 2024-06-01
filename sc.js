@@ -1,11 +1,26 @@
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+
 document.addEventListener('DOMContentLoaded', loadScrapbook);
 
 document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
 
 async function loadScrapbook() {
-    const response = await fetch('http://localhost:3000/api/items');
-    const items = await response.json();
-    items.forEach(item => {
+    const snapshot = await db.collection('scrapbookItems').get();
+    snapshot.forEach(doc => {
+        const item = doc.data();
         let element;
         if (item.type === 'image') {
             element = document.createElement('img');
@@ -27,16 +42,16 @@ async function loadScrapbook() {
 
 async function handleImageUpload(event) {
     const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        addPageElement(img);
+    const storageRef = storage.ref('images/' + file.name);
+    await storageRef.put(file);
+    const url = await storageRef.getDownloadURL();
 
-        // Save to server
-        await saveItem({ type: 'image', content: e.target.result });
-    }
-    reader.readAsDataURL(file);
+    const img = document.createElement('img');
+    img.src = url;
+    addPageElement(img);
+
+    // Save to Firestore
+    await db.collection('scrapbookItems').add({ type: 'image', content: url });
 }
 
 async function addText() {
@@ -47,8 +62,8 @@ async function addText() {
         textElement.textContent = text;
         addPageElement(textElement);
 
-        // Save to server
-        await saveItem({ type: 'text', content: text });
+        // Save to Firestore
+        await db.collection('scrapbookItems').add({ type: 'text', content: text });
     }
 }
 
@@ -60,8 +75,8 @@ async function addVideo() {
         video.controls = true;
         addPageElement(video);
 
-        // Save to server
-        await saveItem({ type: 'video', content: url });
+        // Save to Firestore
+        await db.collection('scrapbookItems').add({ type: 'video', content: url });
     }
 }
 
@@ -73,11 +88,5 @@ function addPageElement(element) {
 }
 
 async function saveItem(item) {
-    await fetch('http://localhost:3000/api/items', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(item)
-    });
+    await db.collection('scrapbookItems').add(item);
 }
