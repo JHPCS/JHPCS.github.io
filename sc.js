@@ -1,40 +1,32 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAl6otwxebB8nIuc5LJC3WyGF9zmMAPVqc",
-  authDomain: "scrapbook-4479a.firebaseapp.com",
-  projectId: "scrapbook-4479a",
-  storageBucket: "scrapbook-4479a.appspot.com",
-  messagingSenderId: "920077054891",
-  appId: "1:920077054891:web:10afa14cb38920302dd8ee",
-  measurementId: "G-PJWS9K4TRD"
+    apiKey: "AIzaSyAl6otwxebB8nIuc5LJC3WyGF9zmMAPVqc",
+    authDomain: "scrapbook-4479a.firebaseapp.com",
+    projectId: "scrapbook-4479a",
+    storageBucket: "scrapbook-4479a.appspot.com",
+    messagingSenderId: "920077054891",
+    appId: "1:920077054891:web:10afa14cb38920302dd8ee",
+    measurementId: "G-PJWS9K4TRD"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
 // Now you can use Firebase services
-const db = firebase.firestore();
-const storage = firebase.storage();
-
-
+const db = getFirestore(app);
+const storage = getStorage(app);
 
 // Rest of your code
 document.addEventListener('DOMContentLoaded', loadScrapbook);
 document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
 
-// Other functions...
-
-
 async function loadScrapbook() {
-    const snapshot = await db.collection('scrapbookItems').get();
+    const snapshot = await getDocs(collection(db, 'scrapbookItems'));
     snapshot.forEach(doc => {
         const item = doc.data();
         let element;
@@ -58,16 +50,16 @@ async function loadScrapbook() {
 
 async function handleImageUpload(event) {
     const file = event.target.files[0];
-    const storageRef = storage.ref('images/' + file.name);
-    await storageRef.put(file);
-    const url = await storageRef.getDownloadURL();
+    const storageRef = ref(storage, 'images/' + file.name);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
 
     const img = document.createElement('img');
     img.src = url;
     addPageElement(img);
 
     // Save to Firestore
-    await db.collection('scrapbookItems').add({ type: 'image', content: url });
+    await addDoc(collection(db, 'scrapbookItems'), { type: 'image', content: url });
 }
 
 async function addText() {
@@ -79,7 +71,7 @@ async function addText() {
         addPageElement(textElement);
 
         // Save to Firestore
-        await db.collection('scrapbookItems').add({ type: 'text', content: text });
+        await addDoc(collection(db, 'scrapbookItems'), { type: 'text', content: text });
     }
 }
 
@@ -92,7 +84,7 @@ async function addVideo() {
         addPageElement(video);
 
         // Save to Firestore
-        await db.collection('scrapbookItems').add({ type: 'video', content: url });
+        await addDoc(collection(db, 'scrapbookItems'), { type: 'video', content: url });
     }
 }
 
