@@ -16,7 +16,12 @@
         <button onclick="signOut()">Sign Out</button>
     </div>
     <div id="scrapbook" style="display: none;">
-        <!-- Scrapbook content -->
+        <div id="toolbar">
+            <input type="file" id="imageUpload" accept="image/*">
+            <button onclick="addText()">Add Text</button>
+            <button onclick="addVideo()">Add Video</button>
+        </div>
+        <div id="pages"></div>
     </div>
 
     <!-- Firebase SDK scripts -->
