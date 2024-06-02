@@ -9,9 +9,11 @@ const firebaseConfig = {
     measurementId: "G-PJWS9K4TRD"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
+const auth = firebase.auth();
 
 document.addEventListener('DOMContentLoaded', loadScrapbook);
 document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
@@ -94,3 +96,81 @@ function addPageElement(element) {
     page.appendChild(element);
     document.getElementById('pages').appendChild(page);
 }
+
+
+
+// Firebase Authentication functions for Phone Authentication
+let confirmationResult;
+
+// Setup reCAPTCHA
+function setupRecaptcha() {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        'size': 'invisible',
+        'callback': function(response) {
+            // reCAPTCHA solved, allow sendVerificationCode
+            sendVerificationCode();
+        }
+    });
+}
+
+function sendVerificationCode() {
+    const phoneNumber = document.getElementById('phoneNumber').value;
+    const appVerifier = window.recaptchaVerifier;
+
+    auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+        .then(result => {
+            confirmationResult = result;
+            alert('Verification code sent');
+        }).catch(error => {
+            console.error("Error during signInWithPhoneNumber: ", error);
+            alert(error.message);
+        });
+}
+
+function verifyCode() {
+    const code = document.getElementById('verificationCode').value;
+    confirmationResult.confirm(code)
+        .then(result => {
+            const user = result.user;
+            alert('Phone number verified successfully');
+            checkUserRole();
+        }).catch(error => {
+            console.error("Error during confirmationResult.confirm: ", error);
+            alert(error.message);
+        });
+}
+
+async function signOut() {
+    try {
+        await auth.signOut();
+        alert('Sign-out successful!');
+        document.getElementById('auth').style.display = 'block';
+        document.getElementById('scrapbook').style.display = 'none';
+    } catch (error) {
+        console.error("Error signing out: ", error);
+        alert(error.message);
+    }
+}
+
+async function checkUserRole() {
+    auth.onAuthStateChanged(async user => {
+        if (user) {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            const userData = userDoc.data();
+            if (userData && userData.role === 'editor') {
+                document.getElementById('auth').style.display = 'none';
+                document.getElementById('scrapbook').style.display = 'block';
+            } else {
+                alert('You do not have permission to edit the scrapbook.');
+                signOut();
+            }
+        } else {
+            document.getElementById('auth').style.display = 'block';
+            document.getElementById('scrapbook').style.display = 'none';
+        }
+    });
+}
+
+// Call setupRecaptcha on load
+document.addEventListener('DOMContentLoaded', setupRecaptcha);
+
