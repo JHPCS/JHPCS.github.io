@@ -7,20 +7,23 @@
     <link rel="stylesheet" href="sc.css">
 </head>
 <body>
-    <div id="scrapbook">
-        <div id="toolbar">
-            <input type="file" id="imageUpload" accept="image/*">
-            <button onclick="addText()">Add Text</button>
-            <button onclick="addVideo()">Add Video</button>
-        </div>
-        <div id="pages"></div>
+    <div id="auth">
+        <input type="text" id="phoneNumber" placeholder="Phone Number">
+        <button onclick="sendVerificationCode()">Send Verification Code</button>
+        <div id="recaptcha-container"></div>
+        <input type="text" id="verificationCode" placeholder="Verification Code">
+        <button onclick="verifyCode()">Verify Code</button>
+        <button onclick="signOut()">Sign Out</button>
+    </div>
+    <div id="scrapbook" style="display: none;">
+        <!-- Scrapbook content -->
     </div>
 
-   <!-- Firebase SDK scripts (Non-Module versions) -->
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
-
+    <!-- Firebase SDK scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
 
     <!-- Your custom JavaScript file -->
     <script src="sc.js"></script>
