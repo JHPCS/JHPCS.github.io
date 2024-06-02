@@ -1,8 +1,3 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js";
-
 // Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAl6otwxebB8nIuc5LJC3WyGF9zmMAPVqc",
@@ -15,18 +10,18 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
 // Now you can use Firebase services
-const db = getFirestore(app);
-const storage = getStorage(app);
+const db = firebase.firestore();
+const storage = firebase.storage();
 
 // Rest of your code
 document.addEventListener('DOMContentLoaded', loadScrapbook);
 document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
 
 async function loadScrapbook() {
-    const snapshot = await getDocs(collection(db, 'scrapbookItems'));
+    const snapshot = await db.collection('scrapbookItems').get();
     snapshot.forEach(doc => {
         const item = doc.data();
         let element;
@@ -50,16 +45,16 @@ async function loadScrapbook() {
 
 async function handleImageUpload(event) {
     const file = event.target.files[0];
-    const storageRef = ref(storage, 'images/' + file.name);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
+    const storageRef = storage.ref('images/' + file.name);
+    await storageRef.put(file);
+    const url = await storageRef.getDownloadURL();
 
     const img = document.createElement('img');
     img.src = url;
     addPageElement(img);
 
     // Save to Firestore
-    await addDoc(collection(db, 'scrapbookItems'), { type: 'image', content: url });
+    await db.collection('scrapbookItems').add({ type: 'image', content: url });
 }
 
 async function addText() {
@@ -71,7 +66,7 @@ async function addText() {
         addPageElement(textElement);
 
         // Save to Firestore
-        await addDoc(collection(db, 'scrapbookItems'), { type: 'text', content: text });
+        await db.collection('scrapbookItems').add({ type: 'text', content: text });
     }
 }
 
@@ -84,7 +79,7 @@ async function addVideo() {
         addPageElement(video);
 
         // Save to Firestore
-        await addDoc(collection(db, 'scrapbookItems'), { type: 'video', content: url });
+        await db.collection('scrapbookItems').add({ type: 'video', content: url });
     }
 }
 
