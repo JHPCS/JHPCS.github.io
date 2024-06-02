@@ -9,14 +9,16 @@ const firebaseConfig = {
     measurementId: "G-PJWS9K4TRD"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
 const auth = firebase.auth();
 
-document.addEventListener('DOMContentLoaded', loadScrapbook);
-document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
+document.addEventListener('DOMContentLoaded', () => {
+    loadScrapbook();
+    setupRecaptcha();
+    document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
+});
 
 async function loadScrapbook() {
     try {
@@ -97,17 +99,13 @@ function addPageElement(element) {
     document.getElementById('pages').appendChild(page);
 }
 
-
-
 // Firebase Authentication functions for Phone Authentication
 let confirmationResult;
 
-// Setup reCAPTCHA
 function setupRecaptcha() {
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
         'size': 'invisible',
         'callback': function(response) {
-            // reCAPTCHA solved, allow sendVerificationCode
             sendVerificationCode();
         }
     });
@@ -170,7 +168,3 @@ async function checkUserRole() {
         }
     });
 }
-
-// Call setupRecaptcha on load
-document.addEventListener('DOMContentLoaded', setupRecaptcha);
-
