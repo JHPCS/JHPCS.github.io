@@ -15,7 +15,6 @@ const storage = firebase.storage();
 const auth = firebase.auth();
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadScrapbook();
     setupRecaptcha();
     document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
 });
@@ -128,14 +127,37 @@ function sendVerificationCode() {
 function verifyCode() {
     const code = document.getElementById('verificationCode').value;
     confirmationResult.confirm(code)
-        .then(result => {
+        .then(async result => {
             const user = result.user;
             alert('Phone number verified successfully');
-            checkUserRole();
+            await checkUserRole(user);
         }).catch(error => {
             console.error("Error during confirmationResult.confirm: ", error);
             alert(error.message);
         });
+}
+
+async function checkUserRole(user) {
+    try {
+        const phoneNumber = user.phoneNumber;
+        const userDoc = await db.collection('whitelistedNumbers').doc(phoneNumber).get();
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            if (userData.role === 'editor') {
+                document.getElementById('auth').style.display = 'none';
+                document.getElementById('scrapbook').style.display = 'block';
+                loadScrapbook();
+            } else {
+                alert('You do not have permission to edit the scrapbook.');
+                signOut();
+            }
+        } else {
+            alert('Your phone number is not whitelisted.');
+            signOut();
+        }
+    } catch (error) {
+        console.error("Error checking user role: ", error);
+    }
 }
 
 async function signOut() {
@@ -150,21 +172,5 @@ async function signOut() {
     }
 }
 
-async function checkUserRole() {
-    auth.onAuthStateChanged(async user => {
-        if (user) {
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            const userData = userDoc.data();
-            if (userData && userData.role === 'editor') {
-                document.getElementById('auth').style.display = 'none';
-                document.getElementById('scrapbook').style.display = 'block';
-            } else {
-                alert('You do not have permission to edit the scrapbook.');
-                signOut();
-            }
-        } else {
-            document.getElementById('auth').style.display = 'block';
-            document.getElementById('scrapbook').style.display = 'none';
-        }
-    });
-}
+// Call setupRecaptcha on load
+document.addEventListener('DOMContentLoaded', setupRecaptcha);
