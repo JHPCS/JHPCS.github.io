@@ -17,6 +17,7 @@ const auth = firebase.auth();
 document.addEventListener('DOMContentLoaded', () => {
     setupRecaptcha();
     document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
+    loadScrapbook();
 });
 
 async function loadScrapbook() {
@@ -104,9 +105,7 @@ let confirmationResult;
 function setupRecaptcha() {
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
         'size': 'invisible',
-        'callback': function(response) {
-            sendVerificationCode();
-        }
+        'callback': sendVerificationCode
     });
 }
 
@@ -171,6 +170,3 @@ async function signOut() {
         alert(error.message);
     }
 }
-
-// Call setupRecaptcha on load
-document.addEventListener('DOMContentLoaded', setupRecaptcha);
