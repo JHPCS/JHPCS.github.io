@@ -7,7 +7,7 @@ document.body.appendChild(renderer.domElement);
 
 // Load a PNG texture
 const textureLoader = new THREE.TextureLoader();
-const carTexture = textureLoader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/c5ccf300c00821c8d3063a60f97311cd9bfdcec7/carmaybe.png'); // Update this path to your texture
+const carTexture = textureLoader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/c5ccf300c00821c8d3063a60f97311cd9bfdcec7/carmaybe.png'); // Raw URL for the texture
 
 // Load a car model
 const loader = new THREE.GLTFLoader();
@@ -25,19 +25,18 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
     });
 
     car.scale.set(0.5, 0.5, 0.5);
+    car.position.y = 0; // Set the car's height
     scene.add(car);
 }, undefined, function (error) {
     console.error(error);
 });
 
-
-
 // Add some ambient light with higher intensity
-const ambientLight = new THREE.AmbientLight(0xffffff, 2); // Increased intensity to 2
+const ambientLight = new THREE.AmbientLight(0xffffff, 2); // Increased intensity
 scene.add(ambientLight);
 
 // Add a directional light with higher intensity
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Increased intensity to 2
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Increased intensity
 directionalLight.position.set(0, 1, 0).normalize();
 scene.add(directionalLight);
 
@@ -46,41 +45,55 @@ const pointLight = new THREE.PointLight(0xffffff, 2, 50); // Bright white point 
 pointLight.position.set(5, 5, 5); // Position it to the side of the car
 scene.add(pointLight);
 
-
-// Camera positioning
-camera.position.z = 5;
+// Camera positioning for top-down view
+camera.position.set(0, 10, 0); // Position the camera above the car
+camera.lookAt(0, 0, 0); // Look down at the car
 
 // Control variables
-let isDragging = false;
-let previousMousePosition = { x: 0, y: 0 };
+let speed = 0;
+let rotationSpeed = 0;
 
-document.addEventListener('mousedown', function(e) {
-    isDragging = true;
-});
-
-document.addEventListener('mousemove', function(e) {
-    if (isDragging) {
-        const deltaMove = {
-            x: e.offsetX - previousMousePosition.x,
-            y: e.offsetY - previousMousePosition.y
-        };
-
-        if (car) {
-            car.rotation.y += deltaMove.x * 0.01; // Rotate car on Y-axis
-            car.rotation.x += deltaMove.y * 0.01; // Rotate car on X-axis
-        }
+// Keyboard controls
+document.addEventListener('keydown', (event) => {
+    switch(event.code) {
+        case 'ArrowUp':
+            speed = 0.1; // Move forward
+            break;
+        case 'ArrowDown':
+            speed = -0.1; // Move backward
+            break;
+        case 'ArrowLeft':
+            rotationSpeed = 0.05; // Rotate left
+            break;
+        case 'ArrowRight':
+            rotationSpeed = -0.05; // Rotate right
+            break;
     }
-
-    previousMousePosition = { x: e.offsetX, y: e.offsetY };
 });
 
-document.addEventListener('mouseup', function() {
-    isDragging = false;
+document.addEventListener('keyup', (event) => {
+    switch(event.code) {
+        case 'ArrowUp':
+        case 'ArrowDown':
+            speed = 0; // Stop moving
+            break;
+        case 'ArrowLeft':
+        case 'ArrowRight':
+            rotationSpeed = 0; // Stop rotating
+            break;
+    }
 });
 
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
+
+    // Update car position and rotation
+    if (car) {
+        car.position.z += speed; // Move the car forward/backward
+        car.rotation.y += rotationSpeed; // Rotate the car
+    }
+
     renderer.render(scene, camera);
 }
 
