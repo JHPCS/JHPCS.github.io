@@ -9,7 +9,8 @@ document.body.appendChild(renderer.domElement);
 const loader = new THREE.GLTFLoader();
 let car;
 
-loader.load('https://github.com/JHPCS/JHPCS.github.io/raw/refs/heads/main/FabConvert.com_uploads_files_2792345_koenigsegg.glb', function (gltf) {
+loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478b8e2cd686aae823ab127d18dbff54/FabConvert.com_uploads_files_2792345_koenigsegg.glb
+', function (gltf) {
     car = gltf.scene;
     car.scale.set(0.5, 0.5, 0.5);
     scene.add(car);
