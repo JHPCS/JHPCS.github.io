@@ -34,7 +34,7 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
 
 // Create an orange floor
 const floorGeometry = new THREE.PlaneGeometry(100, 100); // Large plane
-const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xff964f }); // Orange material
+const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffa500 }); // Orange material
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.rotation.x = -Math.PI / 2; // Rotate to make it horizontal
 floor.position.y = 0; // Position it below the car
@@ -60,36 +60,31 @@ camera.lookAt(0, 0, 0); // Look down at the car
 
 // Control variables
 let speed = 0;
-let targetSpeed = 0;
 let rotationSpeed = 0;
-const acceleration = 0.02; // Acceleration rate
-const deceleration = 0.05; // Deceleration rate
-const maxSpeed = 1; // Maximum speed
-const rotationAcceleration = 0.01; // Rotation acceleration rate
 
 // Keyboard controls
 document.addEventListener('keydown', (event) => {
-    switch (event.code) {
+    switch(event.code) {
         case 'ArrowUp':
-            targetSpeed = maxSpeed; // Set target speed forward
+            speed = 0.1; // Move forward
             break;
         case 'ArrowDown':
-            targetSpeed = -maxSpeed; // Set target speed backward
+            speed = -0.1; // Move backward
             break;
         case 'ArrowLeft':
-            rotationSpeed = -rotationAcceleration; // Rotate left
+            rotationSpeed = 0.05; // Rotate left
             break;
         case 'ArrowRight':
-            rotationSpeed = rotationAcceleration; // Rotate right
+            rotationSpeed = -0.05; // Rotate right
             break;
     }
 });
 
 document.addEventListener('keyup', (event) => {
-    switch (event.code) {
+    switch(event.code) {
         case 'ArrowUp':
         case 'ArrowDown':
-            targetSpeed = 0; // Stop moving
+            speed = 0; // Stop moving
             break;
         case 'ArrowLeft':
         case 'ArrowRight':
@@ -102,22 +97,10 @@ document.addEventListener('keyup', (event) => {
 function animate() {
     requestAnimationFrame(animate);
 
-    // Update speed with acceleration or deceleration
-    if (targetSpeed > speed) {
-        speed += acceleration;
-        if (speed > targetSpeed) speed = targetSpeed; // Cap speed
-    } else if (targetSpeed < speed) {
-        speed -= deceleration;
-        if (speed < targetSpeed) speed = targetSpeed; // Cap speed
-    }
-
     // Update car position and rotation
     if (car) {
         car.position.z += speed; // Move the car forward/backward
         car.rotation.y += rotationSpeed; // Rotate the car
-
-        // Add slight bounce effect
-        car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02; // Bouncing effect
     }
 
     renderer.render(scene, camera);
