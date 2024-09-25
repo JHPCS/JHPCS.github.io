@@ -21,27 +21,36 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
         if (node.isMesh) {
             node.material.map = carTexture; // Apply the texture
             node.material.needsUpdate = true; // Update the material
+            node.material.emissive = new THREE.Color(0xffffff); // Make it brighter
         }
     });
 
     car.scale.set(0.5, 0.5, 0.5);
-    car.position.y = 0; // Set the car's height
+    car.position.y = 0.1; // Set the car's height slightly above the floor
     scene.add(car);
 }, undefined, function (error) {
     console.error(error);
 });
 
+// Create a white floor
+const floorGeometry = new THREE.PlaneGeometry(100, 100); // Large plane
+const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White material
+const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+floor.rotation.x = -Math.PI / 2; // Rotate to make it horizontal
+floor.position.y = 0; // Position it below the car
+scene.add(floor);
+
 // Add some ambient light with higher intensity
-const ambientLight = new THREE.AmbientLight(0xffffff, 2); // Increased intensity
+const ambientLight = new THREE.AmbientLight(0xffffff, 3); // Increased intensity
 scene.add(ambientLight);
 
 // Add a directional light with higher intensity
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Increased intensity
-directionalLight.position.set(0, 1, 0).normalize();
+const directionalLight = new THREE.DirectionalLight(0xffffff, 3); // Increased intensity
+directionalLight.position.set(0, 5, 0).normalize(); // Positioning the light above
 scene.add(directionalLight);
 
 // Add an extra point light to highlight the car from another angle
-const pointLight = new THREE.PointLight(0xffffff, 2, 50); // Bright white point light
+const pointLight = new THREE.PointLight(0xffffff, 3, 50); // Bright white point light
 pointLight.position.set(5, 5, 5); // Position it to the side of the car
 scene.add(pointLight);
 
