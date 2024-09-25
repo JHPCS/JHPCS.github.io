@@ -18,14 +18,20 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/main/upload
 });
 
 
-// Add some ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+// Add some ambient light with higher intensity
+const ambientLight = new THREE.AmbientLight(0xffffff, 2); // Increased intensity to 2
 scene.add(ambientLight);
 
-// Add a directional light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+// Add a directional light with higher intensity
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Increased intensity to 2
 directionalLight.position.set(0, 1, 0).normalize();
 scene.add(directionalLight);
+
+// Add an extra point light to highlight the car from another angle
+const pointLight = new THREE.PointLight(0xffffff, 2, 50); // Bright white point light
+pointLight.position.set(5, 5, 5); // Position it to the side of the car
+scene.add(pointLight);
+
 
 // Camera positioning
 camera.position.z = 5;
