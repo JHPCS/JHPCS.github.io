@@ -5,12 +5,25 @@ const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canv
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Load a PNG texture
+const textureLoader = new THREE.TextureLoader();
+const carTexture = textureLoader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/c5ccf300c00821c8d3063a60f97311cd9bfdcec7/carmaybe.png'); // Update this path to your texture
+
 // Load a car model
 const loader = new THREE.GLTFLoader();
 let car;
 
 loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478b8e2cd686aae823ab127d18dbff54/FabConvert.com_uploads_files_2792345_koenigsegg.glb', function (gltf) {
     car = gltf.scene;
+
+    // Apply texture to car's material
+    car.traverse(function (node) {
+        if (node.isMesh) {
+            node.material.map = carTexture; // Apply the texture
+            node.material.needsUpdate = true; // Update the material
+        }
+    });
+
     car.scale.set(0.5, 0.5, 0.5);
     scene.add(car);
 }, undefined, function (error) {
