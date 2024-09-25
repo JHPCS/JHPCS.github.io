@@ -32,9 +32,9 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
     console.error(error);
 });
 
-// Create a white floor
+// Create an orange floor
 const floorGeometry = new THREE.PlaneGeometry(100, 100); // Large plane
-const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White material
+const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffa500 }); // Orange material
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.rotation.x = -Math.PI / 2; // Rotate to make it horizontal
 floor.position.y = 0; // Position it below the car
@@ -54,8 +54,8 @@ const pointLight = new THREE.PointLight(0xffffff, 3, 50); // Bright white point 
 pointLight.position.set(5, 5, 5); // Position it to the side of the car
 scene.add(pointLight);
 
-// Camera positioning for top-down view
-camera.position.set(0, 10, 0); // Position the camera above the car
+// Camera positioning for higher angle view
+camera.position.set(5, 10, 5); // Position the camera higher and angled
 camera.lookAt(0, 0, 0); // Look down at the car
 
 // Control variables
