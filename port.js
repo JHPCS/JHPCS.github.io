@@ -9,13 +9,14 @@ document.body.appendChild(renderer.domElement);
 const loader = new THREE.GLTFLoader();
 let car;
 
-loader.load('https://github.com/JHPCS/JHPCS.github.io/blob/d6a11044b99d6076ff587a5b1c44c3632216de9c/uploads_files_2792345_Koenigsegg.glb', function (gltf) {
+loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/main/uploads_files_2792345_Koenigsegg.glb', function (gltf) {
     car = gltf.scene;
-    car.scale.set(0.5, 0.5, 0.5); // Scale the car model
+    car.scale.set(0.5, 0.5, 0.5);
     scene.add(car);
 }, undefined, function (error) {
     console.error(error);
 });
+
 
 // Add some ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
