@@ -7,7 +7,7 @@ document.body.appendChild(renderer.domElement);
 
 // Load a PNG texture
 const textureLoader = new THREE.TextureLoader();
-const carTexture = textureLoader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/c5ccf300c00821c8d3063a60f97311cd9bfdcec7/carmaybe.png'); // Raw URL for the texture
+const carTexture = textureLoader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/c5ccf300c00821c8d3063a60f97311cd9bfdcec7/carmaybe.png');
 
 // Load a car model
 const loader = new THREE.GLTFLoader();
@@ -19,25 +19,25 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
     // Apply texture to car's material
     car.traverse(function (node) {
         if (node.isMesh) {
-            node.material.map = carTexture; // Apply the texture
-            node.material.needsUpdate = true; // Update the material
-            node.material.emissive = new THREE.Color(0xffffff); // Make it brighter
+            node.material.map = carTexture; // Apply texture to the car model
+            node.material.emissiveIntensity = 0; // Turn off emissive light to avoid the white look
+            node.material.needsUpdate = true;
         }
     });
 
     car.scale.set(0.5, 0.5, 0.5);
-    car.position.y = 0.1; // Set the car's height slightly above the floor
+    car.position.y = 0.1; // Set the car slightly above the floor
     scene.add(car);
 }, undefined, function (error) {
     console.error(error);
 });
 
-// Create an orange floor
+// Create an orange floor (#ff964f)
 const floorGeometry = new THREE.PlaneGeometry(100, 100); // Large plane
-const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffa500 }); // Orange material
+const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xff964f }); // Set floor to #ff964f
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-floor.rotation.x = -Math.PI / 2; // Rotate to make it horizontal
-floor.position.y = 0; // Position it below the car
+floor.rotation.x = -Math.PI / 2; // Make the floor horizontal
+floor.position.y = 0; // Position it at ground level
 scene.add(floor);
 
 // Add some ambient light with higher intensity
@@ -46,19 +46,19 @@ scene.add(ambientLight);
 
 // Add a directional light with higher intensity
 const directionalLight = new THREE.DirectionalLight(0xffffff, 3); // Increased intensity
-directionalLight.position.set(0, 5, 0).normalize(); // Positioning the light above
+directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
 
 // Add an extra point light to highlight the car from another angle
-const pointLight = new THREE.PointLight(0xffffff, 3, 50); // Bright white point light
-pointLight.position.set(5, 5, 5); // Position it to the side of the car
+const pointLight = new THREE.PointLight(0xffffff, 3, 50);
+pointLight.position.set(5, 5, 5);
 scene.add(pointLight);
 
 // Camera positioning for higher angle view
 camera.position.set(5, 10, 5); // Position the camera higher and angled
 camera.lookAt(0, 0, 0); // Look down at the car
 
-// Control variables
+// Control variables for car movement
 let speed = 0;
 let targetSpeed = 0;
 let rotationSpeed = 0;
