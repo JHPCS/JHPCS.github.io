@@ -19,8 +19,8 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
     car.traverse(function (node) {
         if (node.isMesh) {
             node.material.map = carTexture;
-            node.material.roughness = 1; // Make the car less shiny
-            node.material.metalness = 0.3; // Add slight metallic reflection (you can adjust this)
+            node.material.roughness = 0.3; // Make the car less shiny
+            node.material.metalness = 0.1; // Add slight metallic reflection (you can adjust this)
             node.material.needsUpdate = true;
         }
     });
@@ -49,7 +49,7 @@ beam.position.set(2, 10, 0); // Place it somewhere near the car
 scene.add(beam);
 
 // Adjust the lighting (lower ambient intensity)
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Reduced ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Reduced ambient light
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 3); // Stronger directional light
