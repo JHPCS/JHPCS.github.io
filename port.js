@@ -20,7 +20,7 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
     car.traverse(function (node) {
         if (node.isMesh) {
             node.material.map = carTexture;
-            node.material.emissiveIntensity = 0;
+            node.material.emissiveIntensity = 1;
             node.material.needsUpdate = true;
         }
     });
@@ -125,7 +125,7 @@ function animate() {
         car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02;
 
         // Update camera position to follow the car
-        const cameraOffset = new THREE.Vector3(0, 5, 10); // Camera follows from above and behind
+        const cameraOffset = new THREE.Vector3(0, 15, 30); // Camera follows from above and behind
         const carPosition = new THREE.Vector3();
         car.getWorldPosition(carPosition); // Get the car's current position
         camera.position.copy(carPosition).add(cameraOffset); // Position the camera relative to the car
