@@ -20,7 +20,7 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
     car.traverse(function (node) {
         if (node.isMesh) {
             node.material.map = carTexture;
-            node.material.emissiveIntensity = 1;
+            node.material.emissiveIntensity = 0;
             node.material.needsUpdate = true;
         }
     });
@@ -47,11 +47,11 @@ const beam = new THREE.Mesh(beamGeometry, beamMaterial);
 beam.position.set(2, 10, 0); // Place it somewhere near the car
 scene.add(beam);
 
-// Adjust the lighting (lowered intensity)
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Lower intensity
+// Adjust the lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Reduced intensity to avoid washing out textures
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Adjusted intensity to not wash out colors
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Strong directional light
 directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
 
@@ -78,10 +78,10 @@ document.addEventListener('keydown', (event) => {
             targetSpeed = -maxSpeed;
             break;
         case 'ArrowLeft':
-            rotationSpeed = rotationAcceleration; // Inverted for correct direction
+            rotationSpeed = rotationAcceleration; // Corrected direction
             break;
         case 'ArrowRight':
-            rotationSpeed = -rotationAcceleration; // Inverted for correct direction
+            rotationSpeed = -rotationAcceleration; // Corrected direction
             break;
     }
 });
@@ -99,6 +99,19 @@ document.addEventListener('keyup', (event) => {
     }
 });
 
+// Smooth camera follow function
+function smoothCameraFollow(car, camera, offset, damping) {
+    const carPosition = new THREE.Vector3();
+    car.getWorldPosition(carPosition); // Get the car's current position
+
+    const desiredPosition = new THREE.Vector3();
+    desiredPosition.copy(carPosition).add(offset); // Calculate desired camera position based on car
+
+    // Smoothly interpolate between the current camera position and the desired position
+    camera.position.lerp(desiredPosition, damping);
+    camera.lookAt(carPosition); // Ensure the camera is always looking at the car
+}
+
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
@@ -113,7 +126,7 @@ function animate() {
             if (speed < targetSpeed) speed = targetSpeed;
         }
 
-        // Update car position and rotation
+        // Update car rotation
         car.rotation.y += rotationSpeed;
 
         // Calculate forward movement based on car's rotation
@@ -124,12 +137,9 @@ function animate() {
         // Add slight bounce effect
         car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02;
 
-        // Update camera position to follow the car
+        // Smooth camera follow with a small damping factor for smoother movement
         const cameraOffset = new THREE.Vector3(0, 15, 30); // Camera follows from above and behind
-        const carPosition = new THREE.Vector3();
-        car.getWorldPosition(carPosition); // Get the car's current position
-        camera.position.copy(carPosition).add(cameraOffset); // Position the camera relative to the car
-        camera.lookAt(carPosition); // Ensure the camera is always looking at the car
+        smoothCameraFollow(car, camera, cameraOffset, 0.05);
     }
 
     renderer.render(scene, camera);
