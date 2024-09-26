@@ -19,33 +19,33 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
     // Apply texture to car's material
     car.traverse(function (node) {
         if (node.isMesh) {
-            node.material.map = carTexture; // Apply texture to the car model
-            node.material.emissiveIntensity = 0; // Turn off emissive light to avoid the white look
+            node.material.map = carTexture;
+            node.material.emissiveIntensity = 0;
             node.material.needsUpdate = true;
         }
     });
 
     car.scale.set(0.5, 0.5, 0.5);
-    car.position.y = 0.1; // Set the car slightly above the floor
+    car.position.y = 0.1;
     scene.add(car);
 }, undefined, function (error) {
     console.error(error);
 });
 
 // Create an orange floor (#ff964f)
-const floorGeometry = new THREE.PlaneGeometry(100, 100); // Large plane
-const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xff964f }); // Set floor to #ff964f
+const floorGeometry = new THREE.PlaneGeometry(100, 100);
+const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xff964f });
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-floor.rotation.x = -Math.PI / 2; // Make the floor horizontal
-floor.position.y = 0; // Position it at ground level
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = 0;
 scene.add(floor);
 
 // Add some ambient light with higher intensity
-const ambientLight = new THREE.AmbientLight(0xffffff, 3); // Increased intensity
+const ambientLight = new THREE.AmbientLight(0xffffff, 3);
 scene.add(ambientLight);
 
 // Add a directional light with higher intensity
-const directionalLight = new THREE.DirectionalLight(0xffffff, 3); // Increased intensity
+const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
 directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
 
@@ -55,32 +55,32 @@ pointLight.position.set(5, 5, 5);
 scene.add(pointLight);
 
 // Camera positioning for higher angle view
-camera.position.set(5, 10, 5); // Position the camera higher and angled
-camera.lookAt(0, 0, 0); // Look down at the car
+camera.position.set(5, 10, 5);
+camera.lookAt(0, 0, 0);
 
 // Control variables for car movement
 let speed = 0;
 let targetSpeed = 0;
 let rotationSpeed = 0;
-const acceleration = 0.02; // Acceleration rate
-const deceleration = 0.05; // Deceleration rate
-const maxSpeed = 1; // Maximum speed
-const rotationAcceleration = 0.01; // Rotation acceleration rate
+const acceleration = 0.02;
+const deceleration = 0.05;
+const maxSpeed = 1;
+const rotationAcceleration = 0.03;
 
 // Keyboard controls
 document.addEventListener('keydown', (event) => {
     switch (event.code) {
         case 'ArrowUp':
-            targetSpeed = maxSpeed; // Set target speed forward
+            targetSpeed = maxSpeed;
             break;
         case 'ArrowDown':
-            targetSpeed = -maxSpeed; // Set target speed backward
+            targetSpeed = -maxSpeed;
             break;
         case 'ArrowLeft':
-            rotationSpeed = -rotationAcceleration; // Rotate left
+            rotationSpeed = -rotationAcceleration;
             break;
         case 'ArrowRight':
-            rotationSpeed = rotationAcceleration; // Rotate right
+            rotationSpeed = rotationAcceleration;
             break;
     }
 });
@@ -89,11 +89,11 @@ document.addEventListener('keyup', (event) => {
     switch (event.code) {
         case 'ArrowUp':
         case 'ArrowDown':
-            targetSpeed = 0; // Stop moving
+            targetSpeed = 0;
             break;
         case 'ArrowLeft':
         case 'ArrowRight':
-            rotationSpeed = 0; // Stop rotating
+            rotationSpeed = 0;
             break;
     }
 });
@@ -102,22 +102,26 @@ document.addEventListener('keyup', (event) => {
 function animate() {
     requestAnimationFrame(animate);
 
-    // Update speed with acceleration or deceleration
-    if (targetSpeed > speed) {
-        speed += acceleration;
-        if (speed > targetSpeed) speed = targetSpeed; // Cap speed
-    } else if (targetSpeed < speed) {
-        speed -= deceleration;
-        if (speed < targetSpeed) speed = targetSpeed; // Cap speed
-    }
-
-    // Update car position and rotation
     if (car) {
-        car.position.z += speed; // Move the car forward/backward
-        car.rotation.y += rotationSpeed; // Rotate the car
+        // Update speed with acceleration or deceleration
+        if (targetSpeed > speed) {
+            speed += acceleration;
+            if (speed > targetSpeed) speed = targetSpeed;
+        } else if (targetSpeed < speed) {
+            speed -= deceleration;
+            if (speed < targetSpeed) speed = targetSpeed;
+        }
+
+        // Update car position and rotation
+        car.rotation.y += rotationSpeed;
+
+        // Calculate forward movement based on car's rotation
+        const direction = new THREE.Vector3();
+        car.getWorldDirection(direction); // Get car's forward direction
+        car.position.addScaledVector(direction, speed); // Move in the forward direction
 
         // Add slight bounce effect
-        car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02; // Bouncing effect
+        car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02;
     }
 
     renderer.render(scene, camera);
