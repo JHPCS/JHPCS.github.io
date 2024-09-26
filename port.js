@@ -63,11 +63,10 @@ scene.add(pointLight);
 let speed = 0;
 let targetSpeed = 0;
 let rotationSpeed = 0;
-const acceleration = 0.05; // Increased acceleration for quicker response
-const deceleration = 0.1; // Increased deceleration for more realistic stop
-const maxSpeed = 2; // Maximum speed for the car
-const rotationAcceleration = 0.1; // Higher for better turning control
-const drag = 0.02; // Simulates air resistance
+const acceleration = 0.02;
+const deceleration = 0.05;
+const maxSpeed = 1;
+const rotationAcceleration = 0.03;
 
 // Keyboard controls
 document.addEventListener('keydown', (event) => {
@@ -76,13 +75,13 @@ document.addEventListener('keydown', (event) => {
             targetSpeed = maxSpeed;
             break;
         case 'ArrowDown':
-            targetSpeed = -maxSpeed / 2; // Reverse at lower speed
+            targetSpeed = -maxSpeed;
             break;
         case 'ArrowLeft':
-            rotationSpeed = rotationAcceleration; // Positive for turning left
+            rotationSpeed = rotationAcceleration; // Inverted for correct direction
             break;
         case 'ArrowRight':
-            rotationSpeed = -rotationAcceleration; // Negative for turning right
+            rotationSpeed = -rotationAcceleration; // Inverted for correct direction
             break;
     }
 });
@@ -91,11 +90,11 @@ document.addEventListener('keyup', (event) => {
     switch (event.code) {
         case 'ArrowUp':
         case 'ArrowDown':
-            targetSpeed = 0; // Let the drag slow down the car
+            targetSpeed = 0;
             break;
         case 'ArrowLeft':
         case 'ArrowRight':
-            rotationSpeed = 0; // Stop rotation when the key is released
+            rotationSpeed = 0;
             break;
     }
 });
@@ -105,15 +104,6 @@ function animate() {
     requestAnimationFrame(animate);
 
     if (car) {
-        // Apply drag when the car is in motion
-        if (speed > 0) {
-            speed -= drag;
-            if (speed < 0) speed = 0; // Prevent going backward
-        } else if (speed < 0) {
-            speed += drag;
-            if (speed > 0) speed = 0; // Prevent going forward
-        }
-
         // Update speed with acceleration or deceleration
         if (targetSpeed > speed) {
             speed += acceleration;
@@ -144,7 +134,6 @@ function animate() {
 
     renderer.render(scene, camera);
 }
-
 
 animate();
 
