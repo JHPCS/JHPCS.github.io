@@ -59,10 +59,6 @@ const pointLight = new THREE.PointLight(0xffffff, 2, 50);
 pointLight.position.set(5, 5, 5);
 scene.add(pointLight);
 
-// Camera positioning for higher angle view
-camera.position.set(5, 10, 5);
-camera.lookAt(0, 0, 0);
-
 // Control variables for car movement
 let speed = 0;
 let targetSpeed = 0;
@@ -127,6 +123,13 @@ function animate() {
 
         // Add slight bounce effect
         car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02;
+
+        // Update camera position to follow the car
+        const cameraOffset = new THREE.Vector3(0, 5, 10); // Camera follows from above and behind
+        const carPosition = new THREE.Vector3();
+        car.getWorldPosition(carPosition); // Get the car's current position
+        camera.position.copy(carPosition).add(cameraOffset); // Position the camera relative to the car
+        camera.lookAt(carPosition); // Ensure the camera is always looking at the car
     }
 
     renderer.render(scene, camera);
