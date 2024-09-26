@@ -21,7 +21,7 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
         if (node.isMesh) {
             node.material.map = carTexture; // Apply the texture
             node.material.needsUpdate = true; // Update the material
-            node.material.emissive = new THREE.Color(0xff964f); // Make it brighter
+            node.material.emissive = new THREE.Color(0xffffff); // Make it brighter
         }
     });
 
@@ -34,7 +34,7 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
 
 // Create an orange floor
 const floorGeometry = new THREE.PlaneGeometry(100, 100); // Large plane
-const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffa500 }); // Orange material
+const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xff964f }); // Orange material
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.rotation.x = -Math.PI / 2; // Rotate to make it horizontal
 floor.position.y = 0; // Position it below the car
