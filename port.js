@@ -40,17 +40,15 @@ floor.rotation.x = -Math.PI / 2;
 floor.position.y = 0;
 scene.add(floor);
 
-// Add some ambient light with higher intensity
-const ambientLight = new THREE.AmbientLight(0xffffff, 3);
+// Adjust the lighting (lowered intensity)
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Lower intensity
 scene.add(ambientLight);
 
-// Add a directional light with higher intensity
-const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Adjusted intensity to not wash out colors
 directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
 
-// Add an extra point light to highlight the car from another angle
-const pointLight = new THREE.PointLight(0xffffff, 3, 50);
+const pointLight = new THREE.PointLight(0xffffff, 2, 50);
 pointLight.position.set(5, 5, 5);
 scene.add(pointLight);
 
@@ -77,10 +75,10 @@ document.addEventListener('keydown', (event) => {
             targetSpeed = -maxSpeed;
             break;
         case 'ArrowLeft':
-            rotationSpeed = -rotationAcceleration;
+            rotationSpeed = rotationAcceleration; // Inverted for correct direction
             break;
         case 'ArrowRight':
-            rotationSpeed = rotationAcceleration;
+            rotationSpeed = -rotationAcceleration; // Inverted for correct direction
             break;
     }
 });
