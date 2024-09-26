@@ -40,6 +40,13 @@ floor.rotation.x = -Math.PI / 2;
 floor.position.y = 0;
 scene.add(floor);
 
+// Add a vertical beam
+const beamGeometry = new THREE.CylinderGeometry(0.1, 0.1, 20, 32); // Tall cylinder
+const beamMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00, emissive: 0x00ff00, emissiveIntensity: 1 }); // Bright green beam
+const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+beam.position.set(2, 10, 0); // Place it somewhere near the car
+scene.add(beam);
+
 // Adjust the lighting (lowered intensity)
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Lower intensity
 scene.add(ambientLight);
