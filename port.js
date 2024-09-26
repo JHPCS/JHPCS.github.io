@@ -49,7 +49,7 @@ beam.position.set(2, 10, 0); // Place it somewhere near the car
 scene.add(beam);
 
 // Adjust the lighting (lower ambient intensity)
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Reduced ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0); // Reduced ambient light
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 3); // Stronger directional light
