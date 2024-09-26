@@ -48,7 +48,7 @@ beam.position.set(2, 10, 0); // Place it somewhere near the car
 scene.add(beam);
 
 // Adjust the lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Reduced intensity to avoid washing out textures
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Reduced intensity
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Strong directional light
@@ -99,19 +99,6 @@ document.addEventListener('keyup', (event) => {
     }
 });
 
-// Smooth camera follow function
-function smoothCameraFollow(car, camera, offset, damping) {
-    const carPosition = new THREE.Vector3();
-    car.getWorldPosition(carPosition); // Get the car's current position
-
-    const desiredPosition = new THREE.Vector3();
-    desiredPosition.copy(carPosition).add(offset); // Calculate desired camera position based on car
-
-    // Smoothly interpolate between the current camera position and the desired position
-    camera.position.lerp(desiredPosition, damping);
-    camera.lookAt(carPosition); // Ensure the camera is always looking at the car
-}
-
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
@@ -137,9 +124,9 @@ function animate() {
         // Add slight bounce effect
         car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02;
 
-        // Smooth camera follow with a small damping factor for smoother movement
-        const cameraOffset = new THREE.Vector3(0, 15, 30); // Camera follows from above and behind
-        smoothCameraFollow(car, camera, cameraOffset, 0.05);
+        // Camera fixed position (top-down perspective)
+        camera.position.set(0, 15, 30); // Adjust as needed for angle
+        camera.lookAt(car.position); // Ensure the camera is always looking at the car
     }
 
     renderer.render(scene, camera);
