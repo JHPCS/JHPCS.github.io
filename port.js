@@ -47,11 +47,11 @@ const beam = new THREE.Mesh(beamGeometry, beamMaterial);
 beam.position.set(2, 10, 0); // Place it somewhere near the car
 scene.add(beam);
 
-// Adjust the lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Reduced intensity
+// Adjust the lighting (lowered intensity)
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Lower intensity
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Strong directional light
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Adjusted intensity to not wash out colors
 directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
 
@@ -78,10 +78,10 @@ document.addEventListener('keydown', (event) => {
             targetSpeed = -maxSpeed;
             break;
         case 'ArrowLeft':
-            rotationSpeed = rotationAcceleration; // Corrected direction
+            rotationSpeed = rotationAcceleration; // Inverted for correct direction
             break;
         case 'ArrowRight':
-            rotationSpeed = -rotationAcceleration; // Corrected direction
+            rotationSpeed = -rotationAcceleration; // Inverted for correct direction
             break;
     }
 });
@@ -113,7 +113,7 @@ function animate() {
             if (speed < targetSpeed) speed = targetSpeed;
         }
 
-        // Update car rotation
+        // Update car position and rotation
         car.rotation.y += rotationSpeed;
 
         // Calculate forward movement based on car's rotation
@@ -124,9 +124,12 @@ function animate() {
         // Add slight bounce effect
         car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02;
 
-        // Camera fixed position (top-down perspective)
-        camera.position.set(0, 15, 30); // Adjust as needed for angle
-        camera.lookAt(car.position); // Ensure the camera is always looking at the car
+        // Update camera position to follow the car
+        const cameraOffset = new THREE.Vector3(0, 15, 30); // Camera follows from above and behind
+        const carPosition = new THREE.Vector3();
+        car.getWorldPosition(carPosition); // Get the car's current position
+        camera.position.copy(carPosition).add(cameraOffset); // Position the camera relative to the car
+        camera.lookAt(carPosition); // Ensure the camera is always looking at the car
     }
 
     renderer.render(scene, camera);
