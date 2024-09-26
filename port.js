@@ -16,11 +16,11 @@ let car;
 loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478b8e2cd686aae823ab127d18dbff54/FabConvert.com_uploads_files_2792345_koenigsegg.glb', function (gltf) {
     car = gltf.scene;
 
+    // Apply texture to car's material
     car.traverse(function (node) {
         if (node.isMesh) {
             node.material.map = carTexture;
-            node.material.roughness = 0.3; // Make the car less shiny
-            node.material.metalness = 0.1; // Add slight metallic reflection (you can adjust this)
+            node.material.emissiveIntensity = 0;
             node.material.needsUpdate = true;
         }
     });
@@ -31,7 +31,6 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
 }, undefined, function (error) {
     console.error(error);
 });
-
 
 // Create an orange floor (#ff964f)
 const floorGeometry = new THREE.PlaneGeometry(100, 100);
@@ -48,14 +47,13 @@ const beam = new THREE.Mesh(beamGeometry, beamMaterial);
 beam.position.set(2, 10, 0); // Place it somewhere near the car
 scene.add(beam);
 
-// Adjust the lighting (lower ambient intensity)
-const ambientLight = new THREE.AmbientLight(0xffffff, 0); // Reduced ambient light
+// Adjust the lighting (lowered intensity)
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Lower intensity
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 3); // Stronger directional light
-directionalLight.position.set(0, 5, 5).normalize();
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Adjusted intensity to not wash out colors
+directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
-
 
 const pointLight = new THREE.PointLight(0xffffff, 2, 50);
 pointLight.position.set(5, 5, 5);
