@@ -16,14 +16,14 @@ let car;
 loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478b8e2cd686aae823ab127d18dbff54/FabConvert.com_uploads_files_2792345_koenigsegg.glb', function (gltf) {
     car = gltf.scene;
 
-    // Apply texture to car's material
-    car.traverse(function (node) {
-        if (node.isMesh) {
-            node.material.map = carTexture;
-            node.material.emissiveIntensity = 0;
-            node.material.needsUpdate = true;
-        }
-    });
+car.traverse(function (node) {
+    if (node.isMesh) {
+        console.log(node); // Check if the texture is applied to each mesh
+        node.material.map = carTexture; // Ensure the texture is applied
+        node.material.needsUpdate = true; // Force material update
+    }
+});
+
 
     car.scale.set(0.5, 0.5, 0.5);
     car.position.y = 0.1;
