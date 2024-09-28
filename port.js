@@ -1,4 +1,4 @@
-// Basic Three.js setup
+// Existing Three.js setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
@@ -67,7 +67,6 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
 
-
 // Control variables for car movement
 let speed = 0;
 let targetSpeed = 0;
@@ -126,6 +125,55 @@ document.addEventListener('keyup', (event) => {
             break;
     }
 });
+
+// Mobile touch controls
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+document.addEventListener('touchstart', (event) => {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+}, false);
+
+document.addEventListener('touchmove', (event) => {
+    touchEndX = event.touches[0].clientX;
+    touchEndY = event.touches[0].clientY;
+
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+
+    // Set forward/backward movement
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        if (deltaY < 0) {
+            keys.forward = true;
+            keys.backward = false;
+        } else {
+            keys.forward = false;
+            keys.backward = true;
+        }
+    }
+
+    // Set left/right rotation
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX < 0) {
+            keys.left = true;
+            keys.right = false;
+        } else {
+            keys.left = false;
+            keys.right = true;
+        }
+    }
+}, false);
+
+document.addEventListener('touchend', () => {
+    // Reset movement keys when touch ends
+    keys.forward = false;
+    keys.backward = false;
+    keys.left = false;
+    keys.right = false;
+}, false);
 
 // Function to update speed and rotation
 function updateMovement() {
