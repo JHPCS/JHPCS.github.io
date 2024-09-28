@@ -1,37 +1,3 @@
-// Basic Three.js setup
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-// Load a PNG texture
-const textureLoader = new THREE.TextureLoader();
-const carTexture = textureLoader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/c5ccf300c00821c8d3063a60f97311cd9bfdcec7/carmaybe.png');
-
-// Load a car model
-const loader = new THREE.GLTFLoader();
-let car;
-
-loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478b8e2cd686aae823ab127d18dbff54/FabConvert.com_uploads_files_2792345_koenigsegg.glb', function (gltf) {
-    car = gltf.scene;
-
-car.traverse(function (node) {
-    if (node.isMesh) {
-        console.log(node); // Check if the texture is applied to each mesh
-        node.material.map = carTexture; // Ensure the texture is applied
-        node.material.needsUpdate = true; // Force material update
-    }
-});
-
-
-    car.scale.set(0.5, 0.5, 0.5);
-    car.position.y = 0.1;
-    scene.add(car);
-}, undefined, function (error) {
-    console.error(error);
-});
-
 // Create an orange floor (#ff964f)
 const floorGeometry = new THREE.PlaneGeometry(100, 100);
 const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xff964f });
@@ -40,24 +6,58 @@ floor.rotation.x = -Math.PI / 2;
 floor.position.y = 0;
 scene.add(floor);
 
-// Add a vertical beam
+// Add a green vertical beam with emissive lighting
 const beamGeometry = new THREE.CylinderGeometry(0.1, 0.1, 20, 32); // Tall cylinder
-const beamMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00, emissive: 0x00ff00, emissiveIntensity: 1 }); // Bright green beam
+const beamMaterial = new THREE.MeshStandardMaterial({
+    color: 0x00ff00,
+    emissive: 0x00ff00,
+    emissiveIntensity: 5 // Higher emissive intensity for brightness
+});
 const beam = new THREE.Mesh(beamGeometry, beamMaterial);
 beam.position.set(2, 10, 0); // Place it somewhere near the car
 scene.add(beam);
 
-// Adjust the lighting (lowered intensity)
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Lower intensity
+// Add a Point Light at the beam position to simulate the beam casting light
+const beamLight = new THREE.PointLight(0x00ff00, 2, 50); // Green light
+beamLight.position.set(2, 10, 0); // Same position as the beam
+scene.add(beamLight);
+
+// Adjust the car's material to react to lighting
+loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478b8e2cd686aae823ab127d18dbff54/FabConvert.com_uploads_files_2792345_koenigsegg.glb', function (gltf) {
+    car = gltf.scene;
+
+    car.traverse(function (node) {
+        if (node.isMesh) {
+            node.material = new THREE.MeshStandardMaterial({ 
+                map: carTexture, 
+                metalness: 0.5, // Reflective metalness for better lighting effects
+                roughness: 0.3 // Slightly smooth surface to reflect light
+            });
+            node.material.needsUpdate = true;
+        }
+    });
+
+    car.scale.set(0.5, 0.5, 0.5);
+    car.position.y = 0.1;
+    scene.add(car);
+}, undefined, function (error) {
+    console.error(error);
+});
+
+// Ambient light to softly illuminate the whole scene
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); // Lower ambient light to prevent washing out colors
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Adjusted intensity to not wash out colors
+// Directional light to provide general lighting
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
 directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
 
-const pointLight = new THREE.PointLight(0xffffff, 2, 50);
+// Point light to simulate a light source near the car
+const pointLight = new THREE.PointLight(0xffffff, 1, 50);
 pointLight.position.set(5, 5, 5);
 scene.add(pointLight);
+
 
 // Control variables for car movement
 let speed = 0;
