@@ -68,55 +68,63 @@ const deceleration = 0.05;
 const maxSpeed = 1;
 const maxRotationSpeed = 0.03; // Max turning speed when at full speed
 
+// State of the controls
+const keys = {
+    forward: false,
+    backward: false,
+    left: false,
+    right: false
+};
+
 // Keyboard controls
 document.addEventListener('keydown', (event) => {
     switch (event.code) {
         // Accelerate forward (W and Arrow Up)
         case 'ArrowUp':
         case 'KeyW':
-            targetSpeed = maxSpeed;
+            keys.forward = true;
             break;
         
         // Reverse (S and Arrow Down)
         case 'ArrowDown':
         case 'KeyS':
-            targetSpeed = -maxSpeed;
+            keys.backward = true;
             break;
 
-        // Turn left (A and Arrow Left) - Only effective when moving
+        // Turn left (A and Arrow Left)
         case 'ArrowLeft':
         case 'KeyA':
-            if (speed !== 0) {  // Only turn when moving
-                rotationSpeed = maxRotationSpeed * (speed > 0 ? 1 : -1);  // Reverse rotation when going backward
-            }
+            keys.left = true;
             break;
 
-        // Turn right (D and Arrow Right) - Only effective when moving
+        // Turn right (D and Arrow Right)
         case 'ArrowRight':
         case 'KeyD':
-            if (speed !== 0) {  // Only turn when moving
-                rotationSpeed = -maxRotationSpeed * (speed > 0 ? 1 : -1);  // Reverse rotation when going backward
-            }
+            keys.right = true;
             break;
     }
 });
 
 document.addEventListener('keyup', (event) => {
     switch (event.code) {
-        // Stop accelerating or reversing when W/S or Up/Down are released
+        // Stop forward/reverse movement when W/S or Up/Down are released
         case 'ArrowUp':
         case 'KeyW':
+            keys.forward = false;
+            break;
         case 'ArrowDown':
         case 'KeyS':
-            targetSpeed = 0;
+            keys.backward = false;
             break;
 
         // Stop turning when A/D or Left/Right are released
         case 'ArrowLeft':
         case 'KeyA':
+            keys.left = false;
+            break;
         case 'ArrowRight':
         case 'KeyD':
-            rotationSpeed = 0;
+            keys.right = false;
             break;
     }
 });
@@ -126,6 +134,15 @@ function animate() {
     requestAnimationFrame(animate);
 
     if (car) {
+        // Adjust speed based on the keys pressed
+        if (keys.forward) {
+            targetSpeed = maxSpeed;
+        } else if (keys.backward) {
+            targetSpeed = -maxSpeed;
+        } else {
+            targetSpeed = 0;
+        }
+
         // Update speed with acceleration or deceleration
         if (targetSpeed > speed) {
             speed += acceleration;
@@ -135,12 +152,19 @@ function animate() {
             if (speed < targetSpeed) speed = targetSpeed;
         }
 
-        // Rotate the car when moving
-        if (speed !== 0) {
-            car.rotation.y += rotationSpeed;
+        // Adjust rotation based on the keys pressed
+        if (keys.left) {
+            rotationSpeed = maxRotationSpeed * (speed > 0 ? 1 : -1); // Turn left, reverse when going backward
+        } else if (keys.right) {
+            rotationSpeed = -maxRotationSpeed * (speed > 0 ? 1 : -1); // Turn right, reverse when going backward
+        } else {
+            rotationSpeed = 0; // Stop turning if no keys pressed
         }
 
-        // Calculate forward movement based on car's rotation
+        // Rotate the car based on the rotation speed
+        car.rotation.y += rotationSpeed;
+
+        // Move the car forward based on its rotation
         const direction = new THREE.Vector3();
         car.getWorldDirection(direction); // Get car's forward direction
         car.position.addScaledVector(direction, speed); // Move in the forward direction
