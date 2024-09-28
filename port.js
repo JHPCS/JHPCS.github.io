@@ -152,17 +152,19 @@ function animate() {
             if (speed < targetSpeed) speed = targetSpeed;
         }
 
-        // Adjust rotation based on the keys pressed
-        if (keys.left) {
-            rotationSpeed = maxRotationSpeed * (speed > 0 ? 1 : -1); // Turn left, reverse when going backward
-        } else if (keys.right) {
-            rotationSpeed = -maxRotationSpeed * (speed > 0 ? 1 : -1); // Turn right, reverse when going backward
-        } else {
-            rotationSpeed = 0; // Stop turning if no keys pressed
-        }
+        // Adjust rotation based on the keys pressed and if the car is moving
+        if (speed !== 0) { // Only turn if moving
+            if (keys.left) {
+                rotationSpeed = maxRotationSpeed * (speed > 0 ? 1 : -1); // Turn left, reverse when going backward
+            } else if (keys.right) {
+                rotationSpeed = -maxRotationSpeed * (speed > 0 ? 1 : -1); // Turn right, reverse when going backward
+            } else {
+                rotationSpeed = 0; // Stop turning if no keys pressed
+            }
 
-        // Rotate the car based on the rotation speed
-        car.rotation.y += rotationSpeed;
+            // Rotate the car based on the rotation speed
+            car.rotation.y += rotationSpeed;
+        }
 
         // Move the car forward based on its rotation
         const direction = new THREE.Vector3();
