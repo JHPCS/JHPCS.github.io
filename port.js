@@ -64,7 +64,7 @@ let speed = 0;
 let targetSpeed = 0;
 let rotationSpeed = 0;
 const acceleration = 0.02;
-const deceleration = 0.05;
+const decelerationFactor = 0.98; // Gradual deceleration when no keys are pressed
 const maxSpeed = 1;
 const maxRotationSpeed = 0.03; // Max turning speed when at full speed
 
@@ -79,25 +79,18 @@ const keys = {
 // Keyboard controls
 document.addEventListener('keydown', (event) => {
     switch (event.code) {
-        // Accelerate forward (W and Arrow Up)
         case 'ArrowUp':
         case 'KeyW':
             keys.forward = true;
             break;
-        
-        // Reverse (S and Arrow Down)
         case 'ArrowDown':
         case 'KeyS':
             keys.backward = true;
             break;
-
-        // Turn left (A and Arrow Left)
         case 'ArrowLeft':
         case 'KeyA':
             keys.left = true;
             break;
-
-        // Turn right (D and Arrow Right)
         case 'ArrowRight':
         case 'KeyD':
             keys.right = true;
@@ -107,7 +100,6 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keyup', (event) => {
     switch (event.code) {
-        // Stop forward/reverse movement when W/S or Up/Down are released
         case 'ArrowUp':
         case 'KeyW':
             keys.forward = false;
@@ -116,8 +108,6 @@ document.addEventListener('keyup', (event) => {
         case 'KeyS':
             keys.backward = false;
             break;
-
-        // Stop turning when A/D or Left/Right are released
         case 'ArrowLeft':
         case 'KeyA':
             keys.left = false;
@@ -129,42 +119,51 @@ document.addEventListener('keyup', (event) => {
     }
 });
 
+// Function to update speed and rotation
+function updateMovement() {
+    // Adjust speed based on keys pressed
+    if (keys.forward) {
+        targetSpeed = maxSpeed;
+    } else if (keys.backward) {
+        targetSpeed = -maxSpeed;
+    } else {
+        targetSpeed = 0;
+    }
+
+    // Smooth acceleration and deceleration
+    if (targetSpeed > speed) {
+        speed += acceleration;
+        if (speed > targetSpeed) speed = targetSpeed;
+    } else if (targetSpeed < speed) {
+        speed -= acceleration;
+        if (speed < targetSpeed) speed = targetSpeed;
+    } else {
+        // Gradual deceleration when no keys are pressed
+        speed *= decelerationFactor;
+        if (Math.abs(speed) < 0.001) speed = 0; // Stop if the speed is very low
+    }
+
+    // Adjust rotation speed based on current speed and key presses
+    if (speed !== 0) {
+        if (keys.left) {
+            rotationSpeed = maxRotationSpeed * (speed / maxSpeed); // Sharper turns at higher speeds
+        } else if (keys.right) {
+            rotationSpeed = -maxRotationSpeed * (speed / maxSpeed); // Sharper turns at higher speeds
+        } else {
+            rotationSpeed = 0;
+        }
+
+        // Rotate the car based on rotation speed
+        car.rotation.y += rotationSpeed;
+    }
+}
+
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
 
     if (car) {
-        // Adjust speed based on the keys pressed
-        if (keys.forward) {
-            targetSpeed = maxSpeed;
-        } else if (keys.backward) {
-            targetSpeed = -maxSpeed;
-        } else {
-            targetSpeed = 0;
-        }
-
-        // Update speed with acceleration or deceleration
-        if (targetSpeed > speed) {
-            speed += acceleration;
-            if (speed > targetSpeed) speed = targetSpeed;
-        } else if (targetSpeed < speed) {
-            speed -= deceleration;
-            if (speed < targetSpeed) speed = targetSpeed;
-        }
-
-        // Adjust rotation based on the keys pressed and if the car is moving
-        if (speed !== 0) { // Only turn if moving
-            if (keys.left) {
-                rotationSpeed = maxRotationSpeed * (speed > 0 ? 1 : -1); // Turn left, reverse when going backward
-            } else if (keys.right) {
-                rotationSpeed = -maxRotationSpeed * (speed > 0 ? 1 : -1); // Turn right, reverse when going backward
-            } else {
-                rotationSpeed = 0; // Stop turning if no keys pressed
-            }
-
-            // Rotate the car based on the rotation speed
-            car.rotation.y += rotationSpeed;
-        }
+        updateMovement(); // Update speed and rotation
 
         // Move the car forward based on its rotation
         const direction = new THREE.Vector3();
