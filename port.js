@@ -59,13 +59,14 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
 });
 
 // Ambient light to softly illuminate the whole scene
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Adjusted to prevent washing out colors
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // Adjust the intensity
 scene.add(ambientLight);
 
 // Directional light to provide general lighting
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
+
 
 // Control variables for car movement
 let speed = 0;
