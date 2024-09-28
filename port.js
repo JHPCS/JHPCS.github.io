@@ -132,48 +132,62 @@ let touchStartY = 0;
 let touchEndX = 0;
 let touchEndY = 0;
 
-document.addEventListener('touchstart', (event) => {
-    touchStartX = event.touches[0].clientX;
-    touchStartY = event.touches[0].clientY;
-}, false);
+// Control variables for touch controls
+let wheelRotation = 0;
 
-document.addEventListener('touchmove', (event) => {
-    touchEndX = event.touches[0].clientX;
-    touchEndY = event.touches[0].clientY;
+// Get control elements
+const forwardButton = document.getElementById('forward');
+const backwardButton = document.getElementById('backward');
+const wheel = document.getElementById('wheel');
 
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
-
-    // Set forward/backward movement
-    if (Math.abs(deltaY) > Math.abs(deltaX)) {
-        if (deltaY < 0) {
-            keys.forward = true;
-            keys.backward = false;
-        } else {
-            keys.forward = false;
-            keys.backward = true;
-        }
-    }
-
-    // Set left/right rotation
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        if (deltaX < 0) {
-            keys.left = true;
-            keys.right = false;
-        } else {
-            keys.left = false;
-            keys.right = true;
-        }
-    }
-}, false);
-
-document.addEventListener('touchend', () => {
-    // Reset movement keys when touch ends
+// Button event listeners
+forwardButton.addEventListener('touchstart', () => {
+    keys.forward = true;
+});
+forwardButton.addEventListener('touchend', () => {
     keys.forward = false;
+});
+
+backwardButton.addEventListener('touchstart', () => {
+    keys.backward = true;
+});
+backwardButton.addEventListener('touchend', () => {
     keys.backward = false;
+});
+
+// Wheel event listeners
+let isDragging = false;
+
+wheel.addEventListener('touchstart', (event) => {
+    isDragging = true;
+    const touch = event.touches[0];
+    wheelRotation = touch.clientX; // Get initial touch position
+});
+
+wheel.addEventListener('touchmove', (event) => {
+    if (!isDragging) return;
+    const touch = event.touches[0];
+    const delta = touch.clientX - wheelRotation;
+
+    // Update rotation based on delta
+    if (delta > 5) { // Threshold to avoid small movements
+        keys.right = true;
+        keys.left = false;
+    } else if (delta < -5) {
+        keys.left = true;
+        keys.right = false;
+    } else {
+        keys.right = false;
+        keys.left = false;
+    }
+});
+
+wheel.addEventListener('touchend', () => {
+    isDragging = false;
     keys.left = false;
     keys.right = false;
-}, false);
+});
+
 
 // Function to update speed and rotation
 function updateMovement() {
