@@ -66,40 +66,44 @@ let rotationSpeed = 0;
 const acceleration = 0.02;
 const deceleration = 0.05;
 const maxSpeed = 1;
-const rotationAcceleration = 0.03;
+const maxRotationSpeed = 0.03; // Max turning speed when at full speed
 
 // Keyboard controls
 document.addEventListener('keydown', (event) => {
     switch (event.code) {
-        // Forward (W and Arrow Up)
+        // Accelerate forward (W and Arrow Up)
         case 'ArrowUp':
         case 'KeyW':
             targetSpeed = maxSpeed;
             break;
         
-        // Backward (S and Arrow Down)
+        // Reverse (S and Arrow Down)
         case 'ArrowDown':
         case 'KeyS':
             targetSpeed = -maxSpeed;
             break;
 
-        // Left turn (A and Arrow Left)
+        // Turn left (A and Arrow Left) - Only effective when moving
         case 'ArrowLeft':
         case 'KeyA':
-            rotationSpeed = rotationAcceleration; // Inverted for correct direction
+            if (speed !== 0) {  // Only turn when moving
+                rotationSpeed = maxRotationSpeed * (speed > 0 ? 1 : -1);  // Reverse rotation when going backward
+            }
             break;
 
-        // Right turn (D and Arrow Right)
+        // Turn right (D and Arrow Right) - Only effective when moving
         case 'ArrowRight':
         case 'KeyD':
-            rotationSpeed = -rotationAcceleration; // Inverted for correct direction
+            if (speed !== 0) {  // Only turn when moving
+                rotationSpeed = -maxRotationSpeed * (speed > 0 ? 1 : -1);  // Reverse rotation when going backward
+            }
             break;
     }
 });
 
 document.addEventListener('keyup', (event) => {
     switch (event.code) {
-        // Stop forward/backward movement when W/S or Up/Down are released
+        // Stop accelerating or reversing when W/S or Up/Down are released
         case 'ArrowUp':
         case 'KeyW':
         case 'ArrowDown':
@@ -131,8 +135,10 @@ function animate() {
             if (speed < targetSpeed) speed = targetSpeed;
         }
 
-        // Update car position and rotation
-        car.rotation.y += rotationSpeed;
+        // Rotate the car when moving
+        if (speed !== 0) {
+            car.rotation.y += rotationSpeed;
+        }
 
         // Calculate forward movement based on car's rotation
         const direction = new THREE.Vector3();
