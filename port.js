@@ -59,7 +59,7 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
 });
 
 // Ambient light to softly illuminate the whole scene
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // Adjust the intensity
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Adjust the intensity
 scene.add(ambientLight);
 
 // Directional light to provide general lighting
