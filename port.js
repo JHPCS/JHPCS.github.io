@@ -71,16 +71,27 @@ const rotationAcceleration = 0.03;
 // Keyboard controls
 document.addEventListener('keydown', (event) => {
     switch (event.code) {
+        // Forward (W and Arrow Up)
         case 'ArrowUp':
+        case 'KeyW':
             targetSpeed = maxSpeed;
             break;
+        
+        // Backward (S and Arrow Down)
         case 'ArrowDown':
+        case 'KeyS':
             targetSpeed = -maxSpeed;
             break;
+
+        // Left turn (A and Arrow Left)
         case 'ArrowLeft':
+        case 'KeyA':
             rotationSpeed = rotationAcceleration; // Inverted for correct direction
             break;
+
+        // Right turn (D and Arrow Right)
         case 'ArrowRight':
+        case 'KeyD':
             rotationSpeed = -rotationAcceleration; // Inverted for correct direction
             break;
     }
@@ -88,12 +99,19 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keyup', (event) => {
     switch (event.code) {
+        // Stop forward/backward movement when W/S or Up/Down are released
         case 'ArrowUp':
+        case 'KeyW':
         case 'ArrowDown':
+        case 'KeyS':
             targetSpeed = 0;
             break;
+
+        // Stop turning when A/D or Left/Right are released
         case 'ArrowLeft':
+        case 'KeyA':
         case 'ArrowRight':
+        case 'KeyD':
             rotationSpeed = 0;
             break;
     }
