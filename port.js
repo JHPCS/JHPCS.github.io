@@ -66,6 +66,16 @@ scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
+// Check if the device is mobile and show/hide controls accordingly
+if (isMobile()) {
+    document.getElementById('controls').style.display = 'flex';
+} else {
+    document.getElementById('controls').style.display = 'none';
+}
+
+function isMobile() {
+    return /Mobi|Android/i.test(navigator.userAgent);
+}
 
 // Control variables for car movement
 let speed = 0;
