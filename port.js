@@ -70,7 +70,16 @@ scene.add(directionalLight);
 
 // Function to check if the device is mobile
 function isMobile() {
-    return /Mobi|Android/i.test(navigator.userAgent);
+    // Check if userAgentData is available (for modern browsers)
+    if (navigator.userAgentData && navigator.userAgentData.mobile !== undefined) {
+        return navigator.userAgentData.mobile; // Returns true if it's a mobile device
+    }
+
+    // Fallback to userAgent string for older browsers
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    
+    // More comprehensive check for mobile devices
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
 }
 
 // Show or hide mobile controls based on device type
@@ -79,6 +88,7 @@ if (isMobile()) {
 } else {
     document.getElementById('controls').classList.add('mobile'); // Hide mobile controls
 }
+
 
 
 // Control variables for car movement
