@@ -53,6 +53,9 @@
     position: relative;
     cursor: pointer;
 }
+#controls.mobile {
+    display: none;
+}
 
 </style>
 
@@ -62,11 +65,12 @@
     <canvas id="canvas"></canvas>
 
     
-    <div id="controls">
+    <div id="controls" class="mobile">
     <button id="forward" class="control-button">Forward</button>
     <button id="backward" class="control-button">Backward</button>
     <div id="wheel" class="control-wheel"></div>
 </div>
+
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
