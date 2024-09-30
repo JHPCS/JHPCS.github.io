@@ -68,26 +68,21 @@ directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
 
 
-// Function to check if the device is mobile
-function isMobile() {
-    // Check if userAgentData is available (for modern browsers)
-    if (navigator.userAgentData && navigator.userAgentData.mobile !== undefined) {
-        return navigator.userAgentData.mobile; // Returns true if it's a mobile device
+// Mobile mode toggle functionality
+const mobileModeButton = document.getElementById('mobileModeButton');
+let isMobileMode = false; // Tracks if mobile mode is enabled
+
+mobileModeButton.addEventListener('click', () => {
+    isMobileMode = !isMobileMode; // Toggle the mobile mode state
+    if (isMobileMode) {
+        document.getElementById('controls').classList.remove('mobile'); // Show mobile controls
+        mobileModeButton.textContent = "Desktop Mode"; // Change button text
+    } else {
+        document.getElementById('controls').classList.add('mobile'); // Hide mobile controls
+        mobileModeButton.textContent = "Mobile Mode"; // Change button text back
     }
+});
 
-    // Fallback to userAgent string for older browsers
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    
-    // More comprehensive check for mobile devices
-    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
-}
-
-// Show or hide mobile controls based on device type
-if (isMobile()) {
-    document.getElementById('controls').classList.remove('mobile'); // Show mobile controls
-} else {
-    document.getElementById('controls').classList.add('mobile'); // Hide mobile controls
-}
 
 
 
