@@ -153,11 +153,48 @@ let touchEndY = 0;
 
 // Control variables for touch controls
 let wheelRotation = 0;
+// Dynamically resize controls based on screen size
+function resizeControls() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const controls = document.getElementById('controls');
+    const wheel = document.getElementById('wheel');
+    const buttons = document.querySelectorAll('.control-button');
 
-// Get control elements
-const forwardButton = document.getElementById('forward');
-const backwardButton = document.getElementById('backward');
-const wheel = document.getElementById('wheel');
+    // Calculate dynamic sizes based on screen size
+    const buttonSize = Math.min(screenWidth, screenHeight) * 0.1; // 10% of the smaller dimension
+    const wheelSize = buttonSize * 1.5; // Wheel is 1.5 times the button size
+
+    // Apply dynamic sizes
+    buttons.forEach(button => {
+        button.style.width = buttonSize + 'px';
+        button.style.height = buttonSize + 'px';
+        button.style.fontSize = buttonSize * 0.3 + 'px'; // Adjust font size
+    });
+
+    wheel.style.width = wheelSize + 'px';
+    wheel.style.height = wheelSize + 'px';
+}
+
+// Call resizeControls initially and whenever the window resizes
+window.addEventListener('resize', resizeControls);
+resizeControls(); // Initial call
+
+// Mobile mode toggle functionality
+const mobileModeButton = document.getElementById('mobileModeButton');
+let isMobileMode = false; // Tracks if mobile mode is enabled
+
+mobileModeButton.addEventListener('click', () => {
+    isMobileMode = !isMobileMode; // Toggle the mobile mode state
+    const controls = document.getElementById('controls');
+    if (isMobileMode) {
+        controls.classList.remove('mobile'); // Show mobile controls
+        mobileModeButton.textContent = "Desktop Mode"; // Change button text
+    } else {
+        controls.classList.add('mobile'); // Hide mobile controls
+        mobileModeButton.textContent = "Mobile Mode"; // Change button text back
+    }
+});
 
 // Button event listeners
 forwardButton.addEventListener('touchstart', () => {
