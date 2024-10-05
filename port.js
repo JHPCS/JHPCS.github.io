@@ -1,4 +1,3 @@
-// Three.js setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
@@ -147,9 +146,8 @@ const backwardButton = document.getElementById('backward');
 const wheel = document.getElementById('wheel');
 const innerWheel = document.getElementById('inner-wheel');
 let isDragging = false;
-let initialWheelX = 0;
-let initialWheelY = 0;
-let currentAngle = 0;
+let centerX, centerY;
+const maxDistance = 50; // Max distance for inner wheel dragging
 
 forwardButton.addEventListener('touchstart', () => {
     keys.forward = true;
@@ -165,54 +163,52 @@ backwardButton.addEventListener('touchend', () => {
     keys.backward = false;
 });
 
+// Start dragging the wheel
 innerWheel.addEventListener('touchstart', (event) => {
     isDragging = true;
-    const touch = event.touches[0];
-    initialWheelX = touch.clientX - innerWheel.getBoundingClientRect().left;
-    initialWheelY = touch.clientY - innerWheel.getBoundingClientRect().top;
+    const rect = wheel.getBoundingClientRect();
+    centerX = rect.left + rect.width / 2;
+    centerY = rect.top + rect.height / 2;
 });
 
+// Handle dragging movement
 innerWheel.addEventListener('touchmove', (event) => {
     if (!isDragging) return;
-    
+
     const touch = event.touches[0];
-    const deltaX = touch.clientX - initialWheelX;
-    const deltaY = touch.clientY - initialWheelY;
-    
+    const deltaX = touch.clientX - centerX;
+    const deltaY = touch.clientY - centerY;
+
+    // Calculate distance from center
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    const maxDistance = 50; // Max distance the inner wheel can be dragged from the center
-    
-    let clampedDistance = Math.min(distance, maxDistance);
-    
+
+    // Clamp the inner wheel movement within the maxDistance
+    const clampedDistance = Math.min(distance, maxDistance);
+
+    // Calculate the drag angle
     const angle = Math.atan2(deltaY, deltaX);
-    currentAngle = angle;
-    
+
+    // Set the new position of the inner wheel
     const x = clampedDistance * Math.cos(angle);
     const y = clampedDistance * Math.sin(angle);
-    
     innerWheel.style.transform = `translate(${x}px, ${y}px)`;
 
-    // Adjust car turning based on drag distance and direction
-    const turnFactor = clampedDistance / maxDistance; // Ranges between 0 and 1
+    // Adjust car turning based on angle and drag distance
+    const turnFactor = clampedDistance / maxDistance;
     if (angle > -Math.PI / 4 && angle < Math.PI / 4) {
-        keys.right = true;
-        keys.left = false;
-        rotationSpeed = -maxRotationSpeed * turnFactor;
+        rotationSpeed = -maxRotationSpeed * turnFactor; // Turn right
     } else if (angle > 3 * Math.PI / 4 || angle < -3 * Math.PI / 4) {
-        keys.left = true;
-        keys.right = false;
-        rotationSpeed = maxRotationSpeed * turnFactor;
+        rotationSpeed = maxRotationSpeed * turnFactor; // Turn left
     } else {
-        keys.left = false;
-        keys.right = false;
+        rotationSpeed = 0;
     }
 });
 
+// End dragging and reset the inner wheel
 innerWheel.addEventListener('touchend', () => {
     isDragging = false;
-    keys.left = false;
-    keys.right = false;
     innerWheel.style.transform = 'translate(0, 0)';
+    rotationSpeed = 0; // Stop turning when the wheel is released
 });
 
 // Movement update function
@@ -270,9 +266,8 @@ function animate() {
 
 animate();
 
-// Handle window resize
 window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
 });
