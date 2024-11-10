@@ -1,4 +1,4 @@
-// Three.js setup
+// Existing Three.js setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
@@ -44,8 +44,8 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
         if (node.isMesh) {
             node.material = new THREE.MeshStandardMaterial({ 
                 map: carTexture, 
-                metalness: 0.5, 
-                roughness: 0.3 
+                metalness: 0.5, // Reflective metalness for better lighting effects
+                roughness: 0.3 // Slightly smooth surface to reflect light
             });
             node.material.needsUpdate = true;
         }
@@ -58,31 +58,40 @@ loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478
     console.error(error);
 });
 
-// Ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+// Ambient light to softly illuminate the whole scene
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Adjust the intensity
 scene.add(ambientLight);
 
-// Directional light
+// Directional light to provide general lighting
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(0, 5, 0).normalize();
 scene.add(directionalLight);
 
-// Device check for mobile
+
+// Function to check if the device is mobile
 function isMobile() {
+    // Check if userAgentData is available (for modern browsers)
     if (navigator.userAgentData && navigator.userAgentData.mobile !== undefined) {
-        return navigator.userAgentData.mobile;
+        return navigator.userAgentData.mobile; // Returns true if it's a mobile device
     }
+
+    // Fallback to userAgent string for older browsers
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    
+    // More comprehensive check for mobile devices
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
 }
 
+// Show or hide mobile controls based on device type
 if (isMobile()) {
-    document.getElementById('controls').classList.remove('mobile');
+    document.getElementById('controls').classList.remove('mobile'); // Show mobile controls
 } else {
-    document.getElementById('controls').classList.add('mobile');
+    document.getElementById('controls').classList.add('mobile'); // Hide mobile controls
 }
 
-// Car movement controls
+
+
+// Control variables for car movement
 let speed = 0;
 let targetSpeed = 0;
 let rotationSpeed = 0;
@@ -142,15 +151,20 @@ document.addEventListener('keyup', (event) => {
 });
 
 // Mobile touch controls
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+// Control variables for touch controls
+let wheelRotation = 0;
+
+// Get control elements
 const forwardButton = document.getElementById('forward');
 const backwardButton = document.getElementById('backward');
 const wheel = document.getElementById('wheel');
-const innerWheel = document.getElementById('inner-wheel');
-let isDragging = false;
-let initialWheelX = 0;
-let initialWheelY = 0;
-let currentAngle = 0;
 
+// Button event listeners
 forwardButton.addEventListener('touchstart', () => {
     keys.forward = true;
 });
@@ -165,57 +179,41 @@ backwardButton.addEventListener('touchend', () => {
     keys.backward = false;
 });
 
-innerWheel.addEventListener('touchstart', (event) => {
+// Wheel event listeners
+let isDragging = false;
+
+wheel.addEventListener('touchstart', (event) => {
     isDragging = true;
     const touch = event.touches[0];
-    initialWheelX = touch.clientX - innerWheel.getBoundingClientRect().left;
-    initialWheelY = touch.clientY - innerWheel.getBoundingClientRect().top;
+    wheelRotation = touch.clientX; // Get initial touch position
 });
 
-innerWheel.addEventListener('touchmove', (event) => {
+wheel.addEventListener('touchmove', (event) => {
     if (!isDragging) return;
-    
     const touch = event.touches[0];
-    const deltaX = touch.clientX - initialWheelX;
-    const deltaY = touch.clientY - initialWheelY;
-    
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    const maxDistance = 50; // Max distance the inner wheel can be dragged from the center
-    
-    let clampedDistance = Math.min(distance, maxDistance);
-    
-    const angle = Math.atan2(deltaY, deltaX);
-    currentAngle = angle;
-    
-    const x = clampedDistance * Math.cos(angle);
-    const y = clampedDistance * Math.sin(angle);
-    
-    innerWheel.style.transform = `translate(${x}px, ${y}px)`;
+    const delta = touch.clientX - wheelRotation;
 
-    // Adjust car turning based on drag distance and direction
-    const turnFactor = clampedDistance / maxDistance; // Ranges between 0 and 1
-    if (angle > -Math.PI / 4 && angle < Math.PI / 4) {
+    // Update rotation based on delta
+    if (delta > 5) { // Threshold to avoid small movements
         keys.right = true;
         keys.left = false;
-        rotationSpeed = -maxRotationSpeed * turnFactor;
-    } else if (angle > 3 * Math.PI / 4 || angle < -3 * Math.PI / 4) {
+    } else if (delta < -5) {
         keys.left = true;
         keys.right = false;
-        rotationSpeed = maxRotationSpeed * turnFactor;
     } else {
-        keys.left = false;
         keys.right = false;
+        keys.left = false;
     }
 });
 
-innerWheel.addEventListener('touchend', () => {
+wheel.addEventListener('touchend', () => {
     isDragging = false;
     keys.left = false;
     keys.right = false;
-    innerWheel.style.transform = 'translate(0, 0)';
 });
 
-// Movement update function
+
+// Function to update speed and rotation
 function updateMovement() {
     if (keys.forward) {
         targetSpeed = maxSpeed;
@@ -238,10 +236,14 @@ function updateMovement() {
 
     if (speed !== 0) {
         if (keys.left) {
-            car.rotation.y += rotationSpeed;
+            rotationSpeed = maxRotationSpeed * (speed / maxSpeed);
         } else if (keys.right) {
-            car.rotation.y -= rotationSpeed;
+            rotationSpeed = -maxRotationSpeed * (speed / maxSpeed);
+        } else {
+            rotationSpeed = 0;
         }
+
+        car.rotation.y += rotationSpeed;
     }
 }
 
@@ -270,9 +272,11 @@ function animate() {
 
 animate();
 
-// Handle window resize
+// Handle window resizing
 window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
 });
