@@ -1,9 +1,14 @@
 // Existing Three.js setup
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf5f5f5); // Set the background to a soft white color
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+// Continue with the rest of your code...
+
 
 // Load a PNG texture
 const textureLoader = new THREE.TextureLoader();
