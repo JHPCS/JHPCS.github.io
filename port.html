@@ -56,7 +56,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
+            position: absolute;
+            left: 20px; /* Move the wheel to the left */
+            bottom: 20px; /* Align it with the bottom */
             cursor: pointer;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -69,11 +71,12 @@
             background-color: #ff964f;
             border-radius: 50%;
             position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            left: 50%; /* Center horizontally */
+            top: 50%; /* Center vertically */
+            transform: translate(-50%, -50%); /* Center the element */
             cursor: grab;
         }
+
         #controls.mobile {
             display: none;
         }
