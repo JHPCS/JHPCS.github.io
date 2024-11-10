@@ -252,7 +252,7 @@ function updateMovement() {
     }
 }
 
-// Animation loop
+// Function to update camera position and orientation
 function animate() {
     requestAnimationFrame(animate);
 
@@ -263,9 +263,10 @@ function animate() {
         car.getWorldDirection(direction);
         car.position.addScaledVector(direction, speed);
 
-        car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02;
+        car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02; // Slight bounce effect
 
-        const cameraOffset = new THREE.Vector3(0, 15, 30);
+        // Update camera to a higher and steeper position
+        const cameraOffset = new THREE.Vector3(0, 20, 35); // Increase the 'y' value for height, and 'z' for distance
         const carPosition = new THREE.Vector3();
         car.getWorldPosition(carPosition);
         camera.position.copy(carPosition).add(cameraOffset);
@@ -276,6 +277,7 @@ function animate() {
 }
 
 animate();
+
 
 // Handle window resizing
 window.addEventListener('resize', () => {
