@@ -232,13 +232,14 @@ function updateMovement() {
         if (Math.abs(speed) < 0.001) speed = 0;
     }
 
-    if (speed !== 0) {
-        if (keys.left) {
-            car.rotation.y += rotationSpeed;
-        } else if (keys.right) {
-            car.rotation.y -= rotationSpeed;
-        }
+if (speed !== 0) {
+    if (keys.left) {
+        car.rotation.y += rotationSpeed; // This turns the car left
+    } else if (keys.right) {
+        car.rotation.y -= rotationSpeed; // This turns the car right
     }
+}
+
 }
 
 // Animation loop
