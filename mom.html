@@ -100,8 +100,8 @@
         <div class="hidden-solve" onclick="solvePuzzle()"></div>
     </div>
     <script>
+        let emptyTile;
         let tiles = [];
-        let emptyIndex = 8;
         
         function startGame() {
             document.querySelector(".start-btn").style.display = "none";
@@ -113,6 +113,7 @@
             const puzzle = document.getElementById("puzzle");
             puzzle.innerHTML = "";
             tiles = [];
+            
             let positions = Array.from({ length: 9 }, (_, i) => i).sort(() => Math.random() - 0.5);
             
             positions.forEach((pos, i) => {
@@ -121,10 +122,11 @@
                 tile.style.backgroundPosition = `${-(pos % 3) * 100}px ${-Math.floor(pos / 3) * 100}px`;
                 tile.style.transform = `translate(${(i % 3) * 102}px, ${Math.floor(i / 3) * 102}px)`;
                 tile.dataset.index = i;
-                tile.dataset.correctPosition = pos;
+                tile.dataset.position = pos;
                 
                 if (pos === 8) {
                     tile.classList.add("empty");
+                    emptyTile = tile;
                 } else {
                     tile.addEventListener("touchstart", moveTile);
                     tile.addEventListener("click", moveTile);
@@ -138,11 +140,13 @@
         function moveTile(e) {
             let tile = e.target;
             let index = parseInt(tile.dataset.index);
-            let emptyTile = document.querySelector(".empty");
-            let emptyIndex = tiles.indexOf(emptyTile);
+            let emptyIndex = parseInt(emptyTile.dataset.index);
+            let row = Math.floor(index / 3);
+            let col = index % 3;
+            let emptyRow = Math.floor(emptyIndex / 3);
+            let emptyCol = emptyIndex % 3;
             
-            let validMoves = [index - 1, index + 1, index - 3, index + 3];
-            if (validMoves.includes(emptyIndex)) {
+            if ((Math.abs(row - emptyRow) === 1 && col === emptyCol) || (Math.abs(col - emptyCol) === 1 && row === emptyRow)) {
                 let tempTransform = tile.style.transform;
                 tile.style.transform = emptyTile.style.transform;
                 emptyTile.style.transform = tempTransform;
@@ -150,18 +154,9 @@
                 let tempIndex = tile.dataset.index;
                 tile.dataset.index = emptyTile.dataset.index;
                 emptyTile.dataset.index = tempIndex;
-                
-                checkSolved();
             }
         }
-        
-        function checkSolved() {
-            let solved = tiles.every((tile, index) => parseInt(tile.dataset.index) === parseInt(tile.dataset.correctPosition));
-            if (solved) {
-                alert("Puzzle solved!");
-            }
-        }
-        
+
         function solvePuzzle() {
             tiles.forEach((tile, i) => {
                 let x = (i % 3) * 102;
@@ -169,7 +164,6 @@
                 tile.style.transform = `translate(${x}px, ${y}px)`;
                 tile.dataset.index = i;
             });
-            checkSolved();
         }
     </script>
 </body>
