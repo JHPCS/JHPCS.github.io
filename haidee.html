@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Valentine's Day, Haidee!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            color: white;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .heart {
+            color: red;
+            font-size: 50px;
+            animation: float 1.5s infinite alternate ease-in-out;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+        #love-note {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            max-width: 80%;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: red;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Happy Valentine's Day, Haidee! <span class="heart">❤️</span></h1>
+    <button onclick="showLoveNote()">Click for a surprise</button>
+    <div id="love-note">
+        <p>My dearest Haidee,</p>
+        <p>You make my world brighter every day. I’m so grateful to have you in my life. Happy Valentine’s Day, my love! 💖</p>
+    </div>
+    <script>
+        function showLoveNote() {
+            document.getElementById("love-note").style.display = "block";
+        }
+    </script>
+</body>
+</html>
