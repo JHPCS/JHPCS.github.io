@@ -54,18 +54,44 @@
             font-weight: bold;
             margin-top: 15px;
             transition: background 0.3s;
+            cursor: pointer;
         }
         .button:hover {
             background: #d43f5f;
         }
+        #surprise-image {
+            display: none;
+            width: 100%;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+        #surprise-text {
+            display: none;
+            font-size: 20px;
+            color: #ff4d6d;
+            margin-top: 10px;
+        }
     </style>
+    <script>
+        function showSurprise() {
+            let img = document.getElementById('surprise-image');
+            img.style.display = 'block';
+            setTimeout(() => {
+                img.style.opacity = '1';
+                document.getElementById('surprise-text').style.display = 'block';
+            }, 50);
+        }
+    </script>
 </head>
 <body>
     <div class="container">
         <h1>Happy Valentine's Day, Lex! ❤️</h1>
         <p>Even though we're miles apart, my heart is always with you. You are my love, my happiness, and my forever Valentine. 💕</p>
         <div class="heart">💖</div>
-        <a href="#" class="button">Click for a Surprise! 🎁</a>
+        <button class="button" onclick="showSurprise()">Click for a Surprise! 🎁</button>
+        <img id="surprise-image" src="https://i.pinimg.com/736x/6c/9b/45/6c9b455a6f0ce0a6dec42fcb303cbb7d.jpg" alt="Surprise Image">
+        <p id="surprise-text">Us?</p>
     </div>
 </body>
 </html>
