@@ -1,0 +1,190 @@
+/* General resets and body styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #111;
+    color: #fff;
+    line-height: 1.6;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #111;
+    border-bottom: 2px solid #ff964f;
+}
+header .logo img {
+    width: 150px;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+nav ul li {
+    position: relative;
+}
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+nav ul li a:hover {
+    color: #ff964f;
+}
+
+/* Hero Section */
+.hero {
+    background: url('https://example.com/your-hero-image.jpg') no-repeat center center/cover;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #fff;
+    font-size: 2.5rem;
+    padding: 0 2rem;
+}
+.hero h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+.hero p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+.cta {
+    background-color: #ff964f;
+    padding: 1rem 2rem;
+    color: #111;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+.cta:hover {
+    background-color: #ff7b2f;
+}
+
+/* About Section */
+#about {
+    background-color: #222;
+    padding: 5rem 2rem;
+    text-align: center;
+}
+#about h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #ff964f;
+}
+#about p {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Services Section */
+#services {
+    padding: 5rem 2rem;
+    text-align: center;
+}
+#services h2 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    color: #ff964f;
+}
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+.service {
+    background-color: #333;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+.service:hover {
+    transform: scale(1.05);
+}
+
+/* Portfolio Section */
+#portfolio {
+    background-color: #111;
+    padding: 5rem 2rem;
+    text-align: center;
+}
+#portfolio h2 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    color: #ff964f;
+}
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* Contact Section */
+#contact {
+    padding: 5rem 2rem;
+    text-align: center;
+}
+#contact h2 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    color: #ff964f;
+}
+form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+input, textarea {
+    width: 100%;
+    padding: 1rem;
+    margin: 1rem 0;
+    border: 2px solid #444;
+    border-radius: 5px;
+    background-color: #222;
+    color: #fff;
+    font-size: 1rem;
+}
+button {
+    background-color: #ff964f;
+    padding: 1rem 2rem;
+    color: #111;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+button:hover {
+    background-color: #ff7b2f;
+}
+
+/* Footer */
+footer {
+    background-color: #111;
+    padding: 2rem;
+    text-align: center;
+    color: #fff;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+.hero {
+    animation: fadeIn 2s ease-in;
+}
