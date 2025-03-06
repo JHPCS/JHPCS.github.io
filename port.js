@@ -87,12 +87,20 @@ function isMobile() {
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
 }
 
-// Show or hide mobile controls based on device type
-if (isMobile()) {
-    document.getElementById('controls').classList.remove('mobile'); // Show mobile controls
-} else {
-    document.getElementById('controls').classList.add('mobile'); // Hide mobile controls
-}
+document.addEventListener('DOMContentLoaded', function () {
+    // Show or hide mobile controls based on device type
+    if (isMobile()) {
+        const controls = document.getElementById('controls');
+        if (controls) {
+            controls.classList.remove('mobile'); // Show mobile controls
+        }
+    } else {
+        const controls = document.getElementById('controls');
+        if (controls) {
+            controls.classList.add('mobile'); // Hide mobile controls
+        }
+    }
+});
 
 
 
