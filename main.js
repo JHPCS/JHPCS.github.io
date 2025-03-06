@@ -302,7 +302,7 @@ const apiKey = 'AIzaSyC80a9hJHBehf8pum1EM8YOL3_9OO3ISAc';
       }
 
      
-      fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchInput}&type=video&key=${apiKey}`)
+      fetch(`AIzaSyCsvG6FqOhXOy2j1v8oldIlX70iyeSLkj4${searchInput}&type=video&key=${apiKey}`)
         .then(response => response.json())
         .then(data => {
           if (data.items.length === 0) {
