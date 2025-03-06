@@ -293,48 +293,53 @@ document.getElementById("applySettings").addEventListener("click", function() {
 
 const apiKey = 'AIzaSyCsvG6FqOhXOy2j1v8oldIlX70iyeSLkj4';
 
-    
-    function searchVideos() {
-      const searchInput = document.getElementById('searchInput').value;
-      if (!searchInput) {
+function searchVideos() {
+    const searchInput = document.getElementById('searchInput').value;
+    if (!searchInput) {
         alert('Please enter a song name');
         return;
-      }
-
-     
-      fetch(`AIzaSyCsvG6FqOhXOy2j1v8oldIlX70iyeSLkj4${searchInput}&type=video&key=${apiKey}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.items.length === 0) {
-            alert('No videos found');
-          } else {
-            
-            const videoListDiv = document.getElementById('videoList');
-            videoListDiv.innerHTML = '';
-            data.items.forEach(item => {
-              const videoTitle = item.snippet.title;
-              const videoId = item.id.videoId;
-              const listItem = document.createElement('div');
-              listItem.innerHTML = `<a href="#" onclick="playVideo('${videoId}')">${videoTitle}</a>`;
-              videoListDiv.appendChild(listItem);
-            });
-          }
-        })
-        .catch(error => console.error('Error:', error));
     }
 
-    
-    function playVideo(videoId) {
-      const playerDiv = document.getElementById('player');
-      playerDiv.innerHTML = ''; 
+    // Correct API request URL
+    const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchInput)}&type=video&key=${apiKey}`;
 
-     
-      const iframe = document.createElement('iframe');
-      iframe.width = '100%';
-      iframe.height = '100%';
-      iframe.src = `https://www.youtube.com/embed/${videoId}`;
-      iframe.frameBorder = 0;
-      iframe.allowFullscreen = true;
-      playerDiv.appendChild(iframe);
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.items || data.items.length === 0) {
+                alert('No videos found');
+            } else {
+                const videoListDiv = document.getElementById('videoList');
+                videoListDiv.innerHTML = '';
+                data.items.forEach(item => {
+                    const videoTitle = item.snippet.title;
+                    const videoId = item.id.videoId;
+                    const listItem = document.createElement('div');
+                    listItem.innerHTML = `<a href="#" onclick="playVideo('${videoId}')">${videoTitle}</a>`;
+                    videoListDiv.appendChild(listItem);
+                });
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function playVideo(videoId) {
+    const playerDiv = document.getElementById('player');
+    playerDiv.innerHTML = '';
+
+    const iframe = document.createElement('iframe');
+    iframe.width = '100%';
+    iframe.height = '100%';
+    iframe.src = `https://www.youtube.com/embed/${videoId}`;
+    iframe.frameBorder = 0;
+    iframe.allowFullscreen = true;
+    playerDiv.appendChild(iframe);
+}
+
     }
 
