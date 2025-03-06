@@ -291,7 +291,7 @@ document.getElementById("applySettings").addEventListener("click", function() {
 
 
 
-const apiKey = 'AIzaSyC80a9hJHBehf8pum1EM8YOL3_9OO3ISAc';
+const apiKey = 'AIzaSyCsvG6FqOhXOy2j1v8oldIlX70iyeSLkj4';
 
     
     function searchVideos() {
