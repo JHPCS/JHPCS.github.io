@@ -7,3 +7,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         });
     });
 });
+function toggleMenu() {
+    document.querySelector(".nav-links").classList.toggle("show");
+}
