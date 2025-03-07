@@ -348,41 +348,45 @@
         const deltaTime = Math.min(30, now - (lastTime || now)); // Cap delta time to prevent large jumps
         lastTime = now;
         
-        // Apply gravity and handle jumping
-        if (!isOnGround()) {
-            // Apply gravity when in the air
-            gameState.velocity.y -= gameState.gravity * deltaTime;
-            
-            // Apply the vertical velocity to the camera position
-            cameraHolder.position.y += gameState.velocity.y * deltaTime;
-            
-            // Check if we've landed
-            if (cameraHolder.position.y <= gameState.playerHeight) {
-                // Land on the ground
-                cameraHolder.position.y = gameState.playerHeight;
-                gameState.velocity.y = 0;
-                gameState.isJumping = false;
-                
-                // Reset jump cooldown after a short delay
-                setTimeout(() => {
-                    gameState.jumpCooldown = false;
-                }, 250);
-            }
-            
-            // Limit maximum jump height
-            if (cameraHolder.position.y >= gameState.maxJumpHeight) {
-                cameraHolder.position.y = gameState.maxJumpHeight;
-                gameState.velocity.y = 0; // Stop upward movement
-            }
-        }
+// Helper function to check if player is on the ground
+function isOnGround() {
+    return Math.abs(cameraHolder.position.y - gameState.playerHeight) < 0.01;
+}
+
+// In the main game loop (animate function), replace the jumping code with this:
+// Apply gravity and handle jumping
+if (!isOnGround()) {
+    // Apply gravity when in the air
+    gameState.velocity.y -= gameState.gravity * deltaTime;
+    
+    // Apply the vertical velocity to the camera position
+    cameraHolder.position.y += gameState.velocity.y * deltaTime;
+    
+    // Check if we've landed
+    if (cameraHolder.position.y <= gameState.playerHeight) {
+        // Land on the ground
+        cameraHolder.position.y = gameState.playerHeight;
+        gameState.velocity.y = 0;
+        gameState.isJumping = false;
         
-        // Handle jumping - only when on ground and space is pressed
-        if (keyboardState['space'] && !gameState.isJumping && isOnGround() && !gameState.jumpCooldown) {
-            // Apply jump velocity
-            gameState.velocity.y = gameState.jumpPower;
-            gameState.isJumping = true;
-            gameState.jumpCooldown = true;
-        }
+        // Reset jump cooldown after a short delay
+        setTimeout(() => {
+            gameState.jumpCooldown = false;
+        }, 250);
+    }
+} else {
+    // Make sure we're exactly at player height when on ground
+    cameraHolder.position.y = gameState.playerHeight;
+    gameState.isJumping = false;
+}
+
+// Handle jumping - only when on ground and space is pressed
+if (keyboardState['space'] && isOnGround() && !gameState.jumpCooldown) {
+    // Apply jump velocity
+    gameState.velocity.y = gameState.jumpPower;
+    gameState.isJumping = true;
+    gameState.jumpCooldown = true;
+}
         
         // Handle reloading
         if (keyboardState['r'] && !gameState.isReloading && gameState.ammo < gameState.maxAmmo) {
