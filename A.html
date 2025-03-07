@@ -83,10 +83,14 @@
 
     // Initialize camera position
     camera.position.set(0, 1.5, 5);
+    
+    // Initialize camera direction angle
+    let cameraAngle = 0;
 
     // Initialize mouse movement variables
     let isDragging = false;
     let previousMouseX = 0;
+    let previousMouseY = 0;
 
     // Keyboard state
     const keyboardState = {
@@ -111,6 +115,11 @@
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
 
+    // Pointer lock for better FPS controls
+    renderer.domElement.addEventListener('click', function() {
+        renderer.domElement.requestPointerLock();
+    });
+
     // Prevent default context menu
     document.addEventListener('contextmenu', function(event) {
         event.preventDefault();
@@ -127,6 +136,14 @@
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
         const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
 
+        // Ensure forward and right vectors don't affect y-coordinate
+        forward.y = 0;
+        right.y = 0;
+        
+        // Normalize vectors to ensure consistent movement speed
+        forward.normalize();
+        right.normalize();
+
         const proposedPosition = camera.position.clone();
 
         if (keyboardState['w']) proposedPosition.add(forward.clone().multiplyScalar(movementSpeed));
@@ -134,9 +151,13 @@
         if (keyboardState['a']) proposedPosition.sub(right.clone().multiplyScalar(movementSpeed));
         if (keyboardState['d']) proposedPosition.add(right.clone().multiplyScalar(movementSpeed));
 
-        if (!checkCollisionWithFloor(proposedPosition)) {
-            camera.position.copy(proposedPosition);
+        // Only check the Y position for floor collision, allow XZ movement
+        if (proposedPosition.y < 1.5) {
+            proposedPosition.y = 1.5; // Keep y at player height
         }
+        
+        // Update camera position
+        camera.position.copy(proposedPosition);
 
         // If shooting, create a particle effect
         if (isShooting) {
@@ -160,14 +181,14 @@
 
     // Event handlers
     function handleKeyDown(event) {
-        if (event.key in keyboardState) {
-            keyboardState[event.key] = true;
+        if (event.key.toLowerCase() in keyboardState) {
+            keyboardState[event.key.toLowerCase()] = true;
         }
     }
 
     function handleKeyUp(event) {
-        if (event.key in keyboardState) {
-            keyboardState[event.key] = false;
+        if (event.key.toLowerCase() in keyboardState) {
+            keyboardState[event.key.toLowerCase()] = false;
         }
     }
 
@@ -178,14 +199,31 @@
         else if (event.button === 2) { // Check if right mouse button is clicked
             isDragging = true;
             previousMouseX = event.clientX;
+            previousMouseY = event.clientY;
         }
     }
 
     function handleMouseMove(event) {
-        if (!isDragging) return;
-        const delta = event.clientX - previousMouseX;
-        camera.rotation.y -= (delta * 0.01); // Subtract instead of adding
-        previousMouseX = event.clientX;
+        if (document.pointerLockElement === renderer.domElement) {
+            // Use movementX and movementY for pointer lock controls
+            camera.rotation.y -= event.movementX * 0.002;
+            camera.rotation.x -= event.movementY * 0.002;
+            
+            // Limit vertical look
+            camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
+        } else if (isDragging) {
+            const deltaX = event.clientX - previousMouseX;
+            camera.rotation.y -= (deltaX * 0.01);
+            
+            const deltaY = event.clientY - previousMouseY;
+            camera.rotation.x -= (deltaY * 0.01);
+            
+            // Limit vertical look
+            camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
+            
+            previousMouseX = event.clientX;
+            previousMouseY = event.clientY;
+        }
     }
 
     function handleMouseUp(event) {
@@ -229,15 +267,7 @@
             }
         }, timeStep * 1000);
     }
-
-    // Check collision with floor
-    function checkCollisionWithFloor(position) {
-        return position.y >= 0;
-    }
 });
-
-
-        
     </script>
 </body>
 </html>
