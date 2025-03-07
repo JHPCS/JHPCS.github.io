@@ -143,10 +143,14 @@
         isReloading: false,
         canShoot: true,
         isJumping: false,
-        gravity: 0.005,
+        gravity: 0.00098,        // Adjusted gravity
+        jumpPower: 0.035,        // Adjusted jump power
+        playerHeight: 1.7,       // Standard player height
+        maxJumpHeight: 3.0,      // Maximum jump height
         velocity: new THREE.Vector3(0, 0, 0),
         targetRespawnTime: 3000, // milliseconds
-        gameStarted: false
+        gameStarted: false,
+        jumpCooldown: false      // Added jump cooldown
     };
 
     // Set up Three.js scene
@@ -270,7 +274,7 @@
     // Camera holder setup for better control
     const cameraHolder = new THREE.Object3D();
     scene.add(cameraHolder);
-    cameraHolder.position.set(0, 1.7, 5); // Slightly taller for a more realistic height
+    cameraHolder.position.set(0, gameState.playerHeight, 5); // Using the player height constant
     
     // Pitch object for vertical rotation
     const pitchObject = new THREE.Object3D();
@@ -330,31 +334,54 @@
     initTargets();
     updateHUD();
 
+    // Helper function to check if player is on the ground
+    function isOnGround() {
+        return cameraHolder.position.y <= gameState.playerHeight;
+    }
+
     // Main game loop
     function animate() {
         requestAnimationFrame(animate);
         
         // Delta time for smoother animation regardless of frame rate
         const now = Date.now();
-        const deltaTime = now - (lastTime || now);
+        const deltaTime = Math.min(30, now - (lastTime || now)); // Cap delta time to prevent large jumps
         lastTime = now;
         
         // Apply gravity and handle jumping
         if (!isOnGround()) {
+            // Apply gravity when in the air
             gameState.velocity.y -= gameState.gravity * deltaTime;
-        } else if (gameState.velocity.y < 0) {
-            gameState.velocity.y = 0;
-            cameraHolder.position.y = 1.7; // Reset to exact ground height
-            gameState.isJumping = false;
+            
+            // Apply the vertical velocity to the camera position
+            cameraHolder.position.y += gameState.velocity.y * deltaTime;
+            
+            // Check if we've landed
+            if (cameraHolder.position.y <= gameState.playerHeight) {
+                // Land on the ground
+                cameraHolder.position.y = gameState.playerHeight;
+                gameState.velocity.y = 0;
+                gameState.isJumping = false;
+                
+                // Reset jump cooldown after a short delay
+                setTimeout(() => {
+                    gameState.jumpCooldown = false;
+                }, 250);
+            }
+            
+            // Limit maximum jump height
+            if (cameraHolder.position.y >= gameState.maxJumpHeight) {
+                cameraHolder.position.y = gameState.maxJumpHeight;
+                gameState.velocity.y = 0; // Stop upward movement
+            }
         }
         
-        // Apply velocity
-        cameraHolder.position.y += gameState.velocity.y * deltaTime;
-        
-        // Handle jumping
-        if (keyboardState['space'] && !gameState.isJumping && isOnGround()) {
-            gameState.velocity.y = 0.015;
+        // Handle jumping - only when on ground and space is pressed
+        if (keyboardState['space'] && !gameState.isJumping && isOnGround() && !gameState.jumpCooldown) {
+            // Apply jump velocity
+            gameState.velocity.y = gameState.jumpPower;
             gameState.isJumping = true;
+            gameState.jumpCooldown = true;
         }
         
         // Handle reloading
@@ -394,7 +421,8 @@
             
             // Keep player on the platform
             if (Math.abs(newPosition.x) < 14 && Math.abs(newPosition.z) < 14) {
-                cameraHolder.position.copy(newPosition);
+                cameraHolder.position.x = newPosition.x;
+                cameraHolder.position.z = newPosition.z;
             } else {
                 // Allow movement along the edge
                 if (Math.abs(newPosition.x) < 14) {
@@ -427,11 +455,6 @@
     
     let lastTime = 0;
     animate();
-
-    // Helper function to check if player is on the ground
-    function isOnGround() {
-        return cameraHolder.position.y <= 1.7;
-    }
     
     // Update all targets
     function updateTargets(deltaTime) {
