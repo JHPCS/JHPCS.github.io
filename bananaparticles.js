@@ -1,68 +1,147 @@
-// Set up Three.js scene
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87CEEB); // Sky blue background
+// Particles array
+const particles = [];
 
-// Add ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambientLight);
+// Update particles
+function updateParticles() {
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const particle = particles[i];
+        particle.position.add(particle.userData.velocity);
+        
+        // Apply gravity to particles
+        particle.userData.velocity.y -= 0.001;
+        
+        // Particle lifetime
+        particle.userData.lifetime -= 1;
+        if (particle.userData.lifetime <= 0) {
+            scene.remove(particle);
+            particles.splice(i, 1);
+            continue;
+        }
+        
+        // Check for collisions with targets
+        checkBulletCollision(particle);
+        
+        // Check for collision with ground
+        if (particle.position.y <= 0) {
+            // Create impact mark
+            createImpactMark(particle.position.clone());
+            
+            scene.remove(particle);
+            particles.splice(i, 1);
+        }
+    }
+}
 
-// Add directional light (sun)
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-directionalLight.position.set(10, 20, 10);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.width = 1024;
-directionalLight.shadow.mapSize.height = 1024;
-scene.add(directionalLight);
+// Create an impact mark on surface
+function createImpactMark(position) {
+    position.y = 0.01; // Slightly above ground
+    
+    const markGeometry = new THREE.CircleGeometry(0.1, 8);
+    const markMaterial = new THREE.MeshBasicMaterial({
+        color: 0x333333,
+        transparent: true,
+        opacity: 0.8
+    });
+    
+    const mark = new THREE.Mesh(markGeometry, markMaterial);
+    mark.rotation.x = -Math.PI / 2; // Lay flat
+    mark.position.copy(position);
+    scene.add(mark);
+    
+    // Fade out and remove after a delay
+    const fadeStep = 0.01;
+    const fadeInterval = setInterval(() => {
+        if (mark.material.opacity <= 0) {
+            clearInterval(fadeInterval);
+            scene.remove(mark);
+        } else {
+            mark.material.opacity -= fadeStep;
+        }
+    }, 100);
+}
 
-// Camera setup
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-document.body.appendChild(renderer.domElement);
+// Check bullet collision with targets
+function checkBulletCollision(bullet) {
+    for (let i = targets.length - 1; i >= 0; i--) {
+        const target = targets[i];
+        
+        // Simple distance-based collision
+        const distance = bullet.position.distanceTo(target.position);
+        
+        if (distance < 0.8 * Math.max(...target.scale.toArray())) {
+            // Hit confirmed!
+            showHitMarker();
+            
+            // Deal damage
+            target.userData.health -= 25;
+            target.userData.lastHitTime = Date.now();
+            
+            // Remove bullet
+            scene.remove(bullet);
+            bullets = particles.indexOf(bullet);
+            if (bullets !== -1) {
+                particles.splice(bullets, 1);
+            }
+            
+            // If target health <= 0, remove it
+            if (target.userData.health <= 0) {
+                // Increment score
+                gameState.score += 100;
+                updateHUD();
+                
+                // Create explosion effect
+                createExplosion(target.position.clone());
+                
+                // Remove target
+                scene.remove(target);
+                targets.splice(i, 1);
+                
+                // Schedule a new target to spawn
+                setTimeout(createTarget, gameState.targetRespawnTime);
+            }
+            
+            break; // Bullet hit something, stop checking
+        }
+    }
+}
 
-// Camera holder setup for better control
-const cameraHolder = new THREE.Object3D();
-scene.add(cameraHolder);
-cameraHolder.position.set(0, gameState.playerHeight, 5); // Using the player height constant
+// Create explosion effect
+function createExplosion(position) {
+    // Create multiple particles for explosion
+    const particleCount = 15;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const size = 0.1 + Math.random() * 0.2;
+        const geometry = new THREE.SphereGeometry(size, 8, 8);
+        const material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color(1, 0.5 + Math.random() * 0.5, 0),
+            transparent: true,
+            opacity: 0.8
+        });
+        
+        const particle = new THREE.Mesh(geometry, material);
+        particle.position.copy(position);
+        
+        // Random velocity in all directions
+        const velocity = new THREE.Vector3(
+            (Math.random() - 0.5) * 0.2,
+            Math.random() * 0.2,
+            (Math.random() - 0.5) * 0.2
+        );
+        
+        particle.userData = {
+            velocity: velocity,
+            lifetime: 30 + Math.floor(Math.random() * 20)
+        };
+        
+        scene.add(particle);
+        particles.push(particle);
+    }
+}
 
-// Pitch object for vertical rotation
-const pitchObject = new THREE.Object3D();
-cameraHolder.add(pitchObject);
-pitchObject.add(camera);
-camera.position.set(0, 0, 0);
-
-// Window resize handler
-window.addEventListener('resize', function() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// Create a larger platform
-const platformGeometry = new THREE.BoxGeometry(30, 1, 30);
-const platformMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x8B4513,
-    roughness: 0.8,
-    metalness: 0.2
-});
-const platform = new THREE.Mesh(platformGeometry, platformMaterial);
-platform.receiveShadow = true;
-scene.add(platform);
-
-// Add a ground texture
-const groundGeometry = new THREE.PlaneGeometry(100, 100);
-const groundMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x556B2F,
-    roughness: 0.9,
-    metalness: 0.1
-});
-const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-ground.rotation.x = -Math.PI / 2;
-ground.position.y = -0.5;
-ground.receiveShadow = true;
-scene.add(ground);
-
-// Raycaster for shooting
-const raycaster = new THREE.Raycaster();
+// Create muzzle flash
+function createMuzzleFlash() {
+    // Audio would normally go here
+    
+    // We could add a visual flash effect here if desired
+}
