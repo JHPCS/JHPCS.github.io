@@ -14,13 +14,9 @@ directionalLight.shadow.mapSize.width = 1024;
 directionalLight.shadow.mapSize.height = 1024;
 scene.add(directionalLight);
 
-// Camera setup
+// Setup renderer
+let renderer;
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-document.body.appendChild(renderer.domElement);
 
 // Camera holder setup for better control
 const cameraHolder = new THREE.Object3D();
@@ -33,12 +29,21 @@ cameraHolder.add(pitchObject);
 pitchObject.add(camera);
 camera.position.set(0, 0, 0);
 
-// Window resize handler
-window.addEventListener('resize', function() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+// Setup renderer function (called after DOM loaded)
+function setupRenderer() {
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-});
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    document.body.appendChild(renderer.domElement);
+    
+    // Window resize handler
+    window.addEventListener('resize', function() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+}
 
 // Create a larger platform
 const platformGeometry = new THREE.BoxGeometry(30, 1, 30);
