@@ -25,7 +25,7 @@ document.body.appendChild(renderer.domElement);
 // Camera holder setup for better control
 const cameraHolder = new THREE.Object3D();
 scene.add(cameraHolder);
-cameraHolder.position.set(0, gameState.playerHeight, 5); // Using the player height constant
+cameraHolder.position.set(0, gameState.playerHeight, 0); // Using the player height from gameState
 
 // Pitch object for vertical rotation
 const pitchObject = new THREE.Object3D();
@@ -40,7 +40,7 @@ window.addEventListener('resize', function() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Create a larger platform
+// Create a larger platform (hidden initially)
 const platformGeometry = new THREE.BoxGeometry(30, 1, 30);
 const platformMaterial = new THREE.MeshStandardMaterial({ 
     color: 0x8B4513,
@@ -49,9 +49,10 @@ const platformMaterial = new THREE.MeshStandardMaterial({
 });
 const platform = new THREE.Mesh(platformGeometry, platformMaterial);
 platform.receiveShadow = true;
+platform.visible = false;
 scene.add(platform);
 
-// Add a ground texture
+// Add a ground texture (hidden initially)
 const groundGeometry = new THREE.PlaneGeometry(100, 100);
 const groundMaterial = new THREE.MeshStandardMaterial({ 
     color: 0x556B2F,
@@ -62,7 +63,323 @@ const ground = new THREE.Mesh(groundGeometry, groundMaterial);
 ground.rotation.x = -Math.PI / 2;
 ground.position.y = -0.5;
 ground.receiveShadow = true;
+ground.visible = false;
 scene.add(ground);
 
-// Raycaster for shooting
+// Raycaster for shooting and portal interaction
 const raycaster = new THREE.Raycaster();
+
+// Extend game state with room-specific properties
+// (This won't overwrite your existing gameState properties)
+Object.assign(gameState, {
+    inStartingRoom: true,
+    startingRoom: null,
+    portals: [],
+    currentScene: 'startingRoom'
+});
+
+// Starting Room Setup
+function createStartingRoom() {
+    // Create a room container
+    const room = new THREE.Group();
+    scene.add(room);
+    
+    // Room dimensions
+    const roomWidth = 20;
+    const roomHeight = 10;
+    const roomDepth = 20;
+    
+    // Room walls, floor and ceiling
+    const wallMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xf5f5dc, // Beige
+        roughness: 0.8,
+        metalness: 0.2
+    });
+    
+    // Floor
+    const floorGeometry = new THREE.BoxGeometry(roomWidth, 0.5, roomDepth);
+    const floor = new THREE.Mesh(floorGeometry, wallMaterial);
+    floor.position.y = -0.25;
+    floor.receiveShadow = true;
+    room.add(floor);
+    
+    // Ceiling
+    const ceilingGeometry = new THREE.BoxGeometry(roomWidth, 0.5, roomDepth);
+    const ceiling = new THREE.Mesh(ceilingGeometry, wallMaterial);
+    ceiling.position.y = roomHeight;
+    ceiling.receiveShadow = true;
+    room.add(ceiling);
+    
+    // Walls
+    const wallThickness = 0.5;
+    
+    // Back wall
+    const backWallGeometry = new THREE.BoxGeometry(roomWidth, roomHeight, wallThickness);
+    const backWall = new THREE.Mesh(backWallGeometry, wallMaterial);
+    backWall.position.set(0, roomHeight/2, -roomDepth/2);
+    backWall.receiveShadow = true;
+    room.add(backWall);
+    
+    // Front wall (with opening)
+    const frontWallLeft = new THREE.Mesh(
+        new THREE.BoxGeometry(roomWidth/2 - 2, roomHeight, wallThickness),
+        wallMaterial
+    );
+    frontWallLeft.position.set(-roomWidth/4 - 1, roomHeight/2, roomDepth/2);
+    frontWallLeft.receiveShadow = true;
+    room.add(frontWallLeft);
+    
+    const frontWallRight = new THREE.Mesh(
+        new THREE.BoxGeometry(roomWidth/2 - 2, roomHeight, wallThickness),
+        wallMaterial
+    );
+    frontWallRight.position.set(roomWidth/4 + 1, roomHeight/2, roomDepth/2);
+    frontWallRight.receiveShadow = true;
+    room.add(frontWallRight);
+    
+    // Top of doorway
+    const doorTop = new THREE.Mesh(
+        new THREE.BoxGeometry(4, roomHeight/3, wallThickness),
+        wallMaterial
+    );
+    doorTop.position.set(0, roomHeight - roomHeight/6, roomDepth/2);
+    doorTop.receiveShadow = true;
+    room.add(doorTop);
+    
+    // Left wall
+    const leftWallGeometry = new THREE.BoxGeometry(wallThickness, roomHeight, roomDepth);
+    const leftWall = new THREE.Mesh(leftWallGeometry, wallMaterial);
+    leftWall.position.set(-roomWidth/2, roomHeight/2, 0);
+    leftWall.receiveShadow = true;
+    room.add(leftWall);
+    
+    // Right wall
+    const rightWallGeometry = new THREE.BoxGeometry(wallThickness, roomHeight, roomDepth);
+    const rightWall = new THREE.Mesh(rightWallGeometry, wallMaterial);
+    rightWall.position.set(roomWidth/2, roomHeight/2, 0);
+    rightWall.receiveShadow = true;
+    room.add(rightWall);
+    
+    // Add some lighting for the room
+    const roomLight = new THREE.PointLight(0xffffcc, 1, 30);
+    roomLight.position.set(0, roomHeight * 0.8, 0);
+    roomLight.castShadow = true;
+    room.add(roomLight);
+    
+    // Add portal positions for teleporting to target scenes
+    const portalPositions = [
+        { x: -7, y: 1.5, z: -8 },
+        { x: 0, y: 1.5, z: -8 },
+        { x: 7, y: 1.5, z: -8 },
+        { x: -7, y: 1.5, z: 8 },
+        { x: 7, y: 1.5, z: 8 }
+    ];
+    
+    const portals = [];
+    
+    // Create portals to different target areas
+    portalPositions.forEach((position, index) => {
+        const portalGeometry = new THREE.BoxGeometry(2, 3, 0.5);
+        const portalMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x00bfff,
+            emissive: 0x0080ff,
+            emissiveIntensity: 0.5,
+            transparent: true,
+            opacity: 0.7
+        });
+        
+        const portal = new THREE.Mesh(portalGeometry, portalMaterial);
+        portal.position.set(position.x, position.y, position.z);
+        
+        // If on back wall, rotate
+        if (position.z < 0) {
+            portal.rotation.y = Math.PI;
+        }
+        
+        portal.userData = {
+            isPortal: true,
+            targetId: `target_${index + 1}`,
+            label: `Target ${index + 1}`
+        };
+        
+        room.add(portal);
+        portals.push(portal);
+        
+        // Add text label
+        if (defaultFont) {
+            const textGeometry = new THREE.TextGeometry(portal.userData.label, {
+                font: defaultFont,
+                size: 0.3,
+                height: 0.05
+            });
+            const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+            
+            // Center text
+            textGeometry.computeBoundingBox();
+            const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
+            textMesh.position.set(position.x - textWidth/2, position.y + 1.7, position.z + 0.3);
+            
+            if (position.z < 0) {
+                textMesh.rotation.y = Math.PI;
+                textMesh.position.z = position.z - 0.3;
+            }
+            
+            room.add(textMesh);
+        }
+    });
+    
+    return { room, portals };
+}
+
+// We need a way to load fonts for the text labels
+let defaultFont = null;
+const fontLoader = new THREE.FontLoader();
+fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+    defaultFont = font;
+    const { room, portals } = createStartingRoom();
+    gameState.startingRoom = room;
+    gameState.portals = portals;
+});
+
+// Function to check portal intersection and handle teleportation
+function checkPortalIntersection() {
+    if (!gameState.inStartingRoom || !gameState.portals) return;
+    
+    // Create a ray from the camera position in the direction it's looking
+    raycaster.set(cameraHolder.position, new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion));
+    
+    // Check for intersections with portals
+    const intersects = raycaster.intersectObjects(gameState.portals);
+    
+    if (intersects.length > 0 && intersects[0].distance < 2) {
+        const portal = intersects[0].object;
+        teleportToTargetScene(portal.userData.targetId);
+    }
+}
+
+// Function to teleport to a target scene
+function teleportToTargetScene(targetId) {
+    // Hide starting room
+    gameState.startingRoom.visible = false;
+    gameState.inStartingRoom = false;
+    
+    // Reset camera position for the target area
+    cameraHolder.position.set(0, gameState.playerHeight, 5);
+    pitchObject.rotation.x = 0;
+    cameraHolder.rotation.y = 0;
+    
+    // Reset velocity when teleporting
+    gameState.velocity.set(0, 0, 0);
+    
+    // Show platform and ground for target area
+    platform.visible = true;
+    ground.visible = true;
+    
+    // Initialize the target scene
+    initTargets();
+    
+    gameState.currentScene = targetId;
+    
+    // Add a return portal
+    createReturnPortal();
+}
+
+// Function to create a return portal back to the starting room
+function createReturnPortal() {
+    const returnPortalGeometry = new THREE.BoxGeometry(2, 3, 0.5);
+    const returnPortalMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xff4500,
+        emissive: 0xff2000,
+        emissiveIntensity: 0.5,
+        transparent: true,
+        opacity: 0.7
+    });
+    
+    const returnPortal = new THREE.Mesh(returnPortalGeometry, returnPortalMaterial);
+    returnPortal.position.set(0, 1.5, -10);
+    returnPortal.userData = {
+        isReturnPortal: true
+    };
+    
+    scene.add(returnPortal);
+    gameState.returnPortal = returnPortal;
+    
+    // Add text label if font is loaded
+    if (defaultFont) {
+        const textGeometry = new THREE.TextGeometry("Return to Hub", {
+            font: defaultFont,
+            size: 0.3,
+            height: 0.05
+        });
+        const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+        
+        // Center text
+        textGeometry.computeBoundingBox();
+        const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
+        textMesh.position.set(-textWidth/2, 3.2, -10);
+        
+        scene.add(textMesh);
+        gameState.returnPortalText = textMesh;
+    }
+}
+
+// Function to check return portal intersection
+function checkReturnPortalIntersection() {
+    if (gameState.inStartingRoom || !gameState.returnPortal) return;
+    
+    // Create a ray from the camera position in the direction it's looking
+    raycaster.set(cameraHolder.position, new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion));
+    
+    // Check for intersections with return portal
+    const intersects = raycaster.intersectObject(gameState.returnPortal);
+    
+    if (intersects.length > 0 && intersects[0].distance < 2) {
+        returnToStartingRoom();
+    }
+}
+
+// Function to return to the starting room
+function returnToStartingRoom() {
+    // Hide platform and ground
+    platform.visible = false;
+    ground.visible = false;
+    
+    // Remove return portal
+    if (gameState.returnPortal) {
+        scene.remove(gameState.returnPortal);
+        gameState.returnPortal = null;
+    }
+    
+    // Remove return portal text
+    if (gameState.returnPortalText) {
+        scene.remove(gameState.returnPortalText);
+        gameState.returnPortalText = null;
+    }
+    
+    // Remove all targets
+    for (const target of targets) {
+        scene.remove(target);
+    }
+    targets.length = 0;
+    
+    // Show starting room
+    gameState.startingRoom.visible = true;
+    gameState.inStartingRoom = true;
+    
+    // Reset camera position
+    cameraHolder.position.set(0, gameState.playerHeight, 0);
+    
+    // Reset velocity when teleporting back
+    gameState.velocity.set(0, 0, 0);
+    
+    gameState.currentScene = 'startingRoom';
+}
+
+// Update function for portal interactions (to be called in your main update loop)
+function updateRoomInteractions(deltaTime) {
+    // Check portal intersections
+    checkPortalIntersection();
+    checkReturnPortalIntersection();
+}
