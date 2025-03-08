@@ -31,10 +31,14 @@ function createTarget() {
         isMoving: false // Flag to control if target should move
     };
     
-    scene.add(target);
+    // Don't add to scene immediately in starting room
+    if (!gameState.inStartingRoom) {
+        scene.add(target);
+    }
+    
     targets.push(target);
     
-    // Setup movement properties but don't move in starting room
+    // Setup movement properties
     const speed = 0.01 + Math.random() * 0.02;
     const direction = new THREE.Vector3(
         (Math.random() - 0.5) * 2,
@@ -56,10 +60,13 @@ function initTargets() {
     }
     targets.length = 0;
     
-    // Create new targets
-    for (let i = 0; i < maxTargets; i++) {
-        const target = createTarget();
-        target.userData.isMoving = true; // Enable movement for targets in target rooms
+    // Create new targets only if not in starting room
+    if (!gameState.inStartingRoom) {
+        for (let i = 0; i < maxTargets; i++) {
+            const target = createTarget();
+            target.userData.isMoving = true; // Enable movement for targets in target rooms
+            scene.add(target); // Add to scene only when not in starting room
+        }
     }
 }
 
@@ -113,5 +120,6 @@ function updateTargets(deltaTime) {
     if (targets.length < maxTargets && !gameState.inStartingRoom) {
         const newTarget = createTarget();
         newTarget.userData.isMoving = true; // Enable movement for new targets
+        scene.add(newTarget); // Add to scene
     }
 }
