@@ -70,12 +70,13 @@ scene.add(ground);
 const raycaster = new THREE.Raycaster();
 
 // Extend game state with room-specific properties
-// (This won't overwrite your existing gameState properties)
 Object.assign(gameState, {
     inStartingRoom: true,
     startingRoom: null,
     portals: [],
-    currentScene: 'startingRoom'
+    currentScene: 'startingRoom',
+    returnPortal: null,
+    returnPortalText: null
 });
 
 // Starting Room Setup
@@ -204,35 +205,12 @@ function createStartingRoom() {
         
         room.add(portal);
         portals.push(portal);
-        
-        // Add text label
-        if (defaultFont) {
-            const textGeometry = new THREE.TextGeometry(portal.userData.label, {
-                font: defaultFont,
-                size: 0.3,
-                height: 0.05
-            });
-            const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-            
-            // Center text
-            textGeometry.computeBoundingBox();
-            const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
-            textMesh.position.set(position.x - textWidth/2, position.y + 1.7, position.z + 0.3);
-            
-            if (position.z < 0) {
-                textMesh.rotation.y = Math.PI;
-                textMesh.position.z = position.z - 0.3;
-            }
-            
-            room.add(textMesh);
-        }
     });
     
     return { room, portals };
 }
 
-// We need a way to load fonts for the text labels
+// Load fonts and create starting room
 let defaultFont = null;
 const fontLoader = new THREE.FontLoader();
 fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
@@ -240,11 +218,46 @@ fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.
     const { room, portals } = createStartingRoom();
     gameState.startingRoom = room;
     gameState.portals = portals;
+    
+    // Add text labels to portals once font is loaded
+    if (portals.length > 0 && font) {
+        addPortalLabels(portals, font);
+    }
 });
+
+// Function to add text labels to portals
+function addPortalLabels(portals, font) {
+    portals.forEach(portal => {
+        const textGeometry = new THREE.TextGeometry(portal.userData.label, {
+            font: font,
+            size: 0.3,
+            height: 0.05
+        });
+        const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+        
+        // Center text
+        textGeometry.computeBoundingBox();
+        const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
+        const isBackWall = portal.position.z < 0;
+        
+        textMesh.position.set(
+            portal.position.x - textWidth/2, 
+            portal.position.y + 1.7, 
+            isBackWall ? portal.position.z - 0.3 : portal.position.z + 0.3
+        );
+        
+        if (isBackWall) {
+            textMesh.rotation.y = Math.PI;
+        }
+        
+        gameState.startingRoom.add(textMesh);
+    });
+}
 
 // Function to check portal intersection and handle teleportation
 function checkPortalIntersection() {
-    if (!gameState.inStartingRoom || !gameState.portals) return;
+    if (!gameState.inStartingRoom || !gameState.portals || gameState.portals.length === 0) return;
     
     // Create a ray from the camera position in the direction it's looking
     raycaster.set(cameraHolder.position, new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion));
@@ -287,6 +300,14 @@ function teleportToTargetScene(targetId) {
 
 // Function to create a return portal back to the starting room
 function createReturnPortal() {
+    // Remove existing return portal if any
+    if (gameState.returnPortal) {
+        scene.remove(gameState.returnPortal);
+    }
+    if (gameState.returnPortalText) {
+        scene.remove(gameState.returnPortalText);
+    }
+    
     const returnPortalGeometry = new THREE.BoxGeometry(2, 3, 0.5);
     const returnPortalMaterial = new THREE.MeshStandardMaterial({ 
         color: 0xff4500,
