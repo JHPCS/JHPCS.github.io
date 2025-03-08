@@ -49,6 +49,7 @@ const platformMaterial = new THREE.MeshStandardMaterial({
 });
 const platform = new THREE.Mesh(platformGeometry, platformMaterial);
 platform.receiveShadow = true;
+platform.position.y = -0.5; // Position it properly
 platform.visible = false;
 scene.add(platform);
 
@@ -169,18 +170,18 @@ function createStartingRoom() {
     
     // Add portal positions for teleporting to target scenes
     const portalPositions = [
-        { x: -7, y: 1.5, z: -8 },
-        { x: 0, y: 1.5, z: -8 },
-        { x: 7, y: 1.5, z: -8 },
-        { x: -7, y: 1.5, z: 8 },
-        { x: 7, y: 1.5, z: 8 }
+        { x: -7, y: 1.5, z: -9.7 }, // Moved closer to wall
+        { x: 0, y: 1.5, z: -9.7 },  // Moved closer to wall
+        { x: 7, y: 1.5, z: -9.7 },  // Moved closer to wall
+        { x: -7, y: 1.5, z: 9.7 },  // Moved closer to wall
+        { x: 7, y: 1.5, z: 9.7 }    // Moved closer to wall
     ];
     
     const portals = [];
     
     // Create portals to different target areas
     portalPositions.forEach((position, index) => {
-        const portalGeometry = new THREE.BoxGeometry(2, 3, 0.5);
+        const portalGeometry = new THREE.BoxGeometry(2, 3, 0.2); // Thinner portals
         const portalMaterial = new THREE.MeshStandardMaterial({ 
             color: 0x00bfff,
             emissive: 0x0080ff,
@@ -194,7 +195,9 @@ function createStartingRoom() {
         
         // If on back wall, rotate
         if (position.z < 0) {
-            portal.rotation.y = Math.PI;
+            portal.rotation.y = 0; // Fixed rotation for back wall portals
+        } else {
+            portal.rotation.y = Math.PI; // Fixed rotation for front wall portals
         }
         
         portal.userData = {
@@ -241,13 +244,19 @@ function addPortalLabels(portals, font) {
         const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
         const isBackWall = portal.position.z < 0;
         
-        textMesh.position.set(
-            portal.position.x - textWidth/2, 
-            portal.position.y + 1.7, 
-            isBackWall ? portal.position.z - 0.3 : portal.position.z + 0.3
-        );
-        
+        // Position text properly based on wall
         if (isBackWall) {
+            textMesh.position.set(
+                portal.position.x - textWidth/2, 
+                portal.position.y + 1.7, 
+                portal.position.z + 0.2
+            );
+        } else {
+            textMesh.position.set(
+                portal.position.x - textWidth/2, 
+                portal.position.y + 1.7, 
+                portal.position.z - 0.2
+            );
             textMesh.rotation.y = Math.PI;
         }
         
@@ -260,7 +269,8 @@ function checkPortalIntersection() {
     if (!gameState.inStartingRoom || !gameState.portals || gameState.portals.length === 0) return;
     
     // Create a ray from the camera position in the direction it's looking
-    raycaster.set(cameraHolder.position, new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion));
+    const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+    raycaster.set(cameraHolder.position, direction);
     
     // Check for intersections with portals
     const intersects = raycaster.intersectObjects(gameState.portals);
@@ -274,8 +284,10 @@ function checkPortalIntersection() {
 // Function to teleport to a target scene
 function teleportToTargetScene(targetId) {
     // Hide starting room
-    gameState.startingRoom.visible = false;
-    gameState.inStartingRoom = false;
+    if (gameState.startingRoom) {
+        gameState.startingRoom.visible = false;
+        gameState.inStartingRoom = false;
+    }
     
     // Reset camera position for the target area
     cameraHolder.position.set(0, gameState.playerHeight, 5);
@@ -351,7 +363,8 @@ function checkReturnPortalIntersection() {
     if (gameState.inStartingRoom || !gameState.returnPortal) return;
     
     // Create a ray from the camera position in the direction it's looking
-    raycaster.set(cameraHolder.position, new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion));
+    const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+    raycaster.set(cameraHolder.position, direction);
     
     // Check for intersections with return portal
     const intersects = raycaster.intersectObject(gameState.returnPortal);
@@ -386,8 +399,10 @@ function returnToStartingRoom() {
     targets.length = 0;
     
     // Show starting room
-    gameState.startingRoom.visible = true;
-    gameState.inStartingRoom = true;
+    if (gameState.startingRoom) {
+        gameState.startingRoom.visible = true;
+        gameState.inStartingRoom = true;
+    }
     
     // Reset camera position
     cameraHolder.position.set(0, gameState.playerHeight, 0);
