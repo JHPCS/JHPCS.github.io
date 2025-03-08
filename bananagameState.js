@@ -13,7 +13,22 @@ const gameState = {
     velocity: new THREE.Vector3(0, 0, 0),
     targetRespawnTime: 3000, // milliseconds
     gameStarted: false,
-    jumpCooldown: false   // Added jump cooldown
+    jumpCooldown: false,   // Added jump cooldown
+    
+    // Menu and game state flags
+    isInMenu: true,        // Start in menu
+    isPaused: false,       // Pause state
+    
+    // Game settings from menu
+    targetCount: 5,        // Default target count
+    difficulty: 'normal',  // Default difficulty
+    
+    // Difficulty settings (speed multipliers)
+    difficultySpeeds: {
+        'easy': 0.7,
+        'normal': 1.0,
+        'hard': 1.5
+    }
 };
 
 // Recoil animation variables
