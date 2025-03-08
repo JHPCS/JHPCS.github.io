@@ -106,7 +106,7 @@ function handleMouseUp(event) {
 
 // Helper function to check if player is on the ground
 function isOnGround() {
-    return Math.abs(cameraHolder.position.y - gameState.playerHeight) < 0.01;
+    return cameraHolder.position.y <= gameState.playerHeight + 0.01;
 }
 
 // Shooting function
