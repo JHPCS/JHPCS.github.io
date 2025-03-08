@@ -70,16 +70,6 @@ scene.add(ground);
 // Raycaster for shooting and portal interaction
 const raycaster = new THREE.Raycaster();
 
-// Extend game state with room-specific properties
-Object.assign(gameState, {
-    inStartingRoom: true,
-    startingRoom: null,
-    portals: [],
-    currentScene: 'startingRoom',
-    returnPortal: null,
-    returnPortalText: null
-});
-
 // Starting Room Setup
 function createStartingRoom() {
     // Create a room container
@@ -170,11 +160,11 @@ function createStartingRoom() {
     
     // Add portal positions for teleporting to target scenes
     const portalPositions = [
-        { x: -7, y: 1.5, z: -9.7 }, // Moved closer to wall
-        { x: 0, y: 1.5, z: -9.7 },  // Moved closer to wall
-        { x: 7, y: 1.5, z: -9.7 },  // Moved closer to wall
-        { x: -7, y: 1.5, z: 9.7 },  // Moved closer to wall
-        { x: 7, y: 1.5, z: 9.7 }    // Moved closer to wall
+        { x: -7, y: 1.5, z: -9.7 }, // Back wall left
+        { x: 0, y: 1.5, z: -9.7 },  // Back wall center
+        { x: 7, y: 1.5, z: -9.7 },  // Back wall right
+        { x: -7, y: 1.5, z: 9.7 },  // Front wall left
+        { x: 7, y: 1.5, z: 9.7 }    // Front wall right
     ];
     
     const portals = [];
@@ -225,6 +215,12 @@ fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.
     // Add text labels to portals once font is loaded
     if (portals.length > 0 && font) {
         addPortalLabels(portals, font);
+    }
+    
+    // Make sure no targets are created in the starting room
+    while (targets.length > 0) {
+        const target = targets.pop();
+        scene.remove(target);
     }
 });
 
