@@ -13,19 +13,13 @@ const gameState = {
     velocity: new THREE.Vector3(0, 0, 0),
     targetRespawnTime: 3000, // milliseconds
     gameStarted: false,
-    jumpCooldown: false,   // Added jump cooldown
-    
-    // Room-specific properties
-    inStartingRoom: true,
-    startingRoom: null,
-    portals: [],
-    currentScene: 'startingRoom',
-    returnPortal: null,
-    returnPortalText: null
+    jumpCooldown: false   // Added jump cooldown
 };
+
 // Recoil animation variables
 let recoil = 0;
-const maxRecoil = 0.15;         // Increased from 0.05 to 0.15
-const recoilRecoverySpeed = 0.008; // Slightly reduced to make recoil last longer
+const maxRecoil = 0.05;
+const recoilRecoverySpeed = 0.01;
+
 // Timing variables
 let lastTime = 0;
