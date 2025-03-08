@@ -1,6 +1,6 @@
 // Create targets array
 const targets = [];
-const maxTargets = 5;
+let maxTargets = 5; // Will be set from menu selection
 
 // Function to create a target
 function createTarget() {
@@ -33,8 +33,9 @@ function createTarget() {
     scene.add(target);
     targets.push(target);
     
-    // Make targets move
-    const speed = 0.01 + Math.random() * 0.02;
+    // Make targets move with difficulty adjustment
+    const difficultyMultiplier = gameState.difficultySpeeds[gameState.difficulty];
+    const speed = (0.01 + Math.random() * 0.02) * difficultyMultiplier;
     const direction = new THREE.Vector3(
         (Math.random() - 0.5) * 2,
         0,
@@ -49,6 +50,9 @@ function createTarget() {
 
 // Initialize targets
 function initTargets() {
+    // Update maxTargets from game state
+    maxTargets = gameState.targetCount;
+    
     // Clear any existing targets
     for (const target of targets) {
         scene.remove(target);
@@ -63,6 +67,9 @@ function initTargets() {
 
 // Update all targets
 function updateTargets(deltaTime) {
+    // Don't update if game is paused or in menu
+    if (gameState.isPaused || gameState.isInMenu) return;
+    
     for (let i = targets.length - 1; i >= 0; i--) {
         const target = targets[i];
         
