@@ -16,7 +16,7 @@ function createTarget() {
     const platformSize = 12; // Smaller than actual platform to keep targets on it
     target.position.set(
         (Math.random() - 0.5) * platformSize,
-        1.5, // Just above the platform
+        0.5, // Position at half height above the platform
         (Math.random() - 0.5) * platformSize
     );
     
@@ -27,13 +27,14 @@ function createTarget() {
     target.userData = {
         health: 100,
         id: Math.random().toString(36).substr(2, 9),
-        lastHitTime: 0
+        lastHitTime: 0,
+        isMoving: false // Flag to control if target should move
     };
     
     scene.add(target);
     targets.push(target);
     
-    // Make targets move
+    // Setup movement properties but don't move in starting room
     const speed = 0.01 + Math.random() * 0.02;
     const direction = new THREE.Vector3(
         (Math.random() - 0.5) * 2,
@@ -57,32 +58,38 @@ function initTargets() {
     
     // Create new targets
     for (let i = 0; i < maxTargets; i++) {
-        createTarget();
+        const target = createTarget();
+        target.userData.isMoving = true; // Enable movement for targets in target rooms
     }
 }
 
 // Update all targets
 function updateTargets(deltaTime) {
+    if (!deltaTime) return; // Prevent NaN values
+    
     for (let i = targets.length - 1; i >= 0; i--) {
         const target = targets[i];
         
-        // Move the target
-        const moveAmount = target.userData.speed * deltaTime;
-        target.position.x += target.userData.direction.x * moveAmount;
-        target.position.z += target.userData.direction.z * moveAmount;
-        
-        // Bounce off edges
-        if (Math.abs(target.position.x) > 14) {
-            target.userData.direction.x *= -1;
-            target.position.x = Math.sign(target.position.x) * 14;
+        // Only move targets if they're supposed to move and not in starting room
+        if (target.userData.isMoving && !gameState.inStartingRoom) {
+            // Move the target
+            const moveAmount = target.userData.speed * deltaTime;
+            target.position.x += target.userData.direction.x * moveAmount;
+            target.position.z += target.userData.direction.z * moveAmount;
+            
+            // Bounce off edges
+            if (Math.abs(target.position.x) > 14) {
+                target.userData.direction.x *= -1;
+                target.position.x = Math.sign(target.position.x) * 14;
+            }
+            if (Math.abs(target.position.z) > 14) {
+                target.userData.direction.z *= -1;
+                target.position.z = Math.sign(target.position.z) * 14;
+            }
+            
+            // Rotate target
+            target.rotation.y += 0.01 * deltaTime;
         }
-        if (Math.abs(target.position.z) > 14) {
-            target.userData.direction.z *= -1;
-            target.position.z = Math.sign(target.position.z) * 14;
-        }
-        
-        // Rotate target
-        target.rotation.y += 0.01 * deltaTime;
         
         // Color based on health
         const healthPercent = target.userData.health / 100;
@@ -102,8 +109,9 @@ function updateTargets(deltaTime) {
         }
     }
     
-    // Respawn targets if needed
-    if (targets.length < maxTargets) {
-        createTarget();
+    // Respawn targets if needed and not in starting room
+    if (targets.length < maxTargets && !gameState.inStartingRoom) {
+        const newTarget = createTarget();
+        newTarget.userData.isMoving = true; // Enable movement for new targets
     }
 }
