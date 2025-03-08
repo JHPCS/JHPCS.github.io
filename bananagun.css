@@ -1,0 +1,106 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+canvas {
+    display: block;
+}
+#gun-image {
+    position: fixed;
+    bottom: -50px;
+    right: -100px;
+    width: 400px;
+    height: auto;
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+#crosshair {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 10000;
+}
+#crosshair::after, #crosshair::before {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.7);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#crosshair::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+#hud {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    color: white;
+    font-size: 18px;
+    z-index: 10000;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5px;
+    pointer-events: none;
+}
+#hit-marker {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    z-index: 10001;
+}
+#hit-marker::before, #hit-marker::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: rgba(255, 0, 0, 0.8);
+    top: 50%;
+    left: 0;
+}
+#hit-marker::before {
+    transform: rotate(45deg);
+}
+#hit-marker::after {
+    transform: rotate(-45deg);
+}
+#instructions {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 10002;
+    max-width: 400px;
+}
+#instructions h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+#instructions ul {
+    padding-left: 20px;
+    margin-bottom: 0;
+}
