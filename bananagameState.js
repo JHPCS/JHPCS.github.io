@@ -18,8 +18,8 @@ const gameState = {
 
 // Recoil animation variables
 let recoil = 0;
-const maxRecoil = 0.05;
-const recoilRecoverySpeed = 0.01;
+const maxRecoil = 0.15;         // Increased from 0.05 to 0.15
+const recoilRecoverySpeed = 0.008; // Slightly reduced to make recoil last longer
 
 // Timing variables
 let lastTime = 0;
