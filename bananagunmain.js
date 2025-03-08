@@ -108,15 +108,15 @@ function animate() {
     // Update particles
     updateParticles();
     
-    // Gun recoil recovery
-    if (recoil > 0) {
-        recoil -= recoilRecoverySpeed;
-        if (recoil < 0) recoil = 0;
-        
-        // Apply recoil to gun image
-        const gunImage = document.getElementById('gun-image');
-        gunImage.style.transform = `translateY(${-recoil * 100}px)`;
-    }
+// In your animate function where you apply recoil
+if (recoil > 0) {
+    recoil -= recoilRecoverySpeed;
+    if (recoil < 0) recoil = 0;
+    
+    // Increase the multiplier to make the recoil movement more pronounced
+    const gunImage = document.getElementById('gun-image');
+    gunImage.style.transform = `translateY(${-recoil * 200}px)`; // Increased from 100 to 200
+}
     
     renderer.render(scene, camera);
 }
