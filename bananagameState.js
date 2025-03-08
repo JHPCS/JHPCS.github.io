@@ -15,7 +15,7 @@ const gameState = {
     gameStarted: false,
     jumpCooldown: false,   // Added jump cooldown
     
-    // Added room-specific properties (these will be extended in scene.js)
+    // Room-specific properties
     inStartingRoom: true,
     startingRoom: null,
     portals: [],
@@ -23,11 +23,9 @@ const gameState = {
     returnPortal: null,
     returnPortalText: null
 };
-
 // Recoil animation variables
 let recoil = 0;
 const maxRecoil = 0.15;         // Increased from 0.05 to 0.15
 const recoilRecoverySpeed = 0.008; // Slightly reduced to make recoil last longer
-
 // Timing variables
 let lastTime = 0;
