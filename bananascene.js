@@ -3,7 +3,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x87CEEB); // Sky blue background
 
 // Add ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, A0.5);
 scene.add(ambientLight);
 
 // Add directional light (sun)
@@ -70,140 +70,7 @@ scene.add(ground);
 // Raycaster for shooting and portal interaction
 const raycaster = new THREE.Raycaster();
 
-// Starting Room Setup
-function createStartingRoom() {
-    // Create a room container
-    const room = new THREE.Group();
-    scene.add(room);
-    
-    // Room dimensions
-    const roomWidth = 20;
-    const roomHeight = 10;
-    const roomDepth = 20;
-    
-    // Room walls, floor and ceiling
-    const wallMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0xf5f5dc, // Beige
-        roughness: 0.8,
-        metalness: 0.2
-    });
-    
-    // Floor
-    const floorGeometry = new THREE.BoxGeometry(roomWidth, 0.5, roomDepth);
-    const floor = new THREE.Mesh(floorGeometry, wallMaterial);
-    floor.position.y = -0.25;
-    floor.receiveShadow = true;
-    room.add(floor);
-    
-    // Ceiling
-    const ceilingGeometry = new THREE.BoxGeometry(roomWidth, 0.5, roomDepth);
-    const ceiling = new THREE.Mesh(ceilingGeometry, wallMaterial);
-    ceiling.position.y = roomHeight;
-    ceiling.receiveShadow = true;
-    room.add(ceiling);
-    
-    // Walls
-    const wallThickness = 0.5;
-    
-    // Back wall
-    const backWallGeometry = new THREE.BoxGeometry(roomWidth, roomHeight, wallThickness);
-    const backWall = new THREE.Mesh(backWallGeometry, wallMaterial);
-    backWall.position.set(0, roomHeight/2, -roomDepth/2);
-    backWall.receiveShadow = true;
-    room.add(backWall);
-    
-    // Front wall (with opening)
-    const frontWallLeft = new THREE.Mesh(
-        new THREE.BoxGeometry(roomWidth/2 - 2, roomHeight, wallThickness),
-        wallMaterial
-    );
-    frontWallLeft.position.set(-roomWidth/4 - 1, roomHeight/2, roomDepth/2);
-    frontWallLeft.receiveShadow = true;
-    room.add(frontWallLeft);
-    
-    const frontWallRight = new THREE.Mesh(
-        new THREE.BoxGeometry(roomWidth/2 - 2, roomHeight, wallThickness),
-        wallMaterial
-    );
-    frontWallRight.position.set(roomWidth/4 + 1, roomHeight/2, roomDepth/2);
-    frontWallRight.receiveShadow = true;
-    room.add(frontWallRight);
-    
-    // Top of doorway
-    const doorTop = new THREE.Mesh(
-        new THREE.BoxGeometry(4, roomHeight/3, wallThickness),
-        wallMaterial
-    );
-    doorTop.position.set(0, roomHeight - roomHeight/6, roomDepth/2);
-    doorTop.receiveShadow = true;
-    room.add(doorTop);
-    
-    // Left wall
-    const leftWallGeometry = new THREE.BoxGeometry(wallThickness, roomHeight, roomDepth);
-    const leftWall = new THREE.Mesh(leftWallGeometry, wallMaterial);
-    leftWall.position.set(-roomWidth/2, roomHeight/2, 0);
-    leftWall.receiveShadow = true;
-    room.add(leftWall);
-    
-    // Right wall
-    const rightWallGeometry = new THREE.BoxGeometry(wallThickness, roomHeight, roomDepth);
-    const rightWall = new THREE.Mesh(rightWallGeometry, wallMaterial);
-    rightWall.position.set(roomWidth/2, roomHeight/2, 0);
-    rightWall.receiveShadow = true;
-    room.add(rightWall);
-    
-    // Add some lighting for the room
-    const roomLight = new THREE.PointLight(0xffffcc, 1, 30);
-    roomLight.position.set(0, roomHeight * 0.8, 0);
-    roomLight.castShadow = true;
-    room.add(roomLight);
-    
-    // Add portal positions for teleporting to target scenes
-    const portalPositions = [
-        { x: -7, y: 1.5, z: -9.7 }, // Back wall left
-        { x: 0, y: 1.5, z: -9.7 },  // Back wall center
-        { x: 7, y: 1.5, z: -9.7 },  // Back wall right
-        { x: -7, y: 1.5, z: 9.7 },  // Front wall left
-        { x: 7, y: 1.5, z: 9.7 }    // Front wall right
-    ];
-    
-    const portals = [];
-    
-    // Create portals to different target areas
-    portalPositions.forEach((position, index) => {
-        const portalGeometry = new THREE.BoxGeometry(2, 3, 0.2); // Thinner portals
-        const portalMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x00bfff,
-            emissive: 0x0080ff,
-            emissiveIntensity: 0.5,
-            transparent: true,
-            opacity: 0.7
-        });
-        
-        const portal = new THREE.Mesh(portalGeometry, portalMaterial);
-        portal.position.set(position.x, position.y, position.z);
-        
-        // If on back wall, rotate
-        if (position.z < 0) {
-            portal.rotation.y = 0; // Fixed rotation for back wall portals
-        } else {
-            portal.rotation.y = Math.PI; // Fixed rotation for front wall portals
-        }
-        
-        portal.userData = {
-            isPortal: true,
-            targetId: `target_${index + 1}`,
-            label: `Target ${index + 1}`
-        };
-        
-        room.add(portal);
-        portals.push(portal);
-    });
-    
-    return { room, portals };
-}
-
-// Load fonts and create starting room
+// Load fonts
 let defaultFont = null;
 const fontLoader = new THREE.FontLoader();
 fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
@@ -223,59 +90,6 @@ fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.
         scene.remove(target);
     }
 });
-
-// Function to add text labels to portals
-function addPortalLabels(portals, font) {
-    portals.forEach(portal => {
-        const textGeometry = new THREE.TextGeometry(portal.userData.label, {
-            font: font,
-            size: 0.3,
-            height: 0.05
-        });
-        const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-        
-        // Center text
-        textGeometry.computeBoundingBox();
-        const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
-        const isBackWall = portal.position.z < 0;
-        
-        // Position text properly based on wall
-        if (isBackWall) {
-            textMesh.position.set(
-                portal.position.x - textWidth/2, 
-                portal.position.y + 1.7, 
-                portal.position.z + 0.2
-            );
-        } else {
-            textMesh.position.set(
-                portal.position.x - textWidth/2, 
-                portal.position.y + 1.7, 
-                portal.position.z - 0.2
-            );
-            textMesh.rotation.y = Math.PI;
-        }
-        
-        gameState.startingRoom.add(textMesh);
-    });
-}
-
-// Function to check portal intersection and handle teleportation
-function checkPortalIntersection() {
-    if (!gameState.inStartingRoom || !gameState.portals || gameState.portals.length === 0) return;
-    
-    // Create a ray from the camera position in the direction it's looking
-    const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-    raycaster.set(cameraHolder.position, direction);
-    
-    // Check for intersections with portals
-    const intersects = raycaster.intersectObjects(gameState.portals);
-    
-    if (intersects.length > 0 && intersects[0].distance < 2) {
-        const portal = intersects[0].object;
-        teleportToTargetScene(portal.userData.targetId);
-    }
-}
 
 // Function to teleport to a target scene
 function teleportToTargetScene(targetId) {
