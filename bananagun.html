@@ -7,24 +7,63 @@
     <link rel="stylesheet" href="bananagun.css">
 </head>
 <body>
-    <div id="crosshair"></div>
-    <div id="hit-marker"></div>
-    <img src="https://i.postimg.cc/zBbXZZZ8/bwom.png" id="gun-image">
-    <div id="hud">
-        <div>Score: <span id="score">0</span></div>
-        <div>Ammo: <span id="ammo">30</span> / <span id="max-ammo">30</span></div>
+    <!-- Title Screen and Menu -->
+    <div id="title-screen">
+        <h1>Banana Gun Game</h1>
+        <button id="start-button">Start Game</button>
+        <div class="menu-options">
+            <div class="option">
+                <label for="target-count">Number of Targets:</label>
+                <select id="target-count">
+                    <option value="3">3</option>
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                </select>
+            </div>
+            <div class="option">
+                <label for="difficulty">Difficulty:</label>
+                <select id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+        </div>
     </div>
-    <div id="instructions">
-        <h2>Controls</h2>
-        <ul>
-            <li>WASD - Move</li>
-            <li>Mouse - Look around</li>
-            <li>Left Click - Shoot</li>
-            <li>R - Reload</li>
-            <li>Space - Jump</li>
-            <li>Click anywhere to start</li>
-        </ul>
+
+    <!-- Game UI elements (hidden initially) -->
+    <div id="game-ui" style="display: none;">
+        <div id="crosshair"></div>
+        <div id="hit-marker"></div>
+        <img src="https://i.postimg.cc/zBbXZZZ8/bwom.png" id="gun-image">
+        <div id="hud">
+            <div>Score: <span id="score">0</span></div>
+            <div>Ammo: <span id="ammo">30</span> / <span id="max-ammo">30</span></div>
+        </div>
+        <div id="instructions">
+            <h2>Controls</h2>
+            <ul>
+                <li>WASD - Move</li>
+                <li>Mouse - Look around</li>
+                <li>Left Click - Shoot</li>
+                <li>R - Reload</li>
+                <li>Space - Jump</li>
+                <li>ESC - Pause</li>
+            </ul>
+        </div>
     </div>
+
+    <!-- Pause Menu (hidden initially) -->
+    <div id="pause-menu" style="display: none;">
+        <div class="menu-content">
+            <h2>Game Paused</h2>
+            <button id="resume-button">Resume</button>
+            <button id="restart-button">Restart</button>
+            <button id="main-menu-button">Main Menu</button>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="bananagameState.js"></script>
     <script src="bananascene.js"></script>
