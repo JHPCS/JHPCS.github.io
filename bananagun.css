@@ -8,9 +8,9 @@ canvas {
 }
 #gun-image {
     position: fixed;
-    bottom: -50px;
-    right: -100px;
-    width: 400px;
+    bottom: -70px;  /* Adjusted to maintain position with larger size */
+    right: -150px;  /* Adjusted to maintain position with larger size */
+    width: 600px;   /* Increased from 400px to 600px */
     height: auto;
     z-index: 9999;
     pointer-events: none;
