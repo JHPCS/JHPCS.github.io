@@ -13,7 +13,15 @@ const gameState = {
     velocity: new THREE.Vector3(0, 0, 0),
     targetRespawnTime: 3000, // milliseconds
     gameStarted: false,
-    jumpCooldown: false   // Added jump cooldown
+    jumpCooldown: false,   // Added jump cooldown
+    
+    // Added room-specific properties (these will be extended in scene.js)
+    inStartingRoom: true,
+    startingRoom: null,
+    portals: [],
+    currentScene: 'startingRoom',
+    returnPortal: null,
+    returnPortalText: null
 };
 
 // Recoil animation variables
