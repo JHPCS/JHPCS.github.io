@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banana gun game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="crosshair"></div>
+    <div id="hit-marker"></div>
+    <img src="https://imagetolink.com/ib/g5qa0vmqby.png" id="gun-image">
+    <div id="hud">
+        <div>Score: <span id="score">0</span></div>
+        <div>Ammo: <span id="ammo">30</span> / <span id="max-ammo">30</span></div>
+    </div>
+    <div id="instructions">
+        <h2>Controls</h2>
+        <ul>
+            <li>WASD - Move</li>
+            <li>Mouse - Look around</li>
+            <li>Left Click - Shoot</li>
+            <li>R - Reload</li>
+            <li>Space - Jump</li>
+            <li>Click anywhere to start</li>
+        </ul>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/gameState.js"></script>
+    <script src="js/scene.js"></script>
+    <script src="js/targets.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
