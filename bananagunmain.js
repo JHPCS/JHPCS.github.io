@@ -17,10 +17,10 @@ function animate() {
     // Apply gravity and handle jumping
     if (!isOnGround()) {
         // Apply gravity when in the air
-        gameState.velocity.y -= gameState.gravity * deltaTime;
+        gameState.velocity.y -= gameState.gravity * deltaTime / 1000; // Scale gravity by seconds
         
         // Apply the vertical velocity to the camera position
-        cameraHolder.position.y += gameState.velocity.y * deltaTime;
+        cameraHolder.position.y += gameState.velocity.y * deltaTime / 1000; // Scale velocity by seconds
         
         // Check if we've landed
         if (cameraHolder.position.y <= gameState.playerHeight) {
@@ -28,24 +28,28 @@ function animate() {
             cameraHolder.position.y = gameState.playerHeight;
             gameState.velocity.y = 0;
             gameState.isJumping = false;
-            
-            // Reset jump cooldown after a short delay
-            setTimeout(() => {
-                gameState.jumpCooldown = false;
-            }, 250);
         }
     } else {
         // Make sure we're exactly at player height when on ground
         cameraHolder.position.y = gameState.playerHeight;
-        gameState.isJumping = false;
+        
+        // Only reset jumpCooldown when on ground
+        if (gameState.jumpCooldown) {
+            gameState.jumpCooldown = false;
+        }
     }
     
     // Handle jumping - only when on ground and space is pressed
-    if (keyboardState['space'] && isOnGround() && !gameState.jumpCooldown) {
+    if (keyboardState['space'] && isOnGround() && !gameState.jumpCooldown && !gameState.isJumping) {
         // Apply jump velocity
         gameState.velocity.y = gameState.jumpPower;
         gameState.isJumping = true;
         gameState.jumpCooldown = true;
+        
+        // Reset jump cooldown after a short delay
+        setTimeout(() => {
+            gameState.jumpCooldown = false;
+        }, 250);
     }
     
     // Handle reloading
