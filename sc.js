@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup scrapbook functionality
     document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
     
-    // Load scrapbook for everyone
-    loadScrapbook();
+    // Set up real-time updates for scrapbook items
+    setupRealtimeUpdates();
     
     // Check if user is already logged in
     auth.onAuthStateChanged(user => {
@@ -64,37 +64,40 @@ window.onclick = function(event) {
     }
 }
 
-async function loadScrapbook() {
-    try {
-        // Clear existing pages before loading
-        document.getElementById('pages').innerHTML = '';
-        
-        const snapshot = await db.collection('scrapbookItems')
-                                 .orderBy('createdAt', 'desc')
-                                 .get();
-                                 
-        snapshot.forEach(doc => {
-            const item = doc.data();
-            let element;
-            if (item.type === 'image') {
-                element = document.createElement('img');
-                element.src = item.content;
-            } else if (item.type === 'text') {
-                element = document.createElement('div');
-                element.className = 'text';
-                element.textContent = item.content;
-            } else if (item.type === 'video') {
-                element = document.createElement('video');
-                element.src = item.content;
-                element.controls = true;
+// Use ONLY real-time updates instead of separate load function
+function setupRealtimeUpdates() {
+    // Clear existing pages before loading
+    document.getElementById('pages').innerHTML = '';
+    
+    db.collection('scrapbookItems')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            // Handle added items
+            if (change.type === 'added') {
+                const item = change.doc.data();
+                let element;
+                
+                if (item.type === 'image') {
+                    element = document.createElement('img');
+                    element.src = item.content;
+                } else if (item.type === 'text') {
+                    element = document.createElement('div');
+                    element.className = 'text';
+                    element.textContent = item.content;
+                } else if (item.type === 'video') {
+                    element = document.createElement('video');
+                    element.src = item.content;
+                    element.controls = true;
+                }
+                
+                if (element) {
+                    addPageElement(element);
+                }
             }
-            if (element) {
-                addPageElement(element);
-            }
+            // You can handle 'modified' and 'removed' changes here too if needed
         });
-    } catch (error) {
-        console.error("Error loading scrapbook items: ", error);
-    }
+      });
 }
 
 async function handleImageUpload(event) {
@@ -103,15 +106,17 @@ async function handleImageUpload(event) {
     try {
         await storageRef.put(file);
         const url = await storageRef.getDownloadURL();
-        const img = document.createElement('img');
-        img.src = url;
-        addPageElement(img);
+        
+        // Don't add to DOM directly anymore - let the listener handle it
         await db.collection('scrapbookItems').add({ 
             type: 'image', 
             content: url,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             createdBy: auth.currentUser.email
         });
+        
+        // Reset the file input
+        event.target.value = '';
     } catch (error) {
         console.error("Error uploading image: ", error);
     }
@@ -120,11 +125,8 @@ async function handleImageUpload(event) {
 async function addText() {
     const text = prompt("Enter your text:");
     if (text) {
-        const textElement = document.createElement('div');
-        textElement.className = 'text';
-        textElement.textContent = text;
-        addPageElement(textElement);
         try {
+            // Don't add to DOM directly anymore - let the listener handle it
             await db.collection('scrapbookItems').add({ 
                 type: 'text', 
                 content: text,
@@ -140,11 +142,8 @@ async function addText() {
 async function addVideo() {
     const url = prompt("Enter video URL:");
     if (url) {
-        const video = document.createElement('video');
-        video.src = url;
-        video.controls = true;
-        addPageElement(video);
         try {
+            // Don't add to DOM directly anymore - let the listener handle it
             await db.collection('scrapbookItems').add({ 
                 type: 'video', 
                 content: url,
@@ -346,48 +345,3 @@ async function signOut() {
         alert(error.message);
     }
 }
-
-// Setup real-time updates
-function setupRealtimeUpdates() {
-    db.collection('scrapbookItems')
-      .orderBy('createdAt', 'desc')
-      .onSnapshot((snapshot) => {
-        // Only handle new additions to avoid duplicates
-        snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
-                const item = change.doc.data();
-                let element;
-                
-                // Check if this is a brand new item (last 10 seconds)
-                const itemTime = item.createdAt?.toDate() || new Date();
-                const now = new Date();
-                const isNew = (now - itemTime) < 10000; // 10 seconds
-                
-                // Only process if it's a new item to avoid duplicates during initial load
-                if (isNew) {
-                    if (item.type === 'image') {
-                        element = document.createElement('img');
-                        element.src = item.content;
-                    } else if (item.type === 'text') {
-                        element = document.createElement('div');
-                        element.className = 'text';
-                        element.textContent = item.content;
-                    } else if (item.type === 'video') {
-                        element = document.createElement('video');
-                        element.src = item.content;
-                        element.controls = true;
-                    }
-                    
-                    if (element) {
-                        addPageElement(element);
-                    }
-                }
-            }
-        });
-      });
-}
-
-// Start real-time updates after initial load
-loadScrapbook().then(() => {
-    setupRealtimeUpdates();
-});
