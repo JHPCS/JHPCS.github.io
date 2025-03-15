@@ -7,31 +7,45 @@
     <link rel="stylesheet" href="sc.css">
 </head>
 <body>
-    <div id="auth">
-        <h2>Scrapbook Authentication</h2>
-        <div id="emailStep">
-            <input type="email" id="email" placeholder="Email">
-            <button id="requestCodeButton">Request Code</button>
-            <p id="emailStatus" class="status"></p>
-        </div>
-        <div id="codeStep" style="display: none;">
-            <p>A verification code has been sent to your email.</p>
-            <input type="text" id="verificationCode" placeholder="Enter verification code">
-            <button id="verifyCodeButton">Verify Code</button>
-            <p id="codeStatus" class="status"></p>
-        </div>
-        <button id="signOutButton" style="display: none;">Sign Out</button>
-    </div>
-    <div id="scrapbook" style="display: none;">
+    <div id="scrapbook">
         <div id="toolbar">
-            <span>Logged in as: <span id="userEmail"></span></span>
-            <input type="file" id="imageUpload" accept="image/*">
-            <button onclick="addText()">Add Text</button>
-            <button onclick="addVideo()">Add Video</button>
-            <button onclick="signOut()">Sign Out</button>
+            <div class="toolbar-left">
+                <h2>Virtual Scrapbook</h2>
+            </div>
+            <div class="toolbar-right">
+                <div id="guestControls">
+                    <button id="loginButton">Login as Editor</button>
+                </div>
+                <div id="editorControls" style="display: none;">
+                    <span>Logged in as: <span id="userEmail"></span></span>
+                    <input type="file" id="imageUpload" accept="image/*">
+                    <button onclick="addText()">Add Text</button>
+                    <button onclick="addVideo()">Add Video</button>
+                    <button onclick="signOut()">Sign Out</button>
+                </div>
+            </div>
         </div>
         <div id="pages"></div>
     </div>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Editor Authentication</h2>
+            <div id="emailStep">
+                <input type="email" id="email" placeholder="Email">
+                <button id="requestCodeButton">Request Code</button>
+                <p id="emailStatus" class="status"></p>
+            </div>
+            <div id="codeStep" style="display: none;">
+                <p>A verification code has been sent to your email.</p>
+                <input type="text" id="verificationCode" placeholder="Enter verification code">
+                <button id="verifyCodeButton">Verify Code</button>
+                <p id="codeStatus" class="status"></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
