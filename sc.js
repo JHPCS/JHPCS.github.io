@@ -15,13 +15,30 @@ const storage = firebase.storage();
 const auth = firebase.auth();
 
 document.addEventListener('DOMContentLoaded', () => {
-    setupRecaptcha();
+    // Setup authentication listeners
+    document.getElementById('loginButton').addEventListener('click', login);
+    document.getElementById('signupButton').addEventListener('click', signUp);
+    document.getElementById('signOutButton').addEventListener('click', signOut);
+    
+    // Setup scrapbook functionality
     document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
-    loadScrapbook();
+    
+    // Check if user is already logged in
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            checkUserRole(user);
+        } else {
+            document.getElementById('auth').style.display = 'block';
+            document.getElementById('scrapbook').style.display = 'none';
+        }
+    });
 });
 
 async function loadScrapbook() {
     try {
+        // Clear existing pages before loading
+        document.getElementById('pages').innerHTML = '';
+        
         const snapshot = await db.collection('scrapbookItems').get();
         snapshot.forEach(doc => {
             const item = doc.data();
@@ -56,7 +73,12 @@ async function handleImageUpload(event) {
         const img = document.createElement('img');
         img.src = url;
         addPageElement(img);
-        await db.collection('scrapbookItems').add({ type: 'image', content: url });
+        await db.collection('scrapbookItems').add({ 
+            type: 'image', 
+            content: url,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdBy: auth.currentUser.email
+        });
     } catch (error) {
         console.error("Error uploading image: ", error);
     }
@@ -70,7 +92,12 @@ async function addText() {
         textElement.textContent = text;
         addPageElement(textElement);
         try {
-            await db.collection('scrapbookItems').add({ type: 'text', content: text });
+            await db.collection('scrapbookItems').add({ 
+                type: 'text', 
+                content: text,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdBy: auth.currentUser.email
+            });
         } catch (error) {
             console.error("Error adding text: ", error);
         }
@@ -85,7 +112,12 @@ async function addVideo() {
         video.controls = true;
         addPageElement(video);
         try {
-            await db.collection('scrapbookItems').add({ type: 'video', content: url });
+            await db.collection('scrapbookItems').add({ 
+                type: 'video', 
+                content: url,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdBy: auth.currentUser.email
+            });
         } catch (error) {
             console.error("Error adding video: ", error);
         }
@@ -99,70 +131,77 @@ function addPageElement(element) {
     document.getElementById('pages').appendChild(page);
 }
 
-// Firebase Authentication functions for Phone Authentication
-let confirmationResult;
-
-function setupRecaptcha() {
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-        'size': 'invisible',
-        'callback': sendVerificationCode
-    });
+// Email/Password Authentication Functions
+async function signUp() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    if (!email || !password) {
+        alert('Please enter both email and password');
+        return;
+    }
+    
+    try {
+        await auth.createUserWithEmailAndPassword(email, password);
+        alert('User created successfully');
+        // After signup, we check if this user is whitelisted
+        checkUserRole(auth.currentUser);
+    } catch (error) {
+        console.error("Error signing up: ", error);
+        alert(error.message);
+    }
 }
 
-function sendVerificationCode() {
-    const phoneNumber = document.getElementById('phoneNumber').value;
-    const appVerifier = window.recaptchaVerifier;
-
-    auth.signInWithPhoneNumber(phoneNumber, appVerifier)
-        .then(result => {
-            confirmationResult = result;
-            alert('Verification code sent');
-        }).catch(error => {
-            console.error("Error during signInWithPhoneNumber: ", error);
-            alert(error.message);
-        });
-}
-
-function verifyCode() {
-    const code = document.getElementById('verificationCode').value;
-    confirmationResult.confirm(code)
-        .then(async result => {
-            const user = result.user;
-            alert('Phone number verified successfully');
-            await checkUserRole(user);
-        }).catch(error => {
-            console.error("Error during confirmationResult.confirm: ", error);
-            alert(error.message);
-        });
+async function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    if (!email || !password) {
+        alert('Please enter both email and password');
+        return;
+    }
+    
+    try {
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        await checkUserRole(user);
+    } catch (error) {
+        console.error("Error logging in: ", error);
+        alert(error.message);
+    }
 }
 
 async function checkUserRole(user) {
     try {
-        const phoneNumber = user.phoneNumber;
-        const userDoc = await db.collection('whitelistedNumbers').doc(phoneNumber).get();
+        const email = user.email;
+        
+        // Use whitelist check
+        const userDoc = await db.collection('whitelistedEmails').doc(email).get();
+        
         if (userDoc.exists) {
             const userData = userDoc.data();
             if (userData.role === 'editor') {
                 document.getElementById('auth').style.display = 'none';
                 document.getElementById('scrapbook').style.display = 'block';
+                document.getElementById('userEmail').textContent = email; // Show logged in email
                 loadScrapbook();
             } else {
                 alert('You do not have permission to edit the scrapbook.');
                 signOut();
             }
         } else {
-            alert('Your phone number is not whitelisted.');
+            alert('Your email is not whitelisted. Access denied.');
             signOut();
         }
     } catch (error) {
         console.error("Error checking user role: ", error);
+        alert("Error checking permissions: " + error.message);
     }
 }
 
 async function signOut() {
     try {
         await auth.signOut();
-        alert('Sign-out successful!');
         document.getElementById('auth').style.display = 'block';
         document.getElementById('scrapbook').style.display = 'none';
     } catch (error) {
