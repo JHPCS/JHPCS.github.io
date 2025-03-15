@@ -48,6 +48,23 @@ body {
     background-color: #45a049;
 }
 
+.status {
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+.error {
+    color: #e74c3c;
+}
+
+.success {
+    color: #2ecc71;
+}
+
+#emailStep, #codeStep {
+    width: 100%;
+}
+
 #scrapbook {
     width: 80%;
     height: 90%;
