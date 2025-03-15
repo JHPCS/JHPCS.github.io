@@ -8,28 +8,28 @@
 </head>
 <body>
     <div id="auth">
-        <input type="text" id="phoneNumber" placeholder="Phone Number">
-        <button onclick="sendVerificationCode()">Send Verification Code</button>
-        <div id="recaptcha-container"></div>
-        <input type="text" id="verificationCode" placeholder="Verification Code">
-        <button onclick="verifyCode()">Verify Code</button>
-        <button onclick="signOut()">Sign Out</button>
+        <h2>Scrapbook Authentication</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="loginButton">Login</button>
+        <button id="signupButton">Sign Up</button>
+        <button id="signOutButton">Sign Out</button>
     </div>
     <div id="scrapbook" style="display: none;">
         <div id="toolbar">
+            <span>Logged in as: <span id="userEmail"></span></span>
             <input type="file" id="imageUpload" accept="image/*">
             <button onclick="addText()">Add Text</button>
             <button onclick="addVideo()">Add Video</button>
+            <button onclick="signOut()">Sign Out</button>
         </div>
         <div id="pages"></div>
     </div>
-
     <!-- Firebase SDK scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js" defer></script>
-
     <!-- Your custom JavaScript file -->
     <script src="sc.js" defer></script>
 </body>
