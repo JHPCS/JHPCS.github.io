@@ -16,8 +16,8 @@ const auth = firebase.auth();
 
 document.addEventListener('DOMContentLoaded', () => {
     // Setup authentication listeners
-    document.getElementById('loginButton').addEventListener('click', login);
-    document.getElementById('signupButton').addEventListener('click', signUp);
+    document.getElementById('requestCodeButton').addEventListener('click', requestVerificationCode);
+    document.getElementById('verifyCodeButton').addEventListener('click', verifyCode);
     document.getElementById('signOutButton').addEventListener('click', signOut);
     
     // Setup scrapbook functionality
@@ -29,6 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
             checkUserRole(user);
         } else {
             document.getElementById('auth').style.display = 'block';
+            document.getElementById('emailStep').style.display = 'block';
+            document.getElementById('codeStep').style.display = 'none';
+            document.getElementById('signOutButton').style.display = 'none';
             document.getElementById('scrapbook').style.display = 'none';
         }
     });
@@ -131,49 +134,149 @@ function addPageElement(element) {
     document.getElementById('pages').appendChild(page);
 }
 
-// Email/Password Authentication Functions
-async function signUp() {
+// Email verification code system
+async function requestVerificationCode() {
     const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    const emailStatus = document.getElementById('emailStatus');
     
-    if (!email || !password) {
-        alert('Please enter both email and password');
+    if (!email) {
+        emailStatus.textContent = 'Please enter an email address';
+        emailStatus.className = 'status error';
         return;
     }
     
     try {
-        await auth.createUserWithEmailAndPassword(email, password);
-        alert('User created successfully');
-        // After signup, we check if this user is whitelisted
-        checkUserRole(auth.currentUser);
+        // Check if email is whitelisted
+        const userDoc = await db.collection('whitelistedEmails').doc(email).get();
+        
+        if (!userDoc.exists) {
+            emailStatus.textContent = 'This email is not authorized to access the scrapbook.';
+            emailStatus.className = 'status error';
+            return;
+        }
+        
+        // Generate a 6-digit code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Store the code in Firestore with timestamp
+        await db.collection('verificationCodes').doc(email).set({
+            code: verificationCode,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            used: false
+        });
+        
+        // In a real app, you would send this code via email using Firebase Cloud Functions
+        // For this demo, we'll show the code (in production, you'd use Firebase Functions to send emails)
+        console.log(`Code for ${email}: ${verificationCode}`);
+        alert(`For demo purposes, your verification code is: ${verificationCode}`);
+        
+        // Show the code verification step
+        document.getElementById('emailStep').style.display = 'none';
+        document.getElementById('codeStep').style.display = 'block';
+        
+        // Store email in session for code verification
+        sessionStorage.setItem('tempEmail', email);
+        
+        emailStatus.textContent = '';
+        
     } catch (error) {
-        console.error("Error signing up: ", error);
-        alert(error.message);
+        console.error("Error requesting code: ", error);
+        emailStatus.textContent = `Error: ${error.message}`;
+        emailStatus.className = 'status error';
     }
 }
 
-async function login() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+async function verifyCode() {
+    const enteredCode = document.getElementById('verificationCode').value;
+    const codeStatus = document.getElementById('codeStatus');
+    const email = sessionStorage.getItem('tempEmail');
     
-    if (!email || !password) {
-        alert('Please enter both email and password');
+    if (!enteredCode) {
+        codeStatus.textContent = 'Please enter the verification code';
+        codeStatus.className = 'status error';
         return;
     }
     
     try {
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-        await checkUserRole(user);
+        // Get the stored code from Firestore
+        const codeDoc = await db.collection('verificationCodes').doc(email).get();
+        
+        if (!codeDoc.exists) {
+            codeStatus.textContent = 'Verification failed: Code not found';
+            codeStatus.className = 'status error';
+            return;
+        }
+        
+        const codeData = codeDoc.data();
+        
+        // Check if code is used or expired (15 minutes expiration)
+        const now = new Date();
+        const createdAt = codeData.createdAt.toDate();
+        const timeDiff = (now - createdAt) / (1000 * 60); // difference in minutes
+        
+        if (codeData.used || timeDiff > 15) {
+            codeStatus.textContent = 'Verification failed: Code is expired or already used';
+            codeStatus.className = 'status error';
+            return;
+        }
+        
+        // Verify the code
+        if (codeData.code !== enteredCode) {
+            codeStatus.textContent = 'Verification failed: Invalid code';
+            codeStatus.className = 'status error';
+            return;
+        }
+        
+        // Mark code as used
+        await db.collection('verificationCodes').doc(email).update({
+            used: true
+        });
+        
+        // Create anonymous account and link it with the email
+        try {
+            // First sign in anonymously
+            await auth.signInAnonymously();
+            
+            // Store the verified email for the anonymous user
+            const user = auth.currentUser;
+            await db.collection('users').doc(user.uid).set({
+                email: email,
+                verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            // Check if user has editor role
+            await checkUserRole({ email: email });
+            
+        } catch (error) {
+            console.error("Error during auth: ", error);
+            codeStatus.textContent = `Authentication error: ${error.message}`;
+            codeStatus.className = 'status error';
+        }
     } catch (error) {
-        console.error("Error logging in: ", error);
-        alert(error.message);
+        console.error("Error verifying code: ", error);
+        codeStatus.textContent = `Error: ${error.message}`;
+        codeStatus.className = 'status error';
     }
 }
 
 async function checkUserRole(user) {
     try {
-        const email = user.email;
+        let email;
+        
+        if (user.email) {
+            // If user object has email property
+            email = user.email;
+        } else {
+            // For anonymous users, get the email from our users collection
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (userDoc.exists) {
+                email = userDoc.data().email;
+            } else {
+                console.error("No email found for this user");
+                await signOut();
+                return;
+            }
+        }
         
         // Use whitelist check
         const userDoc = await db.collection('whitelistedEmails').doc(email).get();
@@ -184,18 +287,20 @@ async function checkUserRole(user) {
                 document.getElementById('auth').style.display = 'none';
                 document.getElementById('scrapbook').style.display = 'block';
                 document.getElementById('userEmail').textContent = email; // Show logged in email
+                document.getElementById('signOutButton').style.display = 'block';
                 loadScrapbook();
             } else {
                 alert('You do not have permission to edit the scrapbook.');
-                signOut();
+                await signOut();
             }
         } else {
             alert('Your email is not whitelisted. Access denied.');
-            signOut();
+            await signOut();
         }
     } catch (error) {
         console.error("Error checking user role: ", error);
         alert("Error checking permissions: " + error.message);
+        await signOut();
     }
 }
 
@@ -203,7 +308,15 @@ async function signOut() {
     try {
         await auth.signOut();
         document.getElementById('auth').style.display = 'block';
+        document.getElementById('emailStep').style.display = 'block';
+        document.getElementById('codeStep').style.display = 'none';
+        document.getElementById('signOutButton').style.display = 'none';
         document.getElementById('scrapbook').style.display = 'none';
+        document.getElementById('email').value = '';
+        document.getElementById('verificationCode').value = '';
+        document.getElementById('emailStatus').textContent = '';
+        document.getElementById('codeStatus').textContent = '';
+        sessionStorage.removeItem('tempEmail');
     } catch (error) {
         console.error("Error signing out: ", error);
         alert(error.message);
