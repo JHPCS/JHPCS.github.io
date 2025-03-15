@@ -16,33 +16,63 @@ const auth = firebase.auth();
 
 document.addEventListener('DOMContentLoaded', () => {
     // Setup authentication listeners
+    document.getElementById('loginButton').addEventListener('click', openAuthModal);
     document.getElementById('requestCodeButton').addEventListener('click', requestVerificationCode);
     document.getElementById('verifyCodeButton').addEventListener('click', verifyCode);
-    document.getElementById('signOutButton').addEventListener('click', signOut);
+    
+    // Setup modal close button
+    document.querySelector('.close').addEventListener('click', closeAuthModal);
     
     // Setup scrapbook functionality
     document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
+    
+    // Load scrapbook for everyone
+    loadScrapbook();
     
     // Check if user is already logged in
     auth.onAuthStateChanged(user => {
         if (user) {
             checkUserRole(user);
         } else {
-            document.getElementById('auth').style.display = 'block';
-            document.getElementById('emailStep').style.display = 'block';
-            document.getElementById('codeStep').style.display = 'none';
-            document.getElementById('signOutButton').style.display = 'none';
-            document.getElementById('scrapbook').style.display = 'none';
+            // Show guest view (which is default)
+            document.getElementById('guestControls').style.display = 'block';
+            document.getElementById('editorControls').style.display = 'none';
         }
     });
 });
+
+// Modal functions
+function openAuthModal() {
+    document.getElementById('authModal').style.display = 'block';
+    document.getElementById('emailStep').style.display = 'block';
+    document.getElementById('codeStep').style.display = 'none';
+    document.getElementById('email').value = '';
+    document.getElementById('verificationCode').value = '';
+    document.getElementById('emailStatus').textContent = '';
+    document.getElementById('codeStatus').textContent = '';
+}
+
+function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    const modal = document.getElementById('authModal');
+    if (event.target === modal) {
+        closeAuthModal();
+    }
+}
 
 async function loadScrapbook() {
     try {
         // Clear existing pages before loading
         document.getElementById('pages').innerHTML = '';
         
-        const snapshot = await db.collection('scrapbookItems').get();
+        const snapshot = await db.collection('scrapbookItems')
+                                 .orderBy('createdAt', 'desc')
+                                 .get();
+                                 
         snapshot.forEach(doc => {
             const item = doc.data();
             let element;
@@ -150,7 +180,7 @@ async function requestVerificationCode() {
         const userDoc = await db.collection('whitelistedEmails').doc(email).get();
         
         if (!userDoc.exists) {
-            emailStatus.textContent = 'This email is not authorized to access the scrapbook.';
+            emailStatus.textContent = 'This email is not authorized as an editor.';
             emailStatus.className = 'status error';
             return;
         }
@@ -165,8 +195,7 @@ async function requestVerificationCode() {
             used: false
         });
         
-        // In a real app, you would send this code via email using Firebase Cloud Functions
-        // For this demo, we'll show the code (in production, you'd use Firebase Functions to send emails)
+        // For this demo, show the code (in production, you'd use Firebase Functions to send emails)
         console.log(`Code for ${email}: ${verificationCode}`);
         alert(`For demo purposes, your verification code is: ${verificationCode}`);
         
@@ -244,8 +273,11 @@ async function verifyCode() {
                 verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             
+            // Close the modal and check user role
+            closeAuthModal();
+            
             // Check if user has editor role
-            await checkUserRole({ email: email });
+            await checkUserRole({ email: email, uid: user.uid });
             
         } catch (error) {
             console.error("Error during auth: ", error);
@@ -284,11 +316,10 @@ async function checkUserRole(user) {
         if (userDoc.exists) {
             const userData = userDoc.data();
             if (userData.role === 'editor') {
-                document.getElementById('auth').style.display = 'none';
-                document.getElementById('scrapbook').style.display = 'block';
+                // Show editor view
+                document.getElementById('guestControls').style.display = 'none';
+                document.getElementById('editorControls').style.display = 'block';
                 document.getElementById('userEmail').textContent = email; // Show logged in email
-                document.getElementById('signOutButton').style.display = 'block';
-                loadScrapbook();
             } else {
                 alert('You do not have permission to edit the scrapbook.');
                 await signOut();
@@ -307,18 +338,56 @@ async function checkUserRole(user) {
 async function signOut() {
     try {
         await auth.signOut();
-        document.getElementById('auth').style.display = 'block';
-        document.getElementById('emailStep').style.display = 'block';
-        document.getElementById('codeStep').style.display = 'none';
-        document.getElementById('signOutButton').style.display = 'none';
-        document.getElementById('scrapbook').style.display = 'none';
-        document.getElementById('email').value = '';
-        document.getElementById('verificationCode').value = '';
-        document.getElementById('emailStatus').textContent = '';
-        document.getElementById('codeStatus').textContent = '';
+        document.getElementById('guestControls').style.display = 'block';
+        document.getElementById('editorControls').style.display = 'none';
         sessionStorage.removeItem('tempEmail');
     } catch (error) {
         console.error("Error signing out: ", error);
         alert(error.message);
     }
 }
+
+// Setup real-time updates
+function setupRealtimeUpdates() {
+    db.collection('scrapbookItems')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot((snapshot) => {
+        // Only handle new additions to avoid duplicates
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added') {
+                const item = change.doc.data();
+                let element;
+                
+                // Check if this is a brand new item (last 10 seconds)
+                const itemTime = item.createdAt?.toDate() || new Date();
+                const now = new Date();
+                const isNew = (now - itemTime) < 10000; // 10 seconds
+                
+                // Only process if it's a new item to avoid duplicates during initial load
+                if (isNew) {
+                    if (item.type === 'image') {
+                        element = document.createElement('img');
+                        element.src = item.content;
+                    } else if (item.type === 'text') {
+                        element = document.createElement('div');
+                        element.className = 'text';
+                        element.textContent = item.content;
+                    } else if (item.type === 'video') {
+                        element = document.createElement('video');
+                        element.src = item.content;
+                        element.controls = true;
+                    }
+                    
+                    if (element) {
+                        addPageElement(element);
+                    }
+                }
+            }
+        });
+      });
+}
+
+// Start real-time updates after initial load
+loadScrapbook().then(() => {
+    setupRealtimeUpdates();
+});
