@@ -9,11 +9,18 @@
 <body>
     <div id="auth">
         <h2>Scrapbook Authentication</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <button id="loginButton">Login</button>
-        <button id="signupButton">Sign Up</button>
-        <button id="signOutButton">Sign Out</button>
+        <div id="emailStep">
+            <input type="email" id="email" placeholder="Email">
+            <button id="requestCodeButton">Request Code</button>
+            <p id="emailStatus" class="status"></p>
+        </div>
+        <div id="codeStep" style="display: none;">
+            <p>A verification code has been sent to your email.</p>
+            <input type="text" id="verificationCode" placeholder="Enter verification code">
+            <button id="verifyCodeButton">Verify Code</button>
+            <p id="codeStatus" class="status"></p>
+        </div>
+        <button id="signOutButton" style="display: none;">Sign Out</button>
     </div>
     <div id="scrapbook" style="display: none;">
         <div id="toolbar">
@@ -26,11 +33,12 @@
         <div id="pages"></div>
     </div>
     <!-- Firebase SDK scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-functions-compat.js"></script>
     <!-- Your custom JavaScript file -->
-    <script src="sc.js" defer></script>
+    <script src="sc.js"></script>
 </body>
 </html>
