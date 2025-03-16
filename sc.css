@@ -74,9 +74,12 @@ body {
     gap: 20px;
 }
 
+/* Modified page styles to better handle images */
 .page {
     width: calc(50% - 20px);
-    height: 320px;
+    /* Removed fixed height to allow content to determine size */
+    min-height: 150px;
+    max-height: 400px;
     border: none;
     background-color: #fff;
     position: relative;
@@ -84,6 +87,8 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .page:hover {
@@ -91,10 +96,22 @@ body {
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
+/* Fixed image container to preserve aspect ratio */
+.page .image-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 75%; /* 4:3 aspect ratio by default */
+    overflow: hidden;
+}
+
 .page img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* Changed from cover to contain */
     object-position: center;
     transition: filter 0.3s ease, transform 0.5s ease;
 }
@@ -104,6 +121,29 @@ body {
     transform: scale(1.02);
 }
 
+/* Text-only pages */
+.page.text-only {
+    padding: 20px;
+    height: auto;
+    min-height: 150px;
+    max-height: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page.text-only .text {
+    position: relative;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    max-height: none;
+    width: 100%;
+    height: auto;
+    transform: none;
+}
+
+/* Position text at the bottom of image pages */
 .page .text {
     position: absolute;
     bottom: 15px;
@@ -411,7 +451,7 @@ input[type="file"]::before {
     
     .page {
         width: 100%;
-        height: 280px;
+        max-height: 350px;
         margin: 0 0 20px 0;
     }
     
@@ -452,7 +492,7 @@ input[type="file"]::before {
     }
     
     .page {
-        height: 220px;
+        max-height: 300px;
         border-radius: 10px;
     }
     
