@@ -100,7 +100,7 @@ body {
     position: relative;
     width: 100%;
     height: 0;
-    padding-bottom: 100%; /* Changed to square aspect ratio (1:1) for larger images */
+    padding-bottom: 100%; /* Square aspect ratio (1:1) for images */
     overflow: hidden;
 }
 
@@ -110,7 +110,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Changed back to cover to fill the space better */
+    object-fit: cover; /* Fill the space */
     object-position: center;
     transition: filter 0.3s ease, transform 0.5s ease;
 }
@@ -118,6 +118,24 @@ body {
 .page:hover img {
     filter: brightness(1.05);
     transform: scale(1.02);
+}
+
+/* Modify the image container for desktop */
+@media (min-width: 769px) {
+    .page .image-container {
+        padding-bottom: 75%; /* Reduced from 100% to show more of taller images */
+        max-height: none; /* Remove max-height constraint */
+    }
+    
+    .page {
+        max-height: none; /* Remove max-height constraint from page */
+        height: auto; /* Allow height to adjust based on content */
+    }
+    
+    .page img {
+        object-fit: contain; /* Change from cover to contain for desktop */
+        max-height: 500px; /* Set a reasonable max-height */
+    }
 }
 
 /* Text-only pages */
@@ -154,7 +172,7 @@ body {
     border-radius: 10px;
     font-size: 16px;
     line-height: 1.5;
-    max-height: 50%; /* Reduced from 70% to give more space to the image */
+    max-height: 40%; /* Reduced from 50% to give more space to the image */
     overflow-y: auto;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     backdrop-filter: blur(8px);
@@ -503,48 +521,48 @@ input[type="file"]::before {
         padding-bottom: 75%; /* Adjusted aspect ratio for smaller screens */
     }
     
-    .page .text {
-        font-size: 14px;
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
-        padding: 10px;
-        max-height: 40%; /* Reduced to give more space to images */
-    }
-    
-    .delete-button {
-        width: 32px;
-        height: 32px;
-        font-size: 16px;
-        line-height: 32px;
-        top: 10px;
-        right: 10px;
-    }
-    
+.page .text {
+    font-size: 14px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    padding: 10px;
+    max-height: 40%; /* Reduced to give more space to images */
+}
+
+.delete-button {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    line-height: 32px;
+    top: 10px;
+    right: 10px;
+}
+
 .modal-content {
-        padding: 15px;
-        margin: 30% auto 0;
-        border-radius: 12px;
-    }
-    
-    .modal h2 {
-        font-size: 1.3rem;
-    }
-    
-    #pages {
-        padding: 12px;
-        gap: 12px; /* Reduced gap for very small screens */
-    }
-    
-    .modal input {
-        padding: 12px;
-        font-size: 14px;
-    }
-    
-    .modal button {
-        padding: 12px;
-        font-size: 14px;
-    }
+    padding: 15px;
+    margin: 30% auto 0;
+    border-radius: 12px;
+}
+
+.modal h2 {
+    font-size: 1.3rem;
+}
+
+#pages {
+    padding: 12px;
+    gap: 12px; /* Reduced gap for very small screens */
+}
+
+.modal input {
+    padding: 12px;
+    font-size: 14px;
+}
+
+.modal button {
+    padding: 12px;
+    font-size: 14px;
+}
 }
 
 /* Improve image display on landscape orientation */
@@ -575,7 +593,15 @@ input[type="file"]::before {
     }
     
     .page {
-        max-height: 700px; /* Allow larger images on bigger screens */
+        max-height: none; /* Remove max-height constraint */
+    }
+    
+    .page .image-container {
+        padding-bottom: 70%; /* Even less padding for larger screens */
+    }
+    
+    .page img {
+        max-height: 600px; /* Allow larger images on bigger screens */
     }
     
     .page .text {
