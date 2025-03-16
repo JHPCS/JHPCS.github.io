@@ -76,6 +76,7 @@ function setupRealtimeUpdates() {
             // Handle added items
             if (change.type === 'added') {
                 const item = change.doc.data();
+                const itemId = change.doc.id;
                 let element;
                 
                 if (item.type === 'image') {
@@ -92,16 +93,25 @@ function setupRealtimeUpdates() {
                 }
                 
                 if (element) {
-                    addPageElement(element);
+                    addPageElement(element, itemId, item);
+                }
+            } else if (change.type === 'removed') {
+                // Handle removed items
+                const itemId = change.doc.id;
+                const pageElement = document.getElementById(`page-${itemId}`);
+                if (pageElement) {
+                    pageElement.remove();
                 }
             }
-            // You can handle 'modified' and 'removed' changes here too if needed
+            // You can handle 'modified' changes here too if needed
         });
       });
 }
 
 async function handleImageUpload(event) {
     const file = event.target.files[0];
+    if (!file) return;
+    
     const storageRef = storage.ref('images/' + file.name);
     try {
         await storageRef.put(file);
@@ -112,7 +122,7 @@ async function handleImageUpload(event) {
             type: 'image', 
             content: url,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            createdBy: auth.currentUser.email
+            createdBy: auth.currentUser.email || 'unknown'
         });
         
         // Reset the file input
@@ -131,7 +141,7 @@ async function addText() {
                 type: 'text', 
                 content: text,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                createdBy: auth.currentUser.email
+                createdBy: auth.currentUser.email || 'unknown'
             });
         } catch (error) {
             console.error("Error adding text: ", error);
@@ -148,7 +158,7 @@ async function addVideo() {
                 type: 'video', 
                 content: url,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                createdBy: auth.currentUser.email
+                createdBy: auth.currentUser.email || 'unknown'
             });
         } catch (error) {
             console.error("Error adding video: ", error);
@@ -156,11 +166,64 @@ async function addVideo() {
     }
 }
 
-function addPageElement(element) {
+function addPageElement(element, itemId, itemData) {
     const page = document.createElement('div');
     page.className = 'page';
+    page.id = `page-${itemId}`;
+    
+    // Add the content element
     page.appendChild(element);
+    
+    // Add delete button for editors (will be shown/hidden via CSS)
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'delete-button editor-only';
+    deleteButton.innerHTML = '&times;';
+    deleteButton.title = 'Delete item';
+    deleteButton.onclick = () => deleteItem(itemId, itemData);
+    
+    // Add metadata info
+    const metaInfo = document.createElement('div');
+    metaInfo.className = 'meta-info editor-only';
+    const createdDate = itemData.createdAt ? itemData.createdAt.toDate().toLocaleString() : 'Unknown date';
+    metaInfo.innerHTML = `Added by: ${itemData.createdBy || 'Unknown'}<br>Date: ${createdDate}`;
+    
+    page.appendChild(deleteButton);
+    page.appendChild(metaInfo);
+    
     document.getElementById('pages').appendChild(page);
+}
+
+async function deleteItem(itemId, itemData) {
+    try {
+        if (!confirm('Are you sure you want to delete this item?')) {
+            return;
+        }
+        
+        // If it's an image stored in Firebase Storage, delete the file too
+        if (itemData.type === 'image' && itemData.content && itemData.content.includes('firebasestorage')) {
+            try {
+                // Extract the path from the URL
+                const url = new URL(itemData.content);
+                const pathMatch = url.pathname.match(/\/o\/([^?]+)/);
+                
+                if (pathMatch && pathMatch[1]) {
+                    const path = decodeURIComponent(pathMatch[1]);
+                    const fileRef = storage.ref(path);
+                    await fileRef.delete();
+                }
+            } catch (storageError) {
+                console.error("Error deleting the file from storage:", storageError);
+                // Continue with Firestore deletion even if Storage deletion fails
+            }
+        }
+        
+        // Delete the item from Firestore
+        await db.collection('scrapbookItems').doc(itemId).delete();
+        
+    } catch (error) {
+        console.error("Error deleting item:", error);
+        alert("Failed to delete: " + error.message);
+    }
 }
 
 // Email verification code system
@@ -319,6 +382,9 @@ async function checkUserRole(user) {
                 document.getElementById('guestControls').style.display = 'none';
                 document.getElementById('editorControls').style.display = 'block';
                 document.getElementById('userEmail').textContent = email; // Show logged in email
+                
+                // Show editor-only elements
+                document.body.classList.add('editor-mode');
             } else {
                 alert('You do not have permission to edit the scrapbook.');
                 await signOut();
@@ -340,6 +406,9 @@ async function signOut() {
         document.getElementById('guestControls').style.display = 'block';
         document.getElementById('editorControls').style.display = 'none';
         sessionStorage.removeItem('tempEmail');
+        
+        // Hide editor-only elements
+        document.body.classList.remove('editor-mode');
     } catch (error) {
         console.error("Error signing out: ", error);
         alert(error.message);
