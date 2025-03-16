@@ -86,10 +86,6 @@ function setupRealtimeUpdates() {
                     element = document.createElement('div');
                     element.className = 'text';
                     element.textContent = item.content;
-                } else if (item.type === 'video') {
-                    element = document.createElement('video');
-                    element.src = item.content;
-                    element.controls = true;
                 }
                 
                 if (element) {
@@ -145,23 +141,6 @@ async function addText() {
             });
         } catch (error) {
             console.error("Error adding text: ", error);
-        }
-    }
-}
-
-async function addVideo() {
-    const url = prompt("Enter video URL:");
-    if (url) {
-        try {
-            // Don't add to DOM directly anymore - let the listener handle it
-            await db.collection('scrapbookItems').add({ 
-                type: 'video', 
-                content: url,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                createdBy: auth.currentUser.email || 'unknown'
-            });
-        } catch (error) {
-            console.error("Error adding video: ", error);
         }
     }
 }
