@@ -1,6 +1,6 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    background-color: #f8f5f2;
     margin: 0;
     padding: 0;
     display: flex;
@@ -8,6 +8,7 @@ body {
     align-items: center;
     min-height: 100vh;
     box-sizing: border-box;
+    color: #333;
 }
 
 * {
@@ -15,14 +16,14 @@ body {
 }
 
 #scrapbook {
-    width: 90%;
+    width: 95%;
     max-width: 1200px;
     height: 90vh;
     background-color: white;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
     display: flex;
     flex-direction: column;
-    border-radius: 8px;
+    border-radius: 16px;
     overflow: hidden;
 }
 
@@ -30,54 +31,64 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
-    background-color: #e0e0e0;
-    border-bottom: 1px solid #ccc;
-    border-radius: 8px 8px 0 0;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #ffe2e0 0%, #ffd1d1 100%);
+    border-bottom: 1px solid #f8e8e8;
+    border-radius: 16px 16px 0 0;
     flex-wrap: wrap;
 }
 
 .toolbar-left h2 {
     margin: 0;
-    color: #333;
-    font-size: 1.5rem;
+    color: #d64161;
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .toolbar-right {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
 }
 
 #toolbar span {
     font-size: 14px;
-    color: #555;
+    color: #67595e;
 }
 
 #userEmail {
-    font-weight: bold;
+    font-weight: 600;
+    color: #d64161;
 }
 
 #pages {
     flex: 1;
-    padding: 10px;
+    padding: 20px;
     overflow-y: auto;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
+    background-color: #fffaf7;
+    gap: 20px;
 }
 
 .page {
     width: calc(50% - 20px);
-    height: 300px;
-    margin: 10px;
-    border: 1px solid #ddd;
+    height: 320px;
+    border: none;
     background-color: #fff;
     position: relative;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.page:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
 .page img {
@@ -85,53 +96,71 @@ body {
     height: 100%;
     object-fit: cover;
     object-position: center;
+    transition: filter 0.3s ease;
+}
+
+.page:hover img {
+    filter: brightness(1.05);
 }
 
 .page video {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    background-color: #f0f0f0;
 }
 
 .page .text {
     position: absolute;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    color: #000;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 8px;
-    border-radius: 5px;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    color: #333;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 12px 15px;
+    border-radius: 8px;
     font-size: 16px;
     max-height: 80%;
     overflow-y: auto;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.3);
 }
 
 /* Improved delete button styling */
 .delete-button {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background-color: rgba(255, 82, 82, 0.8);
+    background-color: rgba(255, 82, 82, 0.85);
     color: white;
     font-size: 18px;
-    line-height: 32px;
+    line-height: 36px;
     text-align: center;
     cursor: pointer;
     border: none;
     z-index: 10;
     display: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
     transition: all 0.2s ease;
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.page:hover .delete-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transform: scale(1);
 }
 
 .delete-button:hover {
     transform: scale(1.1);
-    background-color: #ff0000;
+    background-color: #ff3b3b;
 }
 
 /* Meta information styling */
@@ -140,11 +169,18 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.6);
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
     color: white;
-    padding: 8px;
+    padding: 25px 15px 10px 15px;
     font-size: 12px;
     display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.page:hover .meta-info {
+    display: block;
+    opacity: 1;
 }
 
 /* Show editor elements only in editor mode */
@@ -153,16 +189,6 @@ body {
 }
 
 body.editor-mode .editor-only {
-    display: block;
-}
-
-.page:hover .delete-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.page:hover .meta-info {
     display: block;
 }
 
@@ -176,98 +202,144 @@ body.editor-mode .editor-only {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
 }
 
 .modal-content {
     background-color: white;
     margin: 15% auto;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     width: 90%;
-    max-width: 400px;
+    max-width: 420px;
     position: relative;
+    animation: modalOpen 0.4s ease-out;
+}
+
+@keyframes modalOpen {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
 }
 
 .close {
     position: absolute;
-    right: 15px;
-    top: 10px;
+    right: 20px;
+    top: 15px;
     color: #aaa;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .close:hover {
-    color: black;
+    color: #d64161;
 }
 
 #emailStep, #codeStep {
     width: 100%;
 }
 
+.modal h2 {
+    color: #d64161;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
 .modal input {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 14px;
+    margin-bottom: 18px;
+    border: 1px solid #ede0e0;
+    border-radius: 8px;
     box-sizing: border-box;
     font-size: 16px;
+    background-color: #fffbfb;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal input:focus {
+    outline: none;
+    border-color: #f2b5d4;
+    box-shadow: 0 0 0 3px rgba(242, 181, 212, 0.2);
 }
 
 .modal button {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     margin-bottom: 15px;
-    background-color: #4CAF50;
+    background-color: #d64161;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.2s;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(214, 65, 97, 0.2);
 }
 
 .modal button:hover {
-    background-color: #45a049;
+    background-color: #c53555;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(214, 65, 97, 0.25);
+}
+
+.modal button:active {
+    transform: translateY(0);
 }
 
 .status {
     font-size: 14px;
     margin: 10px 0;
+    padding: 8px;
+    border-radius: 6px;
 }
 
 .error {
     color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+    padding: 8px 12px;
 }
 
 .success {
     color: #2ecc71;
+    background-color: rgba(46, 204, 113, 0.1);
+    padding: 8px 12px;
 }
 
 button {
-    padding: 8px 15px;
-    background-color: #4CAF50;
-    color: white;
+    padding: 10px 18px;
+    background-color: #f2b5d4;
+    color: #67595e;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #eea5c8;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 #loginButton {
-    background-color: #2196F3;
+    background-color: #d64161;
+    color: white;
 }
 
 #loginButton:hover {
-    background-color: #0b7dda;
+    background-color: #c53555;
 }
 
 /* File upload button styling */
@@ -276,6 +348,48 @@ input[type="file"] {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    visibility: hidden;
+    width: 0;
+}
+
+input[type="file"]::before {
+    content: 'Upload Images';
+    color: #67595e;
+    display: inline-block;
+    padding: 0;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d3d3d3;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #c1c1c1;
 }
 
 /* Mobile responsive styles */
@@ -283,30 +397,30 @@ input[type="file"] {
     #toolbar {
         flex-direction: column;
         align-items: flex-start;
-        padding: 10px;
+        padding: 16px;
     }
     
     .toolbar-right {
         width: 100%;
-        margin-top: 10px;
+        margin-top: 15px;
         justify-content: space-between;
     }
     
     .page {
         width: 100%;
-        height: 250px;
-        margin: 10px 0;
+        height: 280px;
+        margin: 0 0 20px 0;
     }
     
     .toolbar-left h2 {
-        font-size: 1.3rem;
+        font-size: 1.5rem;
     }
     
     #editorControls {
         display: flex;
         flex-direction: column;
         width: 100%;
-        gap: 8px;
+        gap: 10px;
     }
     
     .toolbar-right button, 
@@ -317,30 +431,56 @@ input[type="file"] {
     
     .modal-content {
         width: 90%;
-        margin: 30% auto;
-        padding: 15px;
+        margin: 20% auto;
+        padding: 20px;
     }
 }
 
 /* For very small screens */
 @media (max-width: 480px) {
     #scrapbook {
-        width: 95%;
+        width: 98%;
         height: 95vh;
+        border-radius: 12px;
+    }
+    
+    #toolbar {
+        padding: 12px;
     }
     
     .page {
-        height: 200px;
+        height: 220px;
+        border-radius: 10px;
     }
     
     .page .text {
         font-size: 14px;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        padding: 10px;
     }
     
     .delete-button {
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
         font-size: 16px;
-        line-height: 28px;
+        line-height: 32px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .modal-content {
+        padding: 15px;
+        margin: 30% auto 0;
+        border-radius: 12px;
+    }
+    
+    .modal h2 {
+        font-size: 1.3rem;
+    }
+    
+    #pages {
+        padding: 12px;
     }
 }
