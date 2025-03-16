@@ -79,7 +79,7 @@ body {
     width: calc(50% - 20px);
     /* Removed fixed height to allow content to determine size */
     min-height: 150px;
-    max-height: 400px;
+    max-height: 1000px;
     border: none;
     background-color: #fff;
     position: relative;
