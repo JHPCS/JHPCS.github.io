@@ -74,12 +74,11 @@ body {
     gap: 20px;
 }
 
-/* Modified page styles to better handle images */
+/* Improved page styles for larger images */
 .page {
     width: calc(50% - 20px);
-    /* Removed fixed height to allow content to determine size */
-    min-height: 150px;
-    max-height: 1000px;
+    min-height: 300px; /* Increased minimum height */
+    max-height: 600px; /* Increased maximum height for larger images */
     border: none;
     background-color: #fff;
     position: relative;
@@ -96,12 +95,12 @@ body {
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-/* Fixed image container to preserve aspect ratio */
+/* Improved image container for better image display */
 .page .image-container {
     position: relative;
     width: 100%;
     height: 0;
-    padding-bottom: 75%; /* 4:3 aspect ratio by default */
+    padding-bottom: 100%; /* Changed to square aspect ratio (1:1) for larger images */
     overflow: hidden;
 }
 
@@ -111,7 +110,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Changed from cover to contain */
+    object-fit: cover; /* Changed back to cover to fill the space better */
     object-position: center;
     transition: filter 0.3s ease, transform 0.5s ease;
 }
@@ -125,7 +124,7 @@ body {
 .page.text-only {
     padding: 20px;
     height: auto;
-    min-height: 150px;
+    min-height: 200px; /* Increased min-height */
     max-height: none;
     display: flex;
     align-items: center;
@@ -143,7 +142,7 @@ body {
     transform: none;
 }
 
-/* Position text at the bottom of image pages */
+/* Improved text positioning */
 .page .text {
     position: absolute;
     bottom: 15px;
@@ -155,7 +154,7 @@ body {
     border-radius: 10px;
     font-size: 16px;
     line-height: 1.5;
-    max-height: 70%;
+    max-height: 50%; /* Reduced from 70% to give more space to the image */
     overflow-y: auto;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     backdrop-filter: blur(8px);
@@ -205,7 +204,7 @@ body {
     background-color: #ff3b3b;
 }
 
-/* Meta information styling - moved below text */
+/* Meta information styling */
 .meta-info {
     position: absolute;
     bottom: 0;
@@ -218,7 +217,7 @@ body {
     display: none;
     opacity: 0;
     transition: opacity 0.3s ease;
-    z-index: 2; /* Position below the text which has z-index 5 */
+    z-index: 2;
 }
 
 .page:hover .meta-info {
@@ -435,7 +434,7 @@ input[type="file"]::before {
     background: #c1c1c1;
 }
 
-/* Mobile responsive styles */
+/* Mobile responsive styles - improved for better image display */
 @media (max-width: 768px) {
     #toolbar {
         flex-direction: column;
@@ -451,8 +450,12 @@ input[type="file"]::before {
     
     .page {
         width: 100%;
-        max-height: 350px;
+        max-height: 450px; /* Increased from 350px for larger images on mobile */
         margin: 0 0 20px 0;
+    }
+    
+    .page .image-container {
+        padding-bottom: 85%; /* Adjusted for taller images on mobile but not full square */
     }
     
     .toolbar-left h2 {
@@ -492,8 +495,12 @@ input[type="file"]::before {
     }
     
     .page {
-        max-height: 300px;
+        max-height: 400px; /* Increased from 300px for larger images */
         border-radius: 10px;
+    }
+    
+    .page .image-container {
+        padding-bottom: 75%; /* Adjusted aspect ratio for smaller screens */
     }
     
     .page .text {
@@ -502,6 +509,7 @@ input[type="file"]::before {
         left: 10px;
         right: 10px;
         padding: 10px;
+        max-height: 40%; /* Reduced to give more space to images */
     }
     
     .delete-button {
@@ -513,7 +521,7 @@ input[type="file"]::before {
         right: 10px;
     }
     
-    .modal-content {
+.modal-content {
         padding: 15px;
         margin: 30% auto 0;
         border-radius: 12px;
@@ -525,5 +533,103 @@ input[type="file"]::before {
     
     #pages {
         padding: 12px;
+        gap: 12px; /* Reduced gap for very small screens */
+    }
+    
+    .modal input {
+        padding: 12px;
+        font-size: 14px;
+    }
+    
+    .modal button {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+
+/* Improve image display on landscape orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+    #scrapbook {
+        height: 85vh;
+    }
+    
+    .page {
+        max-height: 300px;
+    }
+    
+    .page .image-container {
+        padding-bottom: 70%; /* Adjusted for landscape view */
+    }
+    
+    #pages {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}
+
+/* High-resolution screens */
+@media (min-width: 1440px) {
+    #scrapbook {
+        max-width: 1400px;
+    }
+    
+    .page {
+        max-height: 700px; /* Allow larger images on bigger screens */
+    }
+    
+    .page .text {
+        font-size: 18px;
+        padding: 16px 20px;
+    }
+}
+
+/* Add loading state for image uploads */
+.uploading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Improve focus visibility for accessibility */
+button:focus, 
+input:focus, 
+.delete-button:focus {
+    outline: 2px solid #d64161;
+    outline-offset: 2px;
+}
+
+/* Add smooth page entrance animation */
+.page {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Empty state styling */
+.empty-state {
+    width: 100%;
+    text-align: center;
+    padding: 50px 20px;
+    color: #888;
+}
+
+.empty-state p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* Image zoom effect for desktop */
+@media (min-width: 1024px) {
+    .page .image-container:hover {
+        cursor: zoom-in;
     }
 }
