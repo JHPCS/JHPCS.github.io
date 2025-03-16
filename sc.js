@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('verifyCodeButton').addEventListener('click', verifyCode);
     document.getElementById('signOutButton').addEventListener('click', signOut);
     
+    
     // Setup modal close buttons
     const closeButtons = document.querySelectorAll('.close');
     closeButtons.forEach(button => {
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Set up real-time updates for scrapbook items
     setupRealtimeUpdates();
+    loadSiteSettings();
     
     // Check if user is already logged in
     auth.onAuthStateChanged(user => {
@@ -109,9 +111,9 @@ function changeLayout(event) {
     // Add the selected layout class
     pagesContainer.classList.add(layoutValue);
     
-    // Save preference if user is logged in
+    // Save as global site setting, not user preference
     if (auth.currentUser) {
-        saveUserPreference('layout', layoutValue);
+        saveSiteSettings('layout', layoutValue);
     }
 }
 
@@ -126,15 +128,16 @@ function changeColorScheme(event) {
         document.body.classList.add(`theme-${theme}`);
     }
     
-    // Save preference if user is logged in
+    // Save as global site setting, not user preference
     if (auth.currentUser) {
-        saveUserPreference('theme', theme);
+        saveSiteSettings('theme', theme);
     }
 }
 
-// Save user preferences to firestore
-async function saveUserPreference(key, value) {
+// New function to save global site settings
+async function saveSiteSettings(key, value) {
     try {
+        // Check if user is an editor
         let email = '';
         
         if (auth.currentUser.email) {
@@ -147,63 +150,60 @@ async function saveUserPreference(key, value) {
             }
         }
         
+        // Verify the user is actually an editor before allowing them to change global settings
         if (email) {
-            await db.collection('userPreferences').doc(email).set({
-                [key]: value,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-        }
-    } catch (error) {
-        console.error("Error saving user preference:", error);
-    }
-}
-
-// Load user preferences
-async function loadUserPreferences() {
-    try {
-        if (auth.currentUser) {
-            let email = '';
-            
-            if (auth.currentUser.email) {
-                email = auth.currentUser.email;
+            const editorDoc = await db.collection('whitelistedEmails').doc(email).get();
+            if (editorDoc.exists && editorDoc.data().role === 'editor') {
+                // Save to a global site settings document
+                await db.collection('siteSettings').doc('global').set({
+                    [key]: value,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedBy: email
+                }, { merge: true });
+                console.log(`Global ${key} updated to ${value}`);
             } else {
-                // For anonymous users, get the email from our users collection
-                const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-                if (userDoc.exists) {
-                    email = userDoc.data().email;
-                }
-            }
-            
-            if (email) {
-                const prefsDoc = await db.collection('userPreferences').doc(email).get();
-                
-                if (prefsDoc.exists) {
-                    const prefs = prefsDoc.data();
-                    
-                    // Apply layout preference
-                    if (prefs.layout) {
-                        document.getElementById('layoutSelector').value = prefs.layout;
-                        const pagesContainer = document.getElementById('pages');
-                        pagesContainer.classList.remove('layout-1', 'layout-2', 'layout-3', 'layout-4');
-                        pagesContainer.classList.add(prefs.layout);
-                    }
-                    
-                    // Apply theme preference
-                    if (prefs.theme) {
-                        document.getElementById('colorScheme').value = prefs.theme;
-                        document.body.classList.remove('theme-blue', 'theme-dark', 'theme-earth');
-                        if (prefs.theme !== 'default') {
-                            document.body.classList.add(`theme-${prefs.theme}`);
-                        }
-                    }
-                }
+                console.error("Only editors can change global site settings");
             }
         }
     } catch (error) {
-        console.error("Error loading user preferences:", error);
+        console.error("Error saving site setting:", error);
     }
 }
 
+// New function to load global site settings at startup
+async function loadSiteSettings() {
+    try {
+        // Set up a real-time listener for site settings
+        db.collection('siteSettings').doc('global').onSnapshot((doc) => {
+            if (doc.exists) {
+                const settings = doc.data();
+                
+                // Apply layout setting
+                if (settings.layout) {
+                    document.getElementById('layoutSelector').value = settings.layout;
+                    const pagesContainer = document.getElementById('pages');
+                    pagesContainer.classList.remove('layout-1', 'layout-2', 'layout-3', 'layout-4');
+                    pagesContainer.classList.add(settings.layout);
+                }
+                
+                // Apply theme setting
+                if (settings.theme) {
+                    document.getElementById('colorScheme').value = settings.theme;
+                    document.body.classList.remove('theme-blue', 'theme-dark', 'theme-earth');
+                    if (settings.theme !== 'default') {
+                        document.body.classList.add(`theme-${settings.theme}`);
+                    }
+                }
+                
+                console.log("Applied global site settings");
+            }
+        }, (error) => {
+            console.error("Error loading site settings:", error);
+        });
+    } catch (error) {
+        console.error("Error setting up site settings listener:", error);
+    }
+}
 // Use real-time updates for scrapbook items
 function setupRealtimeUpdates() {
     const pagesContainer = document.getElementById('pages');
