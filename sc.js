@@ -17,10 +17,8 @@ const auth = firebase.auth();
 document.addEventListener('DOMContentLoaded', () => {
     // Setup authentication listeners
     document.getElementById('loginButton').addEventListener('click', openAuthModal);
-    document.getElementById('requestCodeButton').addEventListener('click', requestVerificationCode);
-    document.getElementById('verifyCodeButton').addEventListener('click', verifyCode);
+    document.getElementById('requestCodeButton').addEventListener('click', sendSignInLinkToEmail);
     document.getElementById('signOutButton').addEventListener('click', signOut);
-    
     
     // Setup modal close buttons
     const closeButtons = document.querySelectorAll('.close');
@@ -45,6 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
     setupRealtimeUpdates();
     loadSiteSettings();
     
+    // Configure Firebase Auth settings for email link sign-in
+    auth.useDeviceLanguage();
+    
+    // Check if user comes from an email link authentication
+    if (isSignInWithEmailLink()) {
+        completeSignInWithEmailLink();
+    }
+    
     // Check if user is already logged in
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -65,11 +71,14 @@ document.addEventListener('DOMContentLoaded', () => {
 function openAuthModal() {
     document.getElementById('authModal').style.display = 'block';
     document.getElementById('emailStep').style.display = 'block';
-    document.getElementById('codeStep').style.display = 'none';
     document.getElementById('email').value = '';
-    document.getElementById('verificationCode').value = '';
     document.getElementById('emailStatus').textContent = '';
-    document.getElementById('codeStatus').textContent = '';
+    
+    // Try to get stored email from localStorage
+    const savedEmail = localStorage.getItem('emailForSignIn');
+    if (savedEmail) {
+        document.getElementById('email').value = savedEmail;
+    }
 }
 
 function closeAuthModal() {
@@ -204,6 +213,7 @@ async function loadSiteSettings() {
         console.error("Error setting up site settings listener:", error);
     }
 }
+
 // Use real-time updates for scrapbook items
 function setupRealtimeUpdates() {
     const pagesContainer = document.getElementById('pages');
@@ -447,7 +457,7 @@ async function deleteItem(itemId, itemData) {
                 const url = new URL(itemData.content);
                 const pathMatch = url.pathname.match(/\/o\/([^?]+)/);
                 
-if (pathMatch && pathMatch[1]) {
+                if (pathMatch && pathMatch[1]) {
                     const path = decodeURIComponent(pathMatch[1]);
                     const fileRef = storage.ref(path);
                     await fileRef.delete();
@@ -487,8 +497,8 @@ async function getUserEmail() {
     return null;
 }
 
-// Email verification code system
-async function requestVerificationCode() {
+// Firebase Email Link Authentication
+async function sendSignInLinkToEmail() {
     const email = document.getElementById('email').value.trim();
     const emailStatus = document.getElementById('emailStatus');
     
@@ -505,7 +515,7 @@ async function requestVerificationCode() {
     }
     
     try {
-        // Check if email is whitelisted
+        // Check if email is whitelisted before sending sign-in link
         const userDoc = await db.collection('whitelistedEmails').doc(email).get();
         
         if (!userDoc.exists) {
@@ -514,33 +524,82 @@ async function requestVerificationCode() {
             return;
         }
         
-        // Generate a 6-digit code
-        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        // Configure action code settings - where to redirect after clicking email link
+        const actionCodeSettings = {
+            // URL must be whitelisted in the Firebase Console
+            url: window.location.href,
+            // This must be true for email link sign-in
+            handleCodeInApp: true
+        };
         
-        // Store the code in Firestore with timestamp
-        await db.collection('verificationCodes').doc(email).set({
-            code: verificationCode,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            used: false
-        });
+        // Send sign-in link to email
+        await auth.sendSignInLinkToEmail(email, actionCodeSettings);
         
-        // For this demo, show the code (in production, you'd use Firebase Functions to send emails)
-        console.log(`Code for ${email}: ${verificationCode}`);
-        alert(`For demo purposes, your verification code is: ${verificationCode}`);
+        // Save the email locally to remember the user
+        localStorage.setItem('emailForSignIn', email);
         
-        // Show the code verification step
-        document.getElementById('emailStep').style.display = 'none';
-        document.getElementById('codeStep').style.display = 'block';
-        
-        // Store email in session for code verification
-        sessionStorage.setItem('tempEmail', email);
-        
-        emailStatus.textContent = '';
+        // Show success message
+        emailStatus.textContent = 'Sign-in link sent! Check your email.';
+        emailStatus.className = 'status success';
         
     } catch (error) {
-        console.error("Error requesting code: ", error);
+        console.error("Error sending email:", error);
         emailStatus.textContent = `Error: ${error.message}`;
         emailStatus.className = 'status error';
+    }
+}
+
+// Check if current URL is a sign-in link
+function isSignInWithEmailLink() {
+    return auth.isSignInWithEmailLink(window.location.href);
+}
+
+// Complete the sign-in process when user returns from email link
+async function completeSignInWithEmailLink() {
+    try {
+        // Get the email if available, or prompt user for it
+        let email = localStorage.getItem('emailForSignIn');
+        
+        if (!email) {
+            email = window.prompt('Please provide your email for confirmation:');
+        }
+        
+        if (!email) {
+            console.error("No email provided for sign-in completion");
+            return;
+        }
+        
+        // Sign in the user
+        const result = await auth.signInWithEmailLink(email, window.location.href);
+        
+        // Clear email from storage
+        localStorage.removeItem('emailForSignIn');
+        
+        // Clear the URL so the link cannot be reused
+        window.history.replaceState(null, null, window.location.pathname);
+        
+        // Create a user record if it doesn't exist
+        if (result.user) {
+            await ensureUserRecord(result.user, email);
+        }
+        
+        console.log("Successfully signed in with email link");
+        
+    } catch (error) {
+        console.error("Error signing in with email link:", error);
+        alert(`Authentication error: ${error.message}`);
+    }
+}
+
+// Ensure user record exists in Firestore
+async function ensureUserRecord(user, email) {
+    try {
+        await db.collection('users').doc(user.uid).set({
+            email: email,
+            verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+    } catch (error) {
+        console.error("Error creating user record:", error);
     }
 }
 
@@ -548,85 +607,6 @@ async function requestVerificationCode() {
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-}
-
-async function verifyCode() {
-    const enteredCode = document.getElementById('verificationCode').value.trim();
-    const codeStatus = document.getElementById('codeStatus');
-    const email = sessionStorage.getItem('tempEmail');
-    
-    if (!enteredCode) {
-        codeStatus.textContent = 'Please enter the verification code';
-        codeStatus.className = 'status error';
-        return;
-    }
-    
-    try {
-        // Get the stored code from Firestore
-        const codeDoc = await db.collection('verificationCodes').doc(email).get();
-        
-        if (!codeDoc.exists) {
-            codeStatus.textContent = 'Verification failed: Code not found';
-            codeStatus.className = 'status error';
-            return;
-        }
-        
-        const codeData = codeDoc.data();
-        
-        // Check if code is used or expired (15 minutes expiration)
-        const now = new Date();
-        const createdAt = codeData.createdAt.toDate();
-        const timeDiff = (now - createdAt) / (1000 * 60); // difference in minutes
-        
-        if (codeData.used || timeDiff > 15) {
-            codeStatus.textContent = 'Verification failed: Code is expired or already used';
-            codeStatus.className = 'status error';
-            return;
-        }
-        
-        // Verify the code
-        if (codeData.code !== enteredCode) {
-            codeStatus.textContent = 'Verification failed: Invalid code';
-            codeStatus.className = 'status error';
-            return;
-        }
-        
-        // Mark code as used
-        await db.collection('verificationCodes').doc(email).update({
-            used: true
-        });
-        
-        // Create anonymous account and link it with the email
-        try {
-            // First sign in anonymously
-            await auth.signInAnonymously();
-            
-            // Store the verified email for the anonymous user
-            const user = auth.currentUser;
-            await db.collection('users').doc(user.uid).set({
-                email: email,
-                verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            
-            // Close the modal and check user role
-            closeAuthModal();
-            
-            // Check if user has editor role
-            await checkUserRole({ email: email, uid: user.uid });
-            
-            // Load user preferences after successful login
-            await loadUserPreferences();
-            
-        } catch (error) {
-            console.error("Error during auth: ", error);
-            codeStatus.textContent = `Authentication error: ${error.message}`;
-            codeStatus.className = 'status error';
-        }
-    } catch (error) {
-        console.error("Error verifying code: ", error);
-        codeStatus.textContent = `Error: ${error.message}`;
-        codeStatus.className = 'status error';
-    }
 }
 
 async function checkUserRole(user) {
@@ -661,6 +641,9 @@ async function checkUserRole(user) {
                 
                 // Show editor-only elements
                 document.body.classList.add('editor-mode');
+                
+                // Load user preferences
+                await loadUserPreferences();
             } else {
                 alert('You do not have permission to edit the scrapbook.');
                 await signOut();
@@ -676,12 +659,28 @@ async function checkUserRole(user) {
     }
 }
 
+async function loadUserPreferences() {
+    try {
+        const email = await getUserEmail();
+        if (!email) return;
+        
+        const prefDoc = await db.collection('userPreferences').doc(email).get();
+        if (prefDoc.exists) {
+            const prefs = prefDoc.data();
+            // Apply preferences here if needed
+            console.log("Loaded user preferences:", prefs);
+        }
+    } catch (error) {
+        console.error("Error loading user preferences:", error);
+    }
+}
+
 async function signOut() {
     try {
         await auth.signOut();
         document.getElementById('guestControls').style.display = 'block';
         document.getElementById('editorControls').style.display = 'none';
-        sessionStorage.removeItem('tempEmail');
+        localStorage.removeItem('emailForSignIn');
         
         // Hide editor-only elements
         document.body.classList.remove('editor-mode');
