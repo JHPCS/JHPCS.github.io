@@ -8,7 +8,6 @@ body {
     align-items: center;
     height: 100vh;
 }
-
 #scrapbook {
     width: 80%;
     height: 90%;
@@ -18,7 +17,6 @@ body {
     flex-direction: column;
     border-radius: 8px;
 }
-
 #toolbar {
     display: flex;
     justify-content: space-between;
@@ -28,31 +26,25 @@ body {
     border-bottom: 1px solid #ccc;
     border-radius: 8px 8px 0 0;
 }
-
 .toolbar-left h2 {
     margin: 0;
     color: #333;
 }
-
 .toolbar-right {
     display: flex;
     align-items: center;
 }
-
 .toolbar-right button, .toolbar-right input[type="file"] {
     margin-left: 10px;
 }
-
 #toolbar span {
     font-size: 14px;
     color: #555;
     margin-right: 15px;
 }
-
 #userEmail {
     font-weight: bold;
 }
-
 #pages {
     flex: 1;
     padding: 10px;
@@ -60,7 +52,6 @@ body {
     display: flex;
     flex-wrap: wrap;
 }
-
 .page {
     width: 45%;
     height: 45%;
@@ -72,12 +63,10 @@ body {
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-
 .page img, .page video {
     width: 100%;
     height: auto;
 }
-
 .page .text {
     position: absolute;
     bottom: 10px;
@@ -89,7 +78,54 @@ body {
     border-radius: 5px;
     font-size: 16px;
 }
-
+/* Delete button styling */
+.delete-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ff5252;
+    color: white;
+    font-size: 20px;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.8;
+    border: none;
+    z-index: 10;
+    display: none; /* Hidden by default */
+}
+.delete-button:hover {
+    opacity: 1;
+    background-color: #ff0000;
+}
+/* Meta information styling */
+.meta-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px;
+    font-size: 12px;
+    display: none; /* Hidden by default */
+}
+/* Show editor elements only in editor mode */
+.editor-only {
+    display: none;
+}
+body.editor-mode .editor-only {
+    display: block;
+}
+.page:hover .delete-button {
+    display: block;
+}
+.page:hover .meta-info {
+    display: block;
+}
 /* Modal styles */
 .modal {
     display: none;
@@ -102,7 +138,6 @@ body {
     overflow: auto;
     background-color: rgba(0,0,0,0.4);
 }
-
 .modal-content {
     background-color: white;
     margin: 15% auto;
@@ -112,7 +147,6 @@ body {
     width: 300px;
     position: relative;
 }
-
 .close {
     position: absolute;
     right: 15px;
@@ -122,15 +156,12 @@ body {
     font-weight: bold;
     cursor: pointer;
 }
-
 .close:hover {
     color: black;
 }
-
 #emailStep, #codeStep {
     width: 100%;
 }
-
 .modal input {
     width: 100%;
     padding: 10px;
@@ -139,7 +170,6 @@ body {
     border-radius: 4px;
     box-sizing: border-box;
 }
-
 .modal button {
     width: 100%;
     padding: 10px;
@@ -150,24 +180,19 @@ body {
     border-radius: 4px;
     cursor: pointer;
 }
-
 .modal button:hover {
     background-color: #45a049;
 }
-
 .status {
     font-size: 14px;
     margin: 10px 0;
 }
-
 .error {
     color: #e74c3c;
 }
-
 .success {
     color: #2ecc71;
 }
-
 button {
     padding: 8px 15px;
     background-color: #4CAF50;
@@ -176,15 +201,12 @@ button {
     border-radius: 4px;
     cursor: pointer;
 }
-
 button:hover {
     background-color: #45a049;
 }
-
 #loginButton {
     background-color: #2196F3;
 }
-
 #loginButton:hover {
     background-color: #0b7dda;
 }
