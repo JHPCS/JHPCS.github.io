@@ -19,12 +19,26 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('loginButton').addEventListener('click', openAuthModal);
     document.getElementById('requestCodeButton').addEventListener('click', requestVerificationCode);
     document.getElementById('verifyCodeButton').addEventListener('click', verifyCode);
+    document.getElementById('signOutButton').addEventListener('click', signOut);
     
-    // Setup modal close button
-    document.querySelector('.close').addEventListener('click', closeAuthModal);
+    // Setup modal close buttons
+    const closeButtons = document.querySelectorAll('.close');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Find the parent modal and close it
+            const modal = button.closest('.modal');
+            modal.style.display = 'none';
+        });
+    });
     
-    // Setup scrapbook functionality
+    // Setup scrapbook editor functionality
     document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
+    document.getElementById('addTextButton').addEventListener('click', openTextModal);
+    document.getElementById('saveTextButton').addEventListener('click', saveText);
+    
+    // Setup layout and theme selectors
+    document.getElementById('layoutSelector').addEventListener('change', changeLayout);
+    document.getElementById('colorScheme').addEventListener('change', changeColorScheme);
     
     // Set up real-time updates for scrapbook items
     setupRealtimeUpdates();
@@ -37,8 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show guest view (which is default)
             document.getElementById('guestControls').style.display = 'block';
             document.getElementById('editorControls').style.display = 'none';
+            document.body.classList.remove('editor-mode');
         }
     });
+    
+    // Load saved preferences if any
+    loadUserPreferences();
 });
 
 // Modal functions
@@ -56,120 +74,364 @@ function closeAuthModal() {
     document.getElementById('authModal').style.display = 'none';
 }
 
-// When the user clicks anywhere outside of the modal, close it
+function openTextModal() {
+    document.getElementById('textModal').style.display = 'block';
+    document.getElementById('textInput').value = '';
+    document.getElementById('textInput').focus();
+}
+
+function closeTextModal() {
+    document.getElementById('textModal').style.display = 'none';
+}
+
+// When the user clicks anywhere outside of the modals, close them
 window.onclick = function(event) {
-    const modal = document.getElementById('authModal');
-    if (event.target === modal) {
+    const authModal = document.getElementById('authModal');
+    const textModal = document.getElementById('textModal');
+    
+    if (event.target === authModal) {
         closeAuthModal();
+    }
+    
+    if (event.target === textModal) {
+        closeTextModal();
     }
 }
 
-// Use ONLY real-time updates instead of separate load function
+// Layout and Theme Functions
+function changeLayout(event) {
+    const layoutValue = event.target.value;
+    const pagesContainer = document.getElementById('pages');
+    
+    // Remove all existing layout classes
+    pagesContainer.classList.remove('layout-1', 'layout-2', 'layout-3', 'layout-4');
+    
+    // Add the selected layout class
+    pagesContainer.classList.add(layoutValue);
+    
+    // Save preference if user is logged in
+    if (auth.currentUser) {
+        saveUserPreference('layout', layoutValue);
+    }
+}
+
+function changeColorScheme(event) {
+    const theme = event.target.value;
+    
+    // Remove all existing theme classes
+    document.body.classList.remove('theme-blue', 'theme-dark', 'theme-earth');
+    
+    // Add the selected theme class if not default
+    if (theme !== 'default') {
+        document.body.classList.add(`theme-${theme}`);
+    }
+    
+    // Save preference if user is logged in
+    if (auth.currentUser) {
+        saveUserPreference('theme', theme);
+    }
+}
+
+// Save user preferences to firestore
+async function saveUserPreference(key, value) {
+    try {
+        let email = '';
+        
+        if (auth.currentUser.email) {
+            email = auth.currentUser.email;
+        } else {
+            // For anonymous users, get the email from our users collection
+            const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+            if (userDoc.exists) {
+                email = userDoc.data().email;
+            }
+        }
+        
+        if (email) {
+            await db.collection('userPreferences').doc(email).set({
+                [key]: value,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        }
+    } catch (error) {
+        console.error("Error saving user preference:", error);
+    }
+}
+
+// Load user preferences
+async function loadUserPreferences() {
+    try {
+        if (auth.currentUser) {
+            let email = '';
+            
+            if (auth.currentUser.email) {
+                email = auth.currentUser.email;
+            } else {
+                // For anonymous users, get the email from our users collection
+                const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+                if (userDoc.exists) {
+                    email = userDoc.data().email;
+                }
+            }
+            
+            if (email) {
+                const prefsDoc = await db.collection('userPreferences').doc(email).get();
+                
+                if (prefsDoc.exists) {
+                    const prefs = prefsDoc.data();
+                    
+                    // Apply layout preference
+                    if (prefs.layout) {
+                        document.getElementById('layoutSelector').value = prefs.layout;
+                        const pagesContainer = document.getElementById('pages');
+                        pagesContainer.classList.remove('layout-1', 'layout-2', 'layout-3', 'layout-4');
+                        pagesContainer.classList.add(prefs.layout);
+                    }
+                    
+                    // Apply theme preference
+                    if (prefs.theme) {
+                        document.getElementById('colorScheme').value = prefs.theme;
+                        document.body.classList.remove('theme-blue', 'theme-dark', 'theme-earth');
+                        if (prefs.theme !== 'default') {
+                            document.body.classList.add(`theme-${prefs.theme}`);
+                        }
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Error loading user preferences:", error);
+    }
+}
+
+// Use real-time updates for scrapbook items
 function setupRealtimeUpdates() {
-    // Clear existing pages before loading
-    document.getElementById('pages').innerHTML = '';
+    const pagesContainer = document.getElementById('pages');
+    const emptyState = document.getElementById('emptyState');
+    
+    // Add empty state back to the pages container if it was removed
+    if (!document.getElementById('emptyState')) {
+        pagesContainer.appendChild(emptyState);
+    }
+    
+    // Keep track of item count
+    let itemCount = 0;
     
     db.collection('scrapbookItems')
       .orderBy('createdAt', 'desc')
       .onSnapshot((snapshot) => {
+        // Process all changes in this snapshot
         snapshot.docChanges().forEach((change) => {
             // Handle added items
             if (change.type === 'added') {
                 const item = change.doc.data();
                 const itemId = change.doc.id;
-                let element;
                 
                 if (item.type === 'image') {
-                    element = document.createElement('img');
-                    element.src = item.content;
+                    createImagePage(item, itemId);
+                    itemCount++;
                 } else if (item.type === 'text') {
-                    element = document.createElement('div');
-                    element.className = 'text';
-                    element.textContent = item.content;
+                    createTextPage(item, itemId);
+                    itemCount++;
                 }
-                
-                if (element) {
-                    addPageElement(element, itemId, item);
-                }
-            } else if (change.type === 'removed') {
-                // Handle removed items
+            } 
+            // Handle removed items
+            else if (change.type === 'removed') {
                 const itemId = change.doc.id;
                 const pageElement = document.getElementById(`page-${itemId}`);
                 if (pageElement) {
                     pageElement.remove();
+                    itemCount--;
                 }
             }
-            // You can handle 'modified' changes here too if needed
+            // Handle modified items
+            else if (change.type === 'modified') {
+                const item = change.doc.data();
+                const itemId = change.doc.id;
+                
+                // Remove old element and create new one
+                const oldElement = document.getElementById(`page-${itemId}`);
+                if (oldElement) {
+                    oldElement.remove();
+                    
+                    if (item.type === 'image') {
+                        createImagePage(item, itemId);
+                    } else if (item.type === 'text') {
+                        createTextPage(item, itemId);
+                    }
+                }
+            }
         });
+        
+        // Show or hide empty state based on item count
+        if (itemCount === 0) {
+            emptyState.style.display = 'block';
+        } else {
+            emptyState.style.display = 'none';
+        }
+      }, (error) => {
+        console.error("Error getting real-time updates:", error);
       });
+}
+
+function createImagePage(item, itemId) {
+    const page = document.createElement('div');
+    page.className = 'page';
+    page.id = `page-${itemId}`;
+    
+    // Create image container
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'image-container';
+    
+    // Create and add the image
+    const img = document.createElement('img');
+    img.src = item.content;
+    img.alt = 'Scrapbook image';
+    img.loading = 'lazy';
+    
+    imageContainer.appendChild(img);
+    page.appendChild(imageContainer);
+    
+    // Add text container if there's a caption
+    if (item.caption) {
+        const textDiv = document.createElement('div');
+        textDiv.className = 'text';
+        textDiv.textContent = item.caption;
+        page.appendChild(textDiv);
+    }
+    
+    // Add delete button
+    addDeleteButton(page, itemId, item);
+    
+    // Add metadata
+    addMetaInfo(page, item);
+    
+    // Add to the container
+    document.getElementById('pages').appendChild(page);
+}
+
+function createTextPage(item, itemId) {
+    const page = document.createElement('div');
+    page.className = 'page text-only';
+    page.id = `page-${itemId}`;
+    
+    // Create and add the text content
+    const textDiv = document.createElement('div');
+    textDiv.className = 'text';
+    textDiv.textContent = item.content;
+    
+    page.appendChild(textDiv);
+    
+    // Add delete button
+    addDeleteButton(page, itemId, item);
+    
+    // Add metadata
+    addMetaInfo(page, item);
+    
+    // Add to the container
+    document.getElementById('pages').appendChild(page);
+}
+
+function addDeleteButton(page, itemId, itemData) {
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'delete-button editor-only';
+    deleteButton.innerHTML = '&times;';
+    deleteButton.title = 'Delete item';
+    deleteButton.onclick = (e) => {
+        e.stopPropagation(); // Prevent any click events from bubbling up
+        deleteItem(itemId, itemData);
+    };
+    
+    page.appendChild(deleteButton);
+}
+
+function addMetaInfo(page, itemData) {
+    const metaInfo = document.createElement('div');
+    metaInfo.className = 'meta-info editor-only';
+    
+    const createdDate = itemData.createdAt ? 
+        itemData.createdAt.toDate().toLocaleString() : 
+        'Unknown date';
+        
+    metaInfo.innerHTML = `Added by: ${itemData.createdBy || 'Unknown'}<br>Date: ${createdDate}`;
+    
+    page.appendChild(metaInfo);
 }
 
 async function handleImageUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
     
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        alert('Image is too large. Please select an image under 5MB.');
+        event.target.value = '';
+        return;
+    }
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        event.target.value = '';
+        return;
+    }
+    
+    // Show loading state
+    const uploadButton = event.target;
+    uploadButton.disabled = true;
+    uploadButton.classList.add('uploading');
+    
     const storageRef = storage.ref('images/' + file.name);
     try {
         await storageRef.put(file);
         const url = await storageRef.getDownloadURL();
         
-        // Don't add to DOM directly anymore - let the listener handle it
+        // Optional: prompt for a caption
+        const caption = prompt("Add a caption for this image (optional):", "");
+        
+        // Add to Firestore - the listener will add it to the DOM
         await db.collection('scrapbookItems').add({ 
             type: 'image', 
             content: url,
+            caption: caption || null,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            createdBy: auth.currentUser.email || 'unknown'
+            createdBy: await getUserEmail() || 'unknown'
         });
         
-        // Reset the file input
-        event.target.value = '';
     } catch (error) {
         console.error("Error uploading image: ", error);
+        alert(`Error uploading image: ${error.message}`);
+    } finally {
+        // Reset upload button state
+        uploadButton.disabled = false;
+        uploadButton.classList.remove('uploading');
+        uploadButton.value = '';
     }
 }
 
-async function addText() {
-    const text = prompt("Enter your text:");
-    if (text) {
-        try {
-            // Don't add to DOM directly anymore - let the listener handle it
-            await db.collection('scrapbookItems').add({ 
-                type: 'text', 
-                content: text,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                createdBy: auth.currentUser.email || 'unknown'
-            });
-        } catch (error) {
-            console.error("Error adding text: ", error);
-        }
+async function saveText() {
+    const text = document.getElementById('textInput').value.trim();
+    
+    if (!text) {
+        alert('Please enter some text before saving.');
+        return;
     }
-}
-
-function addPageElement(element, itemId, itemData) {
-    const page = document.createElement('div');
-    page.className = 'page';
-    page.id = `page-${itemId}`;
     
-    // Add the content element
-    page.appendChild(element);
-    
-    // Add delete button for editors (will be shown/hidden via CSS)
-    const deleteButton = document.createElement('button');
-    deleteButton.className = 'delete-button editor-only';
-    deleteButton.innerHTML = '&times;';
-    deleteButton.title = 'Delete item';
-    deleteButton.onclick = () => deleteItem(itemId, itemData);
-    
-    // Add metadata info
-    const metaInfo = document.createElement('div');
-    metaInfo.className = 'meta-info editor-only';
-    const createdDate = itemData.createdAt ? itemData.createdAt.toDate().toLocaleString() : 'Unknown date';
-    metaInfo.innerHTML = `Added by: ${itemData.createdBy || 'Unknown'}<br>Date: ${createdDate}`;
-    
-    page.appendChild(deleteButton);
-    page.appendChild(metaInfo);
-    
-    document.getElementById('pages').appendChild(page);
+    try {
+        await db.collection('scrapbookItems').add({ 
+            type: 'text', 
+            content: text,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdBy: await getUserEmail() || 'unknown'
+        });
+        
+        // Close the modal
+        closeTextModal();
+        
+    } catch (error) {
+        console.error("Error adding text: ", error);
+        alert(`Error adding text: ${error.message}`);
+    }
 }
 
 async function deleteItem(itemId, itemData) {
@@ -185,7 +447,7 @@ async function deleteItem(itemId, itemData) {
                 const url = new URL(itemData.content);
                 const pathMatch = url.pathname.match(/\/o\/([^?]+)/);
                 
-                if (pathMatch && pathMatch[1]) {
+if (pathMatch && pathMatch[1]) {
                     const path = decodeURIComponent(pathMatch[1]);
                     const fileRef = storage.ref(path);
                     await fileRef.delete();
@@ -205,13 +467,39 @@ async function deleteItem(itemId, itemData) {
     }
 }
 
+// Helper function to get user email (works for both direct and anonymous auth)
+async function getUserEmail() {
+    if (auth.currentUser) {
+        if (auth.currentUser.email) {
+            return auth.currentUser.email;
+        } else {
+            // For anonymous users, get the email from our users collection
+            try {
+                const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+                if (userDoc.exists) {
+                    return userDoc.data().email;
+                }
+            } catch (error) {
+                console.error("Error getting user email:", error);
+            }
+        }
+    }
+    return null;
+}
+
 // Email verification code system
 async function requestVerificationCode() {
-    const email = document.getElementById('email').value;
+    const email = document.getElementById('email').value.trim();
     const emailStatus = document.getElementById('emailStatus');
     
     if (!email) {
         emailStatus.textContent = 'Please enter an email address';
+        emailStatus.className = 'status error';
+        return;
+    }
+    
+    if (!isValidEmail(email)) {
+        emailStatus.textContent = 'Please enter a valid email address';
         emailStatus.className = 'status error';
         return;
     }
@@ -256,8 +544,14 @@ async function requestVerificationCode() {
     }
 }
 
+// Simple email validation
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 async function verifyCode() {
-    const enteredCode = document.getElementById('verificationCode').value;
+    const enteredCode = document.getElementById('verificationCode').value.trim();
     const codeStatus = document.getElementById('codeStatus');
     const email = sessionStorage.getItem('tempEmail');
     
@@ -319,6 +613,9 @@ async function verifyCode() {
             
             // Check if user has editor role
             await checkUserRole({ email: email, uid: user.uid });
+            
+            // Load user preferences after successful login
+            await loadUserPreferences();
             
         } catch (error) {
             console.error("Error during auth: ", error);
@@ -388,6 +685,18 @@ async function signOut() {
         
         // Hide editor-only elements
         document.body.classList.remove('editor-mode');
+        
+        // Reset to default layout and theme
+        document.getElementById('layoutSelector').value = 'layout-2';
+        document.getElementById('colorScheme').value = 'default';
+        
+        const pagesContainer = document.getElementById('pages');
+        pagesContainer.classList.remove('layout-1', 'layout-3', 'layout-4');
+        pagesContainer.classList.add('layout-2');
+        
+        document.body.classList.remove('theme-blue', 'theme-dark', 'theme-earth');
+        
+        alert('You have been signed out successfully.');
     } catch (error) {
         console.error("Error signing out: ", error);
         alert(error.message);
