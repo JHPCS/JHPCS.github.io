@@ -1,4 +1,79 @@
-/* Improved page and content styling */
+body {
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    background-color: #f8f5f2;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+    color: #333;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+#scrapbook {
+    width: 95%;
+    max-width: 1200px;
+    height: 90vh;
+    background-color: white;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+#toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #ffe2e0 0%, #ffd1d1 100%);
+    border-bottom: 1px solid #f8e8e8;
+    border-radius: 16px 16px 0 0;
+    flex-wrap: wrap;
+}
+
+.toolbar-left h2 {
+    margin: 0;
+    color: #d64161;
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+#toolbar span {
+    font-size: 14px;
+    color: #67595e;
+}
+
+#userEmail {
+    font-weight: 600;
+    color: #d64161;
+}
+
+#pages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    background-color: #fffaf7;
+    gap: 20px;
+}
+
 .page {
     width: calc(50% - 20px);
     height: 320px;
@@ -29,7 +104,6 @@
     transform: scale(1.02);
 }
 
-/* Improved text container styling */
 .page .text {
     position: absolute;
     bottom: 15px;
@@ -91,7 +165,7 @@
     background-color: #ff3b3b;
 }
 
-/* Moved meta-info below text */
+/* Meta information styling - moved below text */
 .meta-info {
     position: absolute;
     bottom: 0;
@@ -119,4 +193,297 @@
 
 body.editor-mode .editor-only {
     display: block;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 420px;
+    position: relative;
+    animation: modalOpen 0.4s ease-out;
+}
+
+@keyframes modalOpen {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close:hover {
+    color: #d64161;
+}
+
+#emailStep, #codeStep {
+    width: 100%;
+}
+
+.modal h2 {
+    color: #d64161;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.modal input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 18px;
+    border: 1px solid #ede0e0;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: #fffbfb;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal input:focus {
+    outline: none;
+    border-color: #f2b5d4;
+    box-shadow: 0 0 0 3px rgba(242, 181, 212, 0.2);
+}
+
+.modal button {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    background-color: #d64161;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(214, 65, 97, 0.2);
+}
+
+.modal button:hover {
+    background-color: #c53555;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(214, 65, 97, 0.25);
+}
+
+.modal button:active {
+    transform: translateY(0);
+}
+
+.status {
+    font-size: 14px;
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.error {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+    padding: 8px 12px;
+}
+
+.success {
+    color: #2ecc71;
+    background-color: rgba(46, 204, 113, 0.1);
+    padding: 8px 12px;
+}
+
+button {
+    padding: 10px 18px;
+    background-color: #f2b5d4;
+    color: #67595e;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+button:hover {
+    background-color: #eea5c8;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+#loginButton {
+    background-color: #d64161;
+    color: white;
+}
+
+#loginButton:hover {
+    background-color: #c53555;
+}
+
+/* File upload button styling */
+input[type="file"] {
+    max-width: 120px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    visibility: hidden;
+    width: 0;
+}
+
+input[type="file"]::before {
+    content: 'Upload Images';
+    color: #67595e;
+    display: inline-block;
+    padding: 0;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d3d3d3;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #c1c1c1;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    #toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px;
+    }
+    
+    .toolbar-right {
+        width: 100%;
+        margin-top: 15px;
+        justify-content: space-between;
+    }
+    
+    .page {
+        width: 100%;
+        height: 280px;
+        margin: 0 0 20px 0;
+    }
+    
+    .toolbar-left h2 {
+        font-size: 1.5rem;
+    }
+    
+    #editorControls {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    .toolbar-right button, 
+    .toolbar-right input[type="file"] {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .modal-content {
+        width: 90%;
+        margin: 20% auto;
+        padding: 20px;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+    #scrapbook {
+        width: 98%;
+        height: 95vh;
+        border-radius: 12px;
+    }
+    
+    #toolbar {
+        padding: 12px;
+    }
+    
+    .page {
+        height: 220px;
+        border-radius: 10px;
+    }
+    
+    .page .text {
+        font-size: 14px;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        padding: 10px;
+    }
+    
+    .delete-button {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        line-height: 32px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .modal-content {
+        padding: 15px;
+        margin: 30% auto 0;
+        border-radius: 12px;
+    }
+    
+    .modal h2 {
+        font-size: 1.3rem;
+    }
+    
+    #pages {
+        padding: 12px;
+    }
 }
