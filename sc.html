@@ -61,15 +61,11 @@
             <span class="close">&times;</span>
             <h2>Editor Authentication</h2>
             <div id="emailStep">
+                <p>Enter your editor email address to receive a sign-in link.</p>
                 <input type="email" id="email" placeholder="Email">
-                <button id="requestCodeButton">Request Code</button>
+                <button id="requestCodeButton">Send Sign-in Link</button>
                 <p id="emailStatus" class="status"></p>
-            </div>
-            <div id="codeStep" style="display: none;">
-                <p>A verification code has been sent to your email.</p>
-                <input type="text" id="verificationCode" placeholder="Enter verification code">
-                <button id="verifyCodeButton">Verify Code</button>
-                <p id="codeStatus" class="status"></p>
+                <p class="info-text">Note: Only whitelisted editor emails will receive a sign-in link.</p>
             </div>
         </div>
     </div>
