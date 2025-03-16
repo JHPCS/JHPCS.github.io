@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtual Scrapbook</title>
-    <link rel="stylesheet" href="sc.css">
+    <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -19,33 +19,43 @@
                 </div>
                 <div id="editorControls" style="display: none;">
                     <span>Logged in as: <span id="userEmail"></span></span>
-                    <input type="file" id="imageUpload" accept="image/*">
-                    <button onclick="addText()">Add Text</button>
-                    <button onclick="signOut()">Sign Out</button>
+                    <div class="editor-options">
+                        <div class="layout-options">
+                            <label for="layoutSelector">Layout:</label>
+                            <select id="layoutSelector">
+                                <option value="layout-1">1 per row</option>
+                                <option value="layout-2" selected>2 per row</option>
+                                <option value="layout-3">3 per row</option>
+                                <option value="layout-4">4 per row</option>
+                            </select>
+                        </div>
+                        <div class="color-scheme">
+                            <label for="colorScheme">Theme:</label>
+                            <select id="colorScheme">
+                                <option value="default">Pink & White</option>
+                                <option value="blue">Blue & White</option>
+                                <option value="dark">Dark Mode</option>
+                                <option value="earth">Earth Tones</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="content-actions">
+                        <input type="file" id="imageUpload" accept="image/*">
+                        <button id="addTextButton">Add Text</button>
+                        <button id="signOutButton">Sign Out</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="pages">
-            <!-- Image pages will be dynamically generated with this structure -->
-            <!-- Example image page structure:
-            <div class="page">
-                <div class="image-container">
-                    <img src="image-url.jpg" alt="Scrapbook Image">
-                </div>
-                <div class="text">Caption text here</div>
-                <button class="delete-button editor-only">×</button>
+        <div id="pages" class="layout-2">
+            <!-- Content will be dynamically generated -->
+            <div id="emptyState" class="empty-state">
+                <p>No items in the scrapbook yet.</p>
+                <p>Add some images or text to get started!</p>
             </div>
-            -->
-            
-            <!-- Text-only pages will be dynamically generated with this structure -->
-            <!-- Example text-only page structure:
-            <div class="page text-only">
-                <div class="text">Text content here</div>
-                <button class="delete-button editor-only">×</button>
-            </div>
-            -->
         </div>
     </div>
+
     <div id="authModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -63,6 +73,17 @@
             </div>
         </div>
     </div>
+
+    <!-- Text input modal -->
+    <div id="textModal" class="modal">
+        <div class="modal-content">
+            <span class="close text-close">&times;</span>
+            <h2>Add Text</h2>
+            <textarea id="textInput" placeholder="Enter your text here" rows="5"></textarea>
+            <button id="saveTextButton">Add to Scrapbook</button>
+        </div>
+    </div>
+
     <!-- Firebase SDK scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
@@ -70,6 +91,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-functions-compat.js"></script>
     <!-- Your custom JavaScript file -->
-    <script src="sc.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
