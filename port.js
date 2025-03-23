@@ -5,6 +5,7 @@ scene.background = new THREE.Color(0xf5f5f5); // Set the background to a soft wh
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputEncoding = THREE.sRGBEncoding; // Add this line for better color handling
 
 // Create an orange floor (#ff964f)
 const floorGeometry = new THREE.PlaneGeometry(100, 100);
@@ -30,62 +31,54 @@ const beamLight = new THREE.PointLight(0x00ff00, 2, 50);
 beamLight.position.set(2, 10, 0);
 scene.add(beamLight);
 
+// Ambient light to softly illuminate the whole scene (increased intensity)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+// Directional light to provide general lighting
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(5, 10, 5);
+scene.add(directionalLight);
+
+// Add additional lights for better visibility
+const fillLight = new THREE.DirectionalLight(0xffffff, 0.7);
+fillLight.position.set(-5, 8, -5);
+scene.add(fillLight);
+
 // Load a car model
 const loader = new THREE.GLTFLoader();
 let car;
 
-// Load the texture before loading the model
-const textureLoader = new THREE.TextureLoader();
-const carTexture = textureLoader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/c5ccf300c00821c8d3063a60f97311cd9bfdcec7/carmaybe.png', 
-    // Success callback
-    function(texture) {
-        console.log("Texture loaded successfully");
-        // Make sure texture has the right settings
-        texture.flipY = false; // GLTF uses a different coordinate system
-        texture.encoding = THREE.sRGBEncoding;
-        
-        // Now load the model with the prepared texture
-        loadCarModel(texture);
-    },
-    // Progress callback
-    undefined,
-    // Error callback
-    function(error) {
-        console.error("Error loading texture:", error);
-        // Try loading the model without the texture if texture fails
-        loadCarModel(null);
-    }
-);
+// Define a colorful default material if texture fails
+const defaultCarMaterial = new THREE.MeshStandardMaterial({
+    color: 0xE74C3C, // Bright red color
+    metalness: 0.7,
+    roughness: 0.2
+});
 
-function loadCarModel(texture) {
+// Load the car model directly with a pre-defined material
+function loadCarModel() {
     loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478b8e2cd686aae823ab127d18dbff54/FabConvert.com_uploads_files_2792345_koenigsegg.glb', 
         function (gltf) {
             car = gltf.scene;
 
             car.traverse(function (node) {
                 if (node.isMesh) {
-                    // Apply texture if available
-                    if (texture) {
-                        node.material = new THREE.MeshStandardMaterial({ 
-                            map: texture, 
-                            metalness: 0.5,
-                            roughness: 0.3
-                        });
-                    } else {
-                        // Fallback material if texture failed to load
-                        node.material = new THREE.MeshStandardMaterial({ 
-                            color: 0x888888, 
-                            metalness: 0.5,
-                            roughness: 0.3
-                        });
-                    }
-                    node.material.needsUpdate = true;
+                    // Apply a preset material instead of trying to use texture
+                    // This ensures the car has color even if texture doesn't work
+                    node.material = defaultCarMaterial.clone();
+                    
+                    // Log the node to debug
+                    console.log("Car mesh found:", node.name);
                 }
             });
 
             car.scale.set(0.5, 0.5, 0.5);
             car.position.y = 0.1;
             scene.add(car);
+            
+            // Log the full car scene to debug
+            console.log("Car loaded:", car);
         }, 
         // Progress callback
         function (xhr) {
@@ -98,19 +91,8 @@ function loadCarModel(texture) {
     );
 }
 
-// Ambient light to softly illuminate the whole scene
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // Increased intensity
-scene.add(ambientLight);
-
-// Directional light to provide general lighting
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(5, 10, 5); // Adjusted position
-scene.add(directionalLight);
-
-// Add additional lights for better visibility
-const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
-fillLight.position.set(-5, 8, -5);
-scene.add(fillLight);
+// Start loading the car
+loadCarModel();
 
 // Function to check if the device is mobile
 function isMobile() {
