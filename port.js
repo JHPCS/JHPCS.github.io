@@ -1,111 +1,260 @@
 // Three.js setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf5f5f5); // Set the background to a soft white color
+scene.background = new THREE.Color(0xff964f); // Orange background to match reference
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas'), antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.outputEncoding = THREE.sRGBEncoding; // Add this line for better color handling
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.shadowMap.enabled = true;
 
-// Create an orange floor (#ff964f)
+// Create floor
 const floorGeometry = new THREE.PlaneGeometry(100, 100);
-const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xff964f });
+const floorMaterial = new THREE.MeshStandardMaterial({ 
+    color: 0xff964f,
+    roughness: 0.8,
+    metalness: 0.2
+});
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.rotation.x = -Math.PI / 2;
 floor.position.y = 0;
+floor.receiveShadow = true;
 scene.add(floor);
 
-// Add a green vertical beam with emissive lighting
-const beamGeometry = new THREE.CylinderGeometry(0.1, 0.1, 20, 32);
-const beamMaterial = new THREE.MeshStandardMaterial({
-    color: 0x00ff00,
-    emissive: 0x00ff00,
-    emissiveIntensity: 5
-});
-const beam = new THREE.Mesh(beamGeometry, beamMaterial);
-beam.position.set(2, 10, 0);
-scene.add(beam);
-
-// Add a Point Light at the beam position to simulate the beam casting light
-const beamLight = new THREE.PointLight(0x00ff00, 2, 50);
-beamLight.position.set(2, 10, 0);
-scene.add(beamLight);
-
-// Ambient light to softly illuminate the whole scene (increased intensity)
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+// Add lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambientLight);
 
-// Directional light to provide general lighting
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(5, 10, 5);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+directionalLight.position.set(10, 20, 10);
+directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.width = 2048;
+directionalLight.shadow.mapSize.height = 2048;
 scene.add(directionalLight);
 
-// Add additional lights for better visibility
-const fillLight = new THREE.DirectionalLight(0xffffff, 0.7);
-fillLight.position.set(-5, 8, -5);
-scene.add(fillLight);
-
-// Load a car model
-const loader = new THREE.GLTFLoader();
-let car;
-
-// Define a colorful default material if texture fails
-const defaultCarMaterial = new THREE.MeshStandardMaterial({
-    color: 0xE74C3C, // Bright red color
-    metalness: 0.7,
-    roughness: 0.2
-});
-
-// Load the car model directly with a pre-defined material
-function loadCarModel() {
-    loader.load('https://raw.githubusercontent.com/JHPCS/JHPCS.github.io/18fc1a12478b8e2cd686aae823ab127d18dbff54/FabConvert.com_uploads_files_2792345_koenigsegg.glb', 
-        function (gltf) {
-            car = gltf.scene;
-
-            car.traverse(function (node) {
-                if (node.isMesh) {
-                    // Apply a preset material instead of trying to use texture
-                    // This ensures the car has color even if texture doesn't work
-                    node.material = defaultCarMaterial.clone();
-                    
-                    // Log the node to debug
-                    console.log("Car mesh found:", node.name);
-                }
-            });
-
-            car.scale.set(0.5, 0.5, 0.5);
-            car.position.y = 0.1;
-            scene.add(car);
-            
-            // Log the full car scene to debug
-            console.log("Car loaded:", car);
-        }, 
-        // Progress callback
-        function (xhr) {
-            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-        },
-        // Error callback
-        function (error) {
-            console.error('Error loading model:', error);
-        }
-    );
-}
-
-// Start loading the car
-loadCarModel();
-
-// Function to check if the device is mobile
-function isMobile() {
-    // Check if userAgentData is available (for modern browsers)
-    if (navigator.userAgentData && navigator.userAgentData.mobile !== undefined) {
-        return navigator.userAgentData.mobile;
-    }
-
-    // Fallback to userAgent string for older browsers
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+// Helper function to create a cartoonish tree
+function createTree(x, z, height = 1, color = 0xC1FF72) {
+    const treeGroup = new THREE.Group();
     
-    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+    // Tree trunk
+    const trunkGeometry = new THREE.CylinderGeometry(0.2, 0.3, height, 8);
+    const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+    trunk.position.y = height / 2;
+    trunk.castShadow = true;
+    treeGroup.add(trunk);
+    
+    // Tree top (leaves)
+    const topGeometry = new THREE.ConeGeometry(1, 2, 8);
+    const topMaterial = new THREE.MeshStandardMaterial({ color: color });
+    const top = new THREE.Mesh(topGeometry, topMaterial);
+    top.position.y = height + 1;
+    top.castShadow = true;
+    treeGroup.add(top);
+    
+    treeGroup.position.set(x, 0, z);
+    return treeGroup;
 }
+
+// Helper function to create a cartoonish rock
+function createRock(x, z, scale = 1) {
+    const rockGeometry = new THREE.DodecahedronGeometry(scale, 0);
+    const rockMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xffffff,
+        roughness: 0.9,
+        metalness: 0.2
+    });
+    const rock = new THREE.Mesh(rockGeometry, rockMaterial);
+    rock.position.set(x, scale/2, z);
+    rock.rotation.set(
+        Math.random() * Math.PI,
+        Math.random() * Math.PI,
+        Math.random() * Math.PI
+    );
+    rock.castShadow = true;
+    rock.receiveShadow = true;
+    return rock;
+}
+
+// Helper function to create road segment
+function createRoadSegment(x, z, width = 2, length = 5) {
+    const roadGeometry = new THREE.PlaneGeometry(width, length);
+    const roadMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xffffff,
+        roughness: 0.5
+    });
+    const road = new THREE.Mesh(roadGeometry, roadMaterial);
+    road.rotation.x = -Math.PI / 2;
+    road.position.set(x, 0.01, z); // Slightly above floor to prevent z-fighting
+    return road;
+}
+
+// Create environment elements
+// Add trees
+for (let i = 0; i < 15; i++) {
+    const x = Math.random() * 80 - 40;
+    const z = Math.random() * 80 - 40;
+    // Don't place trees on the road
+    if (Math.abs(x) > 3 || Math.abs(z) > 3) {
+        const height = 1 + Math.random() * 2;
+        const tree = createTree(x, z, height);
+        scene.add(tree);
+    }
+}
+
+// Add rocks
+for (let i = 0; i < 20; i++) {
+    const x = Math.random() * 60 - 30;
+    const z = Math.random() * 60 - 30;
+    // Don't place rocks on the road
+    if (Math.abs(x) > 3 || Math.abs(z) > 3) {
+        const scale = 0.3 + Math.random() * 0.7;
+        const rock = createRock(x, z, scale);
+        scene.add(rock);
+    }
+}
+
+// Create a simple road pattern
+for (let i = -25; i <= 25; i += 5) {
+    // Create horizontal road segments
+    scene.add(createRoadSegment(0, i));
+    
+    // Create some vertical segments for intersections
+    if (i % 15 === 0) {
+        for (let j = -10; j <= 10; j += 5) {
+            scene.add(createRoadSegment(j, i, 5, 2));
+        }
+    }
+}
+
+// Create 3D text for visual interest
+function createText(text, x, y, z, rotationY = 0) {
+    const loader = new THREE.FontLoader();
+    
+    // Use a simpler approach since FontLoader might not be available
+    const textGeometry = new THREE.TextGeometry(text, {
+        size: 2,
+        height: 0.5,
+    });
+    
+    // Or use a simple box geometry with a custom name as fallback
+    const fallbackGeometry = new THREE.BoxGeometry(text.length * 1.2, 2, 0.5);
+    const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const textMesh = new THREE.Mesh(fallbackGeometry, textMaterial);
+    
+    textMesh.position.set(x, y, z);
+    textMesh.rotation.y = rotationY;
+    textMesh.castShadow = true;
+    scene.add(textMesh);
+    
+    // Add a note about this being a placeholder for actual text
+    console.log(`Added text placeholder for: ${text}`);
+    
+    return textMesh;
+}
+
+// Add some text elements
+createText("PORTFOLIO", -15, 0.5, 15, Math.PI / 4);
+
+// Create a cartoonish car
+function createCartoonCar() {
+    const carGroup = new THREE.Group();
+    
+    // Car body
+    const bodyGeometry = new THREE.BoxGeometry(2, 0.8, 4);
+    const bodyMaterial = new THREE.MeshStandardMaterial({
+        color: 0xE74C3C, // Bright red
+        metalness: 0.3,
+        roughness: 0.5
+    });
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.position.y = 0.9;
+    body.castShadow = true;
+    carGroup.add(body);
+    
+    // Car cabin
+    const cabinGeometry = new THREE.BoxGeometry(1.6, 0.7, 2);
+    const cabinMaterial = new THREE.MeshStandardMaterial({
+        color: 0x2980B9, // Blue windows
+        metalness: 0.8,
+        roughness: 0.2
+    });
+    const cabin = new THREE.Mesh(cabinGeometry, cabinMaterial);
+    cabin.position.set(0, 1.65, -0.2);
+    cabin.castShadow = true;
+    carGroup.add(cabin);
+    
+    // Create wheels
+    const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
+    const wheelMaterial = new THREE.MeshStandardMaterial({
+        color: 0x333333,
+        metalness: 0.5,
+        roughness: 0.7
+    });
+    
+    // Front-left wheel
+    const wheelFL = new THREE.Mesh(wheelGeometry, wheelMaterial);
+    wheelFL.rotation.z = Math.PI / 2;
+    wheelFL.position.set(-1.1, 0.4, -1.2);
+    wheelFL.castShadow = true;
+    carGroup.add(wheelFL);
+    
+    // Front-right wheel
+    const wheelFR = new THREE.Mesh(wheelGeometry, wheelMaterial);
+    wheelFR.rotation.z = Math.PI / 2;
+    wheelFR.position.set(1.1, 0.4, -1.2);
+    wheelFR.castShadow = true;
+    carGroup.add(wheelFR);
+    
+    // Back-left wheel
+    const wheelBL = new THREE.Mesh(wheelGeometry, wheelMaterial);
+    wheelBL.rotation.z = Math.PI / 2;
+    wheelBL.position.set(-1.1, 0.4, 1.2);
+    wheelBL.castShadow = true;
+    carGroup.add(wheelBL);
+    
+    // Back-right wheel
+    const wheelBR = new THREE.Mesh(wheelGeometry, wheelMaterial);
+    wheelBR.rotation.z = Math.PI / 2;
+    wheelBR.position.set(1.1, 0.4, 1.2);
+    wheelBR.castShadow = true;
+    carGroup.add(wheelBR);
+    
+    // Add headlights
+    const headlightGeometry = new THREE.CircleGeometry(0.2, 16);
+    const headlightMaterial = new THREE.MeshStandardMaterial({
+        color: 0xFFFF00,
+        emissive: 0xFFFF99,
+        emissiveIntensity: 2,
+    });
+    
+    const headlightL = new THREE.Mesh(headlightGeometry, headlightMaterial);
+    headlightL.position.set(-0.7, 1, -2);
+    headlightL.rotation.y = Math.PI;
+    carGroup.add(headlightL);
+    
+    const headlightR = new THREE.Mesh(headlightGeometry, headlightMaterial);
+    headlightR.position.set(0.7, 1, -2);
+    headlightR.rotation.y = Math.PI;
+    carGroup.add(headlightR);
+    
+    // Add front bumper
+    const bumperGeometry = new THREE.BoxGeometry(1.8, 0.2, 0.3);
+    const bumperMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+    const bumper = new THREE.Mesh(bumperGeometry, bumperMaterial);
+    bumper.position.set(0, 0.6, -2);
+    carGroup.add(bumper);
+    
+    // Store references to wheels for animation
+    carGroup.wheels = [wheelFL, wheelFR, wheelBL, wheelBR];
+    
+    return carGroup;
+}
+
+// Create our car
+const car = createCartoonCar();
+car.position.set(0, 0, 0);
+scene.add(car);
 
 // Control variables for car movement
 let speed = 0;
@@ -113,7 +262,7 @@ let targetSpeed = 0;
 let rotationSpeed = 0;
 const acceleration = 0.02;
 const decelerationFactor = 0.98;
-const maxSpeed = 1;
+const maxSpeed = 0.2;
 const maxRotationSpeed = 0.03;
 
 const keys = {
@@ -165,6 +314,15 @@ document.addEventListener('keyup', (event) => {
             break;
     }
 });
+
+// Function to check if the device is mobile
+function isMobile() {
+    if (navigator.userAgentData && navigator.userAgentData.mobile !== undefined) {
+        return navigator.userAgentData.mobile;
+    }
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+}
 
 // Initialize controls
 document.addEventListener('DOMContentLoaded', function () {
@@ -255,8 +413,9 @@ function setupMobileControls() {
     });
 }
 
-// Function to update speed and rotation
-function updateMovement() {
+// Function to update car movement and animation
+function updateCarMovement() {
+    // Update target speed
     if (keys.forward) {
         targetSpeed = maxSpeed;
     } else if (keys.backward) {
@@ -265,6 +424,7 @@ function updateMovement() {
         targetSpeed = 0;
     }
 
+    // Smoothly adjust current speed towards target
     if (targetSpeed > speed) {
         speed += acceleration;
         if (speed > targetSpeed) speed = targetSpeed;
@@ -276,6 +436,7 @@ function updateMovement() {
         if (Math.abs(speed) < 0.001) speed = 0;
     }
 
+    // Update rotation
     if (speed !== 0) {
         if (keys.left) {
             rotationSpeed = maxRotationSpeed * (speed / maxSpeed);
@@ -285,33 +446,63 @@ function updateMovement() {
             rotationSpeed = 0;
         }
 
-        if (car) {
-            car.rotation.y += rotationSpeed;
-        }
+        car.rotation.y += rotationSpeed;
     }
+
+    // Move the car forward/backward
+    const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(car.quaternion);
+    car.position.addScaledVector(direction, speed);
+
+    // Add bounce effect for cartoonish feel
+    car.position.y = 0.4 + Math.sin(Date.now() * 0.005) * 0.05;
+    
+    // Add tilt effect based on turning
+    car.rotation.z = -rotationSpeed * 10;
+    
+    // Rotate wheels for animation
+    if (car.wheels) {
+        car.wheels.forEach(wheel => {
+            wheel.rotation.x += speed * 0.5;
+        });
+    }
+    
+    // Add subtle car body squash and stretch based on acceleration
+    if (car.children.length > 0) {
+        const body = car.children[0]; // Assuming body is the first child
+        const targetScaleZ = 1 + (speed - targetSpeed) * 2;
+        body.scale.z = THREE.MathUtils.lerp(body.scale.z, targetScaleZ, 0.1);
+    }
+}
+
+// Function to update camera position to follow car
+function updateCamera() {
+    // Create a smoother follow camera
+    const cameraTargetPosition = new THREE.Vector3();
+    car.getWorldPosition(cameraTargetPosition);
+    
+    // Position camera behind and above car
+    const cameraOffset = new THREE.Vector3();
+    cameraOffset.set(0, 10, 15); // Higher and further back for better view
+    cameraOffset.applyQuaternion(car.quaternion);
+    
+    camera.position.lerp(cameraTargetPosition.add(cameraOffset), 0.05);
+    
+    // Look slightly ahead of car
+    const lookAtPos = new THREE.Vector3();
+    car.getWorldPosition(lookAtPos);
+    const lookAheadOffset = new THREE.Vector3(0, 0, -10).applyQuaternion(car.quaternion);
+    lookAtPos.add(lookAheadOffset);
+    
+    camera.lookAt(lookAtPos);
 }
 
 // Animation function
 function animate() {
     requestAnimationFrame(animate);
-
-    if (car) {
-        updateMovement();
-
-        const direction = new THREE.Vector3();
-        car.getWorldDirection(direction);
-        car.position.addScaledVector(direction, speed);
-
-        car.position.y = 0.1 + Math.sin(Date.now() * 0.005) * 0.02; // Slight bounce effect
-
-        // Update camera to a higher and steeper position
-        const cameraOffset = new THREE.Vector3(0, 20, 35);
-        const carPosition = new THREE.Vector3();
-        car.getWorldPosition(carPosition);
-        camera.position.copy(carPosition).add(cameraOffset);
-        camera.lookAt(carPosition);
-    }
-
+    
+    updateCarMovement();
+    updateCamera();
+    
     renderer.render(scene, camera);
 }
 
