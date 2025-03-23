@@ -1,0 +1,95 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#canvas {
+    display: block;
+    width: 100%;
+    height: 100vh;
+}
+
+#instructions {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    color: #333;
+    font-size: 16px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 10px 0;
+    z-index: 10;
+}
+
+/* Controls container */
+#controls-container {
+    position: fixed;
+    bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+#buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.control-button {
+    background-color: #ff964f;
+    border: none;
+    color: white;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s, transform 0.2s;
+    touch-action: manipulation;
+}
+
+.control-button:hover, 
+.control-button:active {
+    background-color: #e67e3d;
+    transform: scale(1.1);
+}
+
+.control-wheel {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border: 5px solid #ff964f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    touch-action: manipulation;
+}
+
+.control-inner-wheel {
+    width: 50px;
+    height: 50px;
+    background-color: #ff964f;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.control-inner-wheel:active {
+    background-color: #e67e3d;
+}
