@@ -360,6 +360,10 @@ function playHornSound() {
         car.position.y = 0.4;
     }, 100);
 }
+// Initialize car user data
+car.userData = {
+    acceleration: { x: 0, y: 0 }
+};
 
 // Initialize controls
 document.addEventListener('DOMContentLoaded', function () {
@@ -664,10 +668,7 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
 });
 
-// Initialize car user data
-car.userData = {
-    acceleration: { x: 0, y: 0 }
-};
+
 
 // Start the animation loop
 animate();
