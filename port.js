@@ -1,12 +1,12 @@
 // Three.js setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xff964f); // Orange background to match reference
+scene.background = new THREE.Color(0xff964f); // Orange background
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas'), antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.shadowMap.enabled = true;
+renderer.outputEncoding = THREE.sRGBEncoding;
 
 // Create floor
 const floorGeometry = new THREE.PlaneGeometry(100, 100);
@@ -127,41 +127,13 @@ for (let i = -25; i <= 25; i += 5) {
     }
 }
 
-// Create 3D text for visual interest
-function createText(text, x, y, z, rotationY = 0) {
-    const loader = new THREE.FontLoader();
-    
-    // Use a simpler approach since FontLoader might not be available
-    const textGeometry = new THREE.TextGeometry(text, {
-        size: 2,
-        height: 0.5,
-    });
-    
-    // Or use a simple box geometry with a custom name as fallback
-    const fallbackGeometry = new THREE.BoxGeometry(text.length * 1.2, 2, 0.5);
-    const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    const textMesh = new THREE.Mesh(fallbackGeometry, textMaterial);
-    
-    textMesh.position.set(x, y, z);
-    textMesh.rotation.y = rotationY;
-    textMesh.castShadow = true;
-    scene.add(textMesh);
-    
-    // Add a note about this being a placeholder for actual text
-    console.log(`Added text placeholder for: ${text}`);
-    
-    return textMesh;
-}
-
-// Add some text elements
-createText("PORTFOLIO", -15, 0.5, 15, Math.PI / 4);
-
-// Create a cartoonish car
-function createCartoonCar() {
+// Create an improved cartoonish car with antena and back lights
+function createImprovedCar() {
     const carGroup = new THREE.Group();
     
     // Car body
     const bodyGeometry = new THREE.BoxGeometry(2, 0.8, 4);
+    bodyGeometry.translate(0, 0, 0.2); // Shift forward slightly
     const bodyMaterial = new THREE.MeshStandardMaterial({
         color: 0xE74C3C, // Bright red
         metalness: 0.3,
@@ -173,14 +145,15 @@ function createCartoonCar() {
     carGroup.add(body);
     
     // Car cabin
-    const cabinGeometry = new THREE.BoxGeometry(1.6, 0.7, 2);
+    const cabinGeometry = new THREE.BoxGeometry(1.8, 0.7, 2);
+    cabinGeometry.translate(0, 0, -0.5); // Shift backward a bit
     const cabinMaterial = new THREE.MeshStandardMaterial({
         color: 0x2980B9, // Blue windows
         metalness: 0.8,
         roughness: 0.2
     });
     const cabin = new THREE.Mesh(cabinGeometry, cabinMaterial);
-    cabin.position.set(0, 1.65, -0.2);
+    cabin.position.set(0, 1.65, 0);
     cabin.castShadow = true;
     carGroup.add(cabin);
     
@@ -192,33 +165,23 @@ function createCartoonCar() {
         roughness: 0.7
     });
     
-    // Front-left wheel
-    const wheelFL = new THREE.Mesh(wheelGeometry, wheelMaterial);
-    wheelFL.rotation.z = Math.PI / 2;
-    wheelFL.position.set(-1.1, 0.4, -1.2);
-    wheelFL.castShadow = true;
-    carGroup.add(wheelFL);
+    // Wheel positions
+    const wheelPositions = [
+        {x: -1.1, y: 0.4, z: -1.2}, // Front-left
+        {x: 1.1, y: 0.4, z: -1.2},  // Front-right
+        {x: -1.1, y: 0.4, z: 1.2},  // Back-left
+        {x: 1.1, y: 0.4, z: 1.2}    // Back-right
+    ];
     
-    // Front-right wheel
-    const wheelFR = new THREE.Mesh(wheelGeometry, wheelMaterial);
-    wheelFR.rotation.z = Math.PI / 2;
-    wheelFR.position.set(1.1, 0.4, -1.2);
-    wheelFR.castShadow = true;
-    carGroup.add(wheelFR);
-    
-    // Back-left wheel
-    const wheelBL = new THREE.Mesh(wheelGeometry, wheelMaterial);
-    wheelBL.rotation.z = Math.PI / 2;
-    wheelBL.position.set(-1.1, 0.4, 1.2);
-    wheelBL.castShadow = true;
-    carGroup.add(wheelBL);
-    
-    // Back-right wheel
-    const wheelBR = new THREE.Mesh(wheelGeometry, wheelMaterial);
-    wheelBR.rotation.z = Math.PI / 2;
-    wheelBR.position.set(1.1, 0.4, 1.2);
-    wheelBR.castShadow = true;
-    carGroup.add(wheelBR);
+    const wheels = [];
+    wheelPositions.forEach(pos => {
+        const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(pos.x, pos.y, pos.z);
+        wheel.castShadow = true;
+        carGroup.add(wheel);
+        wheels.push(wheel);
+    });
     
     // Add headlights
     const headlightGeometry = new THREE.CircleGeometry(0.2, 16);
@@ -238,6 +201,42 @@ function createCartoonCar() {
     headlightR.rotation.y = Math.PI;
     carGroup.add(headlightR);
     
+    // Add back lights (brake lights)
+    const backLightGeometry = new THREE.CircleGeometry(0.15, 16);
+    const backLightMaterial = new THREE.MeshStandardMaterial({
+        color: 0xFF0000,
+        emissive: 0xFF3333,
+        emissiveIntensity: 0.5,
+        transparent: true,
+        opacity: 0.8
+    });
+    
+    const backLightL = new THREE.Mesh(backLightGeometry, backLightMaterial);
+    backLightL.position.set(-0.7, 1, 2);
+    carGroup.add(backLightL);
+    
+    const backLightR = new THREE.Mesh(backLightGeometry, backLightMaterial);
+    backLightR.position.set(0.7, 1, 2);
+    carGroup.add(backLightR);
+    
+    // Add antena (like in the example code)
+    const antenaGeometry = new THREE.CylinderGeometry(0.02, 0.02, 1, 8);
+    const antenaMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
+    const antena = new THREE.Mesh(antenaGeometry, antenaMaterial);
+    antena.position.set(0, 2.2, 0.5);
+    carGroup.add(antena);
+    
+    // Add antena top ball
+    const antenaTopGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+    const antenaTopMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xFF0000,
+        emissive: 0xFF3333,
+        emissiveIntensity: 0.5
+    });
+    const antenaTop = new THREE.Mesh(antenaTopGeometry, antenaTopMaterial);
+    antenaTop.position.set(0, 2.7, 0.5);
+    carGroup.add(antenaTop);
+    
     // Add front bumper
     const bumperGeometry = new THREE.BoxGeometry(1.8, 0.2, 0.3);
     const bumperMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
@@ -245,31 +244,48 @@ function createCartoonCar() {
     bumper.position.set(0, 0.6, -2);
     carGroup.add(bumper);
     
-    // Store references to wheels for animation
-    carGroup.wheels = [wheelFL, wheelFR, wheelBL, wheelBR];
+    // Store references for animation
+    carGroup.wheels = wheels;
+    carGroup.body = body;
+    carGroup.cabin = cabin;
+    carGroup.antena = antena;
+    carGroup.antenaTop = antenaTop;
+    carGroup.backLights = [backLightL, backLightR];
+    carGroup.headlights = [headlightL, headlightR];
     
     return carGroup;
 }
 
 // Create our car
-const car = createCartoonCar();
+const car = createImprovedCar();
 car.position.set(0, 0, 0);
 scene.add(car);
+
+// Add car extras animation state
+const carState = {
+    antenaSwingX: 0,
+    antenaSwingY: 0,
+    antenaSpeed: { x: 0, y: 0 },
+    braking: false,
+    lastTime: Date.now()
+};
 
 // Control variables for car movement
 let speed = 0;
 let targetSpeed = 0;
 let rotationSpeed = 0;
-const acceleration = 0.02;
+const acceleration = 0.01; // Slower acceleration for more control
 const decelerationFactor = 0.98;
-const maxSpeed = 0.2;
+const maxSpeed = 0.15;
+const maxReverseSpeed = -0.08; // Slower in reverse
 const maxRotationSpeed = 0.03;
 
 const keys = {
     forward: false,
     backward: false,
     left: false,
-    right: false
+    right: false,
+    brake: false
 };
 
 // Keyboard controls
@@ -290,6 +306,13 @@ document.addEventListener('keydown', (event) => {
         case 'ArrowRight':
         case 'KeyD':
             keys.right = true;
+            break;
+        case 'Space':
+            keys.brake = true;
+            carState.braking = true;
+            break;
+        case 'KeyH': // Horn (same as in the reference)
+            playHornSound();
             break;
     }
 });
@@ -312,16 +335,30 @@ document.addEventListener('keyup', (event) => {
         case 'KeyD':
             keys.right = false;
             break;
+        case 'Space':
+            keys.brake = false;
+            carState.braking = false;
+            break;
     }
 });
 
 // Function to check if the device is mobile
 function isMobile() {
-    if (navigator.userAgentData && navigator.userAgentData.mobile !== undefined) {
-        return navigator.userAgentData.mobile;
-    }
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+}
+
+// Horn sound (placeholder - in a real app you'd use an AudioContext)
+function playHornSound() {
+    console.log("Honk Honk!");
+    // In a full implementation, you'd play an actual sound here
+    // Make the car jump slightly when horn is pressed (like in the example)
+    car.position.y += 0.3;
+    
+    // Add a slight bounce effect
+    setTimeout(() => {
+        car.position.y = 0.4;
+    }, 100);
 }
 
 // Initialize controls
@@ -361,44 +398,42 @@ function setupMobileControls() {
         keys.backward = false;
     });
 
+    // Double tap the forward button for horn
+    let lastTap = 0;
+    forwardButton.addEventListener('touchend', () => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 300 && tapLength > 0) {
+            playHornSound();
+        }
+        lastTap = currentTime;
+    });
+
     // Wheel variables
     let isDragging = false;
-    let wheelRotation = 0;
-    let wheelCenter = { x: 0, y: 0 };
-
-    // Calculate wheel center position
-    function updateWheelCenter() {
-        const rect = wheel.getBoundingClientRect();
-        wheelCenter.x = rect.left + rect.width / 2;
-        wheelCenter.y = rect.top + rect.height / 2;
-    }
-
-    // Update wheel center on window resize
-    window.addEventListener('resize', updateWheelCenter);
-    // Initial calculation
-    updateWheelCenter();
-
+    let wheelStartX = 0;
+    
     // Wheel event listeners
     wheel.addEventListener('touchstart', (event) => {
         isDragging = true;
-        const touch = event.touches[0];
-        wheelRotation = touch.clientX;
+        wheelStartX = event.touches[0].clientX;
         event.preventDefault();
     });
 
     wheel.addEventListener('touchmove', (event) => {
         if (!isDragging) return;
         const touch = event.touches[0];
-        const delta = touch.clientX - wheelRotation;
-
-        // Update rotation based on delta
-        if (delta > 5) {
+        const deltaX = touch.clientX - wheelStartX;
+        
+        // Update steering based on touch delta
+        if (deltaX > 20) {
             keys.right = true;
             keys.left = false;
-        } else if (delta < -5) {
+        } else if (deltaX < -20) {
             keys.left = true;
             keys.right = false;
         } else {
+            // Small movements center the wheel
             keys.right = false;
             keys.left = false;
         }
@@ -413,37 +448,112 @@ function setupMobileControls() {
     });
 }
 
+// Function to update antena physics (based on car's reference code)
+function updateAntenaPhysics() {
+    const now = Date.now();
+    const deltaTime = (now - carState.lastTime) / 1000;
+    carState.lastTime = now;
+    
+    // Physics constants
+    const speedStrength = 10;
+    const damping = 0.035;
+    const pullBackStrength = 0.02;
+    
+    // Calculate forces based on car acceleration
+    const accelerationX = THREE.MathUtils.clamp(car.userData.acceleration.x, -1, 1);
+    const accelerationY = THREE.MathUtils.clamp(car.userData.acceleration.y, -1, 1);
+    
+    // Apply forces to antena
+    carState.antenaSpeed.x -= accelerationX * speedStrength * deltaTime;
+    carState.antenaSpeed.y -= accelerationY * speedStrength * deltaTime;
+    
+    // Pull back force (restore to center)
+    const pullBackX = -carState.antenaSwingX * carState.antenaSwingX * Math.sign(carState.antenaSwingX) * pullBackStrength;
+    const pullBackY = -carState.antenaSwingY * carState.antenaSwingY * Math.sign(carState.antenaSwingY) * pullBackStrength;
+    
+    carState.antenaSpeed.x += pullBackX;
+    carState.antenaSpeed.y += pullBackY;
+    
+    // Apply damping
+    carState.antenaSpeed.x *= (1 - damping);
+    carState.antenaSpeed.y *= (1 - damping);
+    
+    // Update position
+    carState.antenaSwingX += carState.antenaSpeed.x;
+    carState.antenaSwingY += carState.antenaSpeed.y;
+    
+    // Apply to antena
+    if (car.antena) {
+        car.antena.rotation.x = carState.antenaSwingY * 0.2;
+        car.antena.rotation.y = carState.antenaSwingX * 0.2;
+        car.antenaTop.rotation.x = carState.antenaSwingY * 0.3;
+        car.antenaTop.rotation.y = carState.antenaSwingX * 0.3;
+    }
+}
+
 // Function to update car movement and animation
 function updateCarMovement() {
+    // Store old position for acceleration calculation
+    const oldPosition = car.position.clone();
+    
     // Update target speed
     if (keys.forward) {
         targetSpeed = maxSpeed;
     } else if (keys.backward) {
-        targetSpeed = -maxSpeed;
+        targetSpeed = maxReverseSpeed;
     } else {
         targetSpeed = 0;
     }
-
-    // Smoothly adjust current speed towards target
-    if (targetSpeed > speed) {
-        speed += acceleration;
-        if (speed > targetSpeed) speed = targetSpeed;
-    } else if (targetSpeed < speed) {
-        speed -= acceleration;
-        if (speed < targetSpeed) speed = targetSpeed;
+    
+    // Apply brakes
+    if (keys.brake) {
+        if (speed > 0.01 || speed < -0.01) {
+            speed *= 0.9; // Stronger deceleration
+        } else {
+            speed = 0;
+        }
+        
+        // Increase brake light intensity
+        if (car.backLights) {
+            car.backLights.forEach(light => {
+                light.material.emissiveIntensity = 2.0;
+                light.material.opacity = 1.0;
+            });
+        }
     } else {
-        speed *= decelerationFactor;
-        if (Math.abs(speed) < 0.001) speed = 0;
+        // Reset brake lights to normal
+        if (car.backLights) {
+            car.backLights.forEach(light => {
+                light.material.emissiveIntensity = 0.5;
+                light.material.opacity = 0.8;
+            });
+        }
+        
+        // Smoothly adjust current speed towards target
+        if (targetSpeed > speed) {
+            speed += acceleration;
+            if (speed > targetSpeed) speed = targetSpeed;
+        } else if (targetSpeed < speed) {
+            speed -= acceleration;
+            if (speed < targetSpeed) speed = targetSpeed;
+        } else {
+            // Natural deceleration when no input
+            speed *= decelerationFactor;
+            if (Math.abs(speed) < 0.001) speed = 0;
+        }
     }
 
     // Update rotation
-    if (speed !== 0) {
+    if (Math.abs(speed) > 0.01) {
+        const steeringFactor = Math.abs(speed) / maxSpeed; // Tie steering to speed
         if (keys.left) {
-            rotationSpeed = maxRotationSpeed * (speed / maxSpeed);
+            rotationSpeed = maxRotationSpeed * steeringFactor;
         } else if (keys.right) {
-            rotationSpeed = -maxRotationSpeed * (speed / maxSpeed);
+            rotationSpeed = -maxRotationSpeed * steeringFactor;
         } else {
-            rotationSpeed = 0;
+            // Gradually return to straight
+            rotationSpeed *= 0.9;
+            if (Math.abs(rotationSpeed) < 0.001) rotationSpeed = 0;
         }
 
         car.rotation.y += rotationSpeed;
@@ -453,25 +563,62 @@ function updateCarMovement() {
     const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(car.quaternion);
     car.position.addScaledVector(direction, speed);
 
-    // Add bounce effect for cartoonish feel
-    car.position.y = 0.4 + Math.sin(Date.now() * 0.005) * 0.05;
+    // Calculate acceleration for physics effects
+    const newPosition = car.position.clone();
+    const positionDelta = newPosition.clone().sub(oldPosition);
+    const acceleration = positionDelta.clone(); // Simple approximation
+
+    // Store acceleration for antena physics
+    car.userData.acceleration = {
+        x: acceleration.x * 100,
+        y: acceleration.z * 100 // z in world is y in car-local coords
+    };
     
-    // Add tilt effect based on turning
-    car.rotation.z = -rotationSpeed * 10;
+    // Add cartoonish effects
     
-    // Rotate wheels for animation
+    // 1. Bounce effect based on speed
+    car.position.y = 0.4 + Math.sin(Date.now() * 0.01 * (Math.abs(speed) * 10 + 0.1)) * 0.05;
+    
+    // 2. Body tilt for acceleration and turning
+    if (car.body) {
+        // Tilt forward/backward based on acceleration
+        const accelTilt = THREE.MathUtils.lerp(
+            car.body.rotation.x, 
+            -speed * 0.5, // Tilt up when accelerating forward
+            0.1
+        );
+        car.body.rotation.x = accelTilt;
+        
+        // Tilt sideways when turning
+        const turnTilt = THREE.MathUtils.lerp(
+            car.body.rotation.z, 
+            rotationSpeed * 10, // More tilt for sharper turns
+            0.1
+        );
+        car.body.rotation.z = turnTilt;
+    }
+    
+    // 3. Cabin follows body with slight delay for suspension feel
+    if (car.cabin) {
+        car.cabin.rotation.x = car.body.rotation.x * 0.7;
+        car.cabin.rotation.z = car.body.rotation.z * 0.7;
+    }
+    
+    // 4. Rotate wheels
     if (car.wheels) {
         car.wheels.forEach(wheel => {
             wheel.rotation.x += speed * 0.5;
         });
     }
     
-    // Add subtle car body squash and stretch based on acceleration
-    if (car.children.length > 0) {
-        const body = car.children[0]; // Assuming body is the first child
-        const targetScaleZ = 1 + (speed - targetSpeed) * 2;
-        body.scale.z = THREE.MathUtils.lerp(body.scale.z, targetScaleZ, 0.1);
+    // 5. Squash and stretch based on acceleration
+    if (car.body && speed !== 0) {
+        const targetScaleZ = 1 + (targetSpeed - speed) * 2;
+        car.body.scale.z = THREE.MathUtils.lerp(car.body.scale.z, targetScaleZ, 0.05);
     }
+    
+    // 6. Update antena physics
+    updateAntenaPhysics();
 }
 
 // Function to update camera position to follow car
@@ -482,7 +629,9 @@ function updateCamera() {
     
     // Position camera behind and above car
     const cameraOffset = new THREE.Vector3();
-    cameraOffset.set(0, 10, 15); // Higher and further back for better view
+    // Add some speed-dependent camera position (pull back more at high speeds)
+    const speedFactor = Math.abs(speed) / maxSpeed;
+    cameraOffset.set(0, 5 + speedFactor * 2, 10 + speedFactor * 5);
     cameraOffset.applyQuaternion(car.quaternion);
     
     camera.position.lerp(cameraTargetPosition.add(cameraOffset), 0.05);
@@ -490,7 +639,7 @@ function updateCamera() {
     // Look slightly ahead of car
     const lookAtPos = new THREE.Vector3();
     car.getWorldPosition(lookAtPos);
-    const lookAheadOffset = new THREE.Vector3(0, 0, -10).applyQuaternion(car.quaternion);
+    const lookAheadOffset = new THREE.Vector3(0, 0, -5 - speedFactor * 5).applyQuaternion(car.quaternion);
     lookAtPos.add(lookAheadOffset);
     
     camera.lookAt(lookAtPos);
@@ -514,6 +663,11 @@ window.addEventListener('resize', () => {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 });
+
+// Initialize car user data
+car.userData = {
+    acceleration: { x: 0, y: 0 }
+};
 
 // Start the animation loop
 animate();
