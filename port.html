@@ -3,24 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Car Portfolio</title>
-    <link rel="stylesheet" href="port.css">
+    <title>My 3D Portfolio</title>
+    <style>
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    -webkit-user-select: none; /* Prevent text selection */
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#canvas {
+    display: block;
+}
+
+/* General layout for the controls */
+#controls-container {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 20px; /* Added padding for better spacing */
+}
+
+#buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.control-button {
+    background-color: #ff964f;
+    border: none;
+    color: white;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow for 3D effect */
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Hover effect */
+.control-button:hover {
+    background-color: #e67e3d;
+    transform: scale(1.1);
+}
+
+/* Adjust the wheel for a more centered layout */
+.control-wheel {
+    width: 120px;
+    height: 120px;
+    border: 5px solid #ff964f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px; /* Add margin for spacing */
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow for 3D effect */
+}
+
+.control-inner-wheel {
+    width: 50px;
+    height: 50px;
+    background-color: #ff964f;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    transition: background-color 0.3s;
+}
+
+.control-inner-wheel:active {
+    background-color: #e67e3d; /* Change color on active drag */
+}
+
+#controls.mobile {
+    display: none;
+}
+
+        }
+    </style>
 </head>
 <body>
-    <div id="instructions">Use arrow keys or WASD to drive, SPACE to brake, H for horn. On mobile, use touchscreen controls and double-tap forward for horn.</div>
+    <div id="instructions">Use mouse to control the view.</div>
     <canvas id="canvas"></canvas>
-    
-    <div id="controls-container">
-        <div id="wheel" class="control-wheel">
-            <div id="inner-wheel" class="control-inner-wheel"></div>
-        </div>
-        <div id="buttons-container">
-            <button id="forward" class="control-button">Forward</button>
-            <button id="backward" class="control-button">Backward</button>
-        </div>
+
+<div id="controls-container">
+    <div id="wheel" class="control-wheel">
+        <div id="inner-wheel" class="control-inner-wheel"></div>
     </div>
-    
-    <!-- Scripts -->
+    <div id="buttons-container">
+        <button id="forward" class="control-button">Forward</button>
+        <button id="backward" class="control-button">Backward</button>
+    </div>
+</div>
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="port.js"></script>
