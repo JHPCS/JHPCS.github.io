@@ -1,4 +1,4 @@
-// Use global THREE and CANNON from CDN scripts
+// Get Cannon.js classes from global scope
 const { World, Body, Box, Vec3, Sphere, NaiveBroadphase } = CANNON;
 
 class Car {
@@ -8,18 +8,16 @@ class Car {
         this.camera = options.camera;
         this.renderer = options.renderer;
         
-        // Initialize
-        this.container = new THREE.Object3D();
-        this.position = new THREE.Vector3();
-        this.setupPhysics();
-        this.setupCar();
-    }
-
-    setupPhysics() {
+        // Physics setup
         this.physicsWorld = new World();
         this.physicsWorld.gravity.set(0, -9.82, 0);
         this.physicsWorld.broadphase = new NaiveBroadphase();
         this.physicsWorld.solver.iterations = 10;
+        
+        // Initialize car
+        this.container = new THREE.Object3D();
+        this.position = new THREE.Vector3();
+        this.setupCar();
     }
 
     setupCar() {
@@ -246,10 +244,29 @@ class Car {
         const wheel = document.getElementById('wheel');
         const innerWheel = document.getElementById('inner-wheel');
 
-        forwardBtn.addEventListener('touchstart', () => this.movement.forward = true);
-        forwardBtn.addEventListener('touchend', () => this.movement.forward = false);
-        backwardBtn.addEventListener('touchstart', () => this.movement.backward = true);
-        backwardBtn.addEventListener('touchend', () => this.movement.backward = false);
+        // Mouse events for desktop testing
+        forwardBtn.addEventListener('mousedown', () => this.movement.forward = true);
+        forwardBtn.addEventListener('mouseup', () => this.movement.forward = false);
+        backwardBtn.addEventListener('mousedown', () => this.movement.backward = true);
+        backwardBtn.addEventListener('mouseup', () => this.movement.backward = false);
+
+        // Touch events for mobile
+        forwardBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.movement.forward = true;
+        });
+        forwardBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.movement.forward = false;
+        });
+        backwardBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.movement.backward = true;
+        });
+        backwardBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.movement.backward = false;
+        });
 
         // Steering wheel control
         let isDragging = false;
@@ -279,16 +296,39 @@ class Car {
             innerWheel.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
         };
 
+        // Mouse events for desktop testing
+        wheel.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startAngle = getAngle(e.clientX, e.clientY) - currentAngle;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            moveHandler(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            currentAngle = 0;
+            this.movement.steering = 0;
+            innerWheel.style.transform = 'translate(-50%, -50%)';
+        });
+
+        // Touch events for mobile
         wheel.addEventListener('touchstart', (e) => {
+            e.preventDefault();
             isDragging = true;
             startAngle = getAngle(e.touches[0].clientX, e.touches[0].clientY) - currentAngle;
         });
 
-        wheel.addEventListener('touchmove', (e) => {
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
             moveHandler(e.touches[0].clientX, e.touches[0].clientY);
-        });
+        }, { passive: false });
 
-        wheel.addEventListener('touchend', () => {
+        document.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
             isDragging = false;
             currentAngle = 0;
             this.movement.steering = 0;
@@ -395,6 +435,7 @@ camera.position.set(0, 5, 10);
 const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -405,6 +446,12 @@ directionalLight.position.set(5, 10, 7);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.width = 2048;
 directionalLight.shadow.mapSize.height = 2048;
+directionalLight.shadow.camera.near = 0.5;
+directionalLight.shadow.camera.far = 50;
+directionalLight.shadow.camera.left = -10;
+directionalLight.shadow.camera.right = 10;
+directionalLight.shadow.camera.top = 10;
+directionalLight.shadow.camera.bottom = -10;
 scene.add(directionalLight);
 
 // Floor
@@ -445,3 +492,11 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+// Hide instructions after 5 seconds
+setTimeout(() => {
+    document.getElementById('instructions').style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById('instructions').style.display = 'none';
+    }, 1000);
+}, 5000);
