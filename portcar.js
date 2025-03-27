@@ -1,16 +1,12 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js';
-import CANNON from 'https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js';
+// Use global THREE and CANNON from CDN scripts
+const { World, Body, Box, Vec3, Sphere, NaiveBroadphase } = CANNON;
 
-export default class Car {
+class Car {
     constructor(options) {
         // Required options
         this.scene = options.scene;
         this.camera = options.camera;
         this.renderer = options.renderer;
-        
-        // Optional parameters with defaults
-        this.debug = options.debug || false;
-        this.config = options.config || { cyberTruck: false };
         
         // Initialize
         this.container = new THREE.Object3D();
@@ -20,9 +16,9 @@ export default class Car {
     }
 
     setupPhysics() {
-        this.physicsWorld = new CANNON.World();
+        this.physicsWorld = new World();
         this.physicsWorld.gravity.set(0, -9.82, 0);
-        this.physicsWorld.broadphase = new CANNON.NaiveBroadphase();
+        this.physicsWorld.broadphase = new NaiveBroadphase();
         this.physicsWorld.solver.iterations = 10;
     }
 
@@ -135,11 +131,11 @@ export default class Car {
         };
         
         // Physics body for the car
-        const chassisShape = new CANNON.Box(new CANNON.Vec3(1.5, 0.6, 2.5));
-        this.chassisBody = new CANNON.Body({
+        const chassisShape = new Box(new Vec3(1.5, 0.6, 2.5));
+        this.chassisBody = new Body({
             mass: 1000,
             shape: chassisShape,
-            position: new CANNON.Vec3(0, 2, 0)
+            position: new Vec3(0, 2, 0)
         });
         this.physicsWorld.addBody(this.chassisBody);
     }
@@ -198,10 +194,10 @@ export default class Car {
             this.wheels.items.push(wheel);
             
             // Physics wheel
-            const wheelBody = new CANNON.Body({
+            const wheelBody = new Body({
                 mass: 50,
-                shape: new CANNON.Sphere(0.5),
-                position: new CANNON.Vec3(pos.x, pos.y, pos.z)
+                shape: new Sphere(0.5),
+                position: new Vec3(pos.x, pos.y, pos.z)
             });
             this.physicsWorld.addBody(wheelBody);
             this.wheels.bodies.push(wheelBody);
@@ -336,7 +332,7 @@ export default class Car {
 
         // Apply forces
         if (Math.abs(this.movement.speed) > 0.01) {
-            const force = new CANNON.Vec3(0, 0, -this.movement.speed * 1000);
+            const force = new Vec3(0, 0, -this.movement.speed * 1000);
             force.applyQuaternion(this.chassisBody.quaternion);
             this.chassisBody.applyForce(force, this.chassisBody.position);
             
