@@ -10,10 +10,18 @@
             padding: 0;
             overflow: hidden;
             font-family: Arial, sans-serif;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
+        
         #canvas {
             display: block;
+            width: 100%;
+            height: 100%;
         }
+        
         #controls-container {
             position: absolute;
             bottom: 30px;
@@ -22,7 +30,16 @@
             justify-content: space-between;
             padding: 0 20px;
             box-sizing: border-box;
+            pointer-events: none;
         }
+        
+        #buttons-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: auto;
+        }
+        
         .control-button {
             background-color: #ff964f;
             border: none;
@@ -32,14 +49,28 @@
             border-radius: 8px;
             font-size: 18px;
             cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+            touch-action: manipulation;
         }
+        
+        .control-button:active {
+            background-color: #e67e3d;
+            transform: scale(0.95);
+        }
+        
         .control-wheel {
             width: 120px;
             height: 120px;
             border: 3px solid #ff964f;
             border-radius: 50%;
             position: relative;
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            pointer-events: auto;
+            touch-action: manipulation;
         }
+        
         .control-inner-wheel {
             width: 40px;
             height: 40px;
@@ -49,11 +80,37 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+        }
+        
+        #instructions {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .control-button {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+            
+            .control-wheel {
+                width: 100px;
+                height: 100px;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="instructions">Use WASD/Arrows to drive or touch controls below</div>
     <canvas id="canvas"></canvas>
+    
     <div id="controls-container">
         <div id="wheel" class="control-wheel">
             <div id="inner-wheel" class="control-inner-wheel"></div>
@@ -66,9 +123,10 @@
 
     <!-- Three.js and dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
     
-    <!-- Main app - now using non-module script -->
+    <!-- Main app -->
     <script src="portcar.js"></script>
 </body>
 </html>
