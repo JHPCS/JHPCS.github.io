@@ -3,30 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My 3D Portfolio</title>
+    <title>3D Car Simulation</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            font-family: Arial, sans-serif;
         }
         #canvas {
             display: block;
-        }
-        #instructions {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            background-color: rgba(0,0,0,0.5);
-            padding: 10px;
-            border-radius: 5px;
-            z-index: 100;
         }
         #controls-container {
             position: absolute;
@@ -34,64 +20,39 @@
             width: 100%;
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
             padding: 0 20px;
-        }
-        #buttons-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            box-sizing: border-box;
         }
         .control-button {
             background-color: #ff964f;
             border: none;
             color: white;
-            padding: 20px;
+            padding: 15px 25px;
             margin: 10px;
             border-radius: 8px;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        .control-button:hover {
-            background-color: #e67e3d;
-            transform: scale(1.1);
         }
         .control-wheel {
             width: 120px;
             height: 120px;
-            border: 5px solid #ff964f;
+            border: 3px solid #ff964f;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 20px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
         .control-inner-wheel {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background-color: #ff964f;
             border-radius: 50%;
             position: absolute;
-            left: 50%;
             top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
-            cursor: grab;
-            transition: background-color 0.3s;
-        }
-        .control-inner-wheel:active {
-            background-color: #e67e3d;
-        }
-        #controls.mobile {
-            display: none;
         }
     </style>
 </head>
 <body>
-    <div id="instructions">Use mouse to control the view.</div>
     <canvas id="canvas"></canvas>
     <div id="controls-container">
         <div id="wheel" class="control-wheel">
@@ -102,10 +63,13 @@
             <button id="backward" class="control-button">Backward</button>
         </div>
     </div>
+
+    <!-- Three.js and dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
-    <script src="portcar.js"></script>
-    <script src="port.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
+    
+    <!-- Main app -->
+    <script type="module" src="portcar.js"></script>
 </body>
 </html>
