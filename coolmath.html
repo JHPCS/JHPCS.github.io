@@ -5,52 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coolmath Games Unblocked</title>
     <link rel="stylesheet" href="coolmath.css">
-    <style>
-        /* Fallback styles if CSS file doesn't load */
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        .game-container { border: 1px solid #ccc; height: 600px; }
-    </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Coolmath Games</h1>
-            <p class="subtitle">Alternative Access</p>
+            <p class="subtitle">Unblocked Access</p>
         </header>
         
         <div class="search-box">
-            <input type="text" id="gameUrl" 
-                   placeholder="Enter game path (e.g. /0-papas-freezeria)" 
-                   value="/0-papas-freezeria">
-            <button onclick="loadGame()">Load Game</button>
+            <input type="text" id="gameUrl" placeholder="Enter game path (e.g. /0-papas-freezeria)">
+            <button id="loadButton">Load Game</button>
         </div>
         
         <div class="quick-links">
             <p>Popular Games:</p>
-            <button onclick="loadQuickGame('/0-papas-freezeria')">Papa's Freezeria</button>
-            <button onclick="loadQuickGame('/0-run-3')">Run 3</button>
-            <button onclick="loadQuickGame('/1-chess')">Chess</button>
+            <button data-path="/0-papas-freezeria">Papa's Freezeria</button>
+            <button data-path="/0-run-3">Run 3</button>
+            <button data-path="/1-chess">Chess</button>
         </div>
         
         <div id="gameContainer" class="game-container">
-            <div class="loading-message">
-                <p>Game will load here</p>
-                <div class="spinner"></div>
+            <div class="initial-message">
+                <p>Enter a game path above to begin</p>
+                <p><small>Example: /0-papas-freezeria</small></p>
             </div>
         </div>
         
         <div class="disclaimer">
-            <p>Note: Some games may not work due to security restrictions. Educational use only.</p>
+            <p>Note: Some games may not work due to security restrictions.</p>
         </div>
     </div>
 
     <script src="coolmath.js"></script>
-    <script>
-        // Quick game loader function
-        function loadQuickGame(path) {
-            document.getElementById('gameUrl').value = path;
-            loadGame();
-        }
-    </script>
 </body>
 </html>
