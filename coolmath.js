@@ -1,92 +1,48 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // DOM Elements
-    const gameUrlInput = document.getElementById('gameUrl');
-    const loadButton = document.getElementById('loadButton');
-    const gameContainer = document.getElementById('gameContainer');
-    const quickButtons = document.querySelectorAll('.quick-links button');
+    const loadBtn = document.getElementById('load-btn');
+    const statusMessage = document.getElementById('status-message');
+    const content = document.getElementById('content');
+    const loading = document.getElementById('loading');
+    const proxyFrame = document.getElementById('proxy-frame');
     
-    // Event Listeners
-    loadButton.addEventListener('click', loadGame);
-    quickButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            gameUrlInput.value = this.dataset.path;
-            loadGame();
-        });
-    });
+    // Hide loading initially
+    loading.style.display = 'none';
     
-    // Main Game Loader
-    async function loadGame() {
-        const gamePath = gameUrlInput.value.trim();
-        if (!gamePath) {
-            showError("Please enter a game path!");
-            return;
-        }
-        
-        const proxyUrl = `https://cors-anywhere.herokuapp.com/https://www.coolmathgames.com${gamePath}`;
-        
-        // Show loading state
-        gameContainer.innerHTML = `
-            <div class="loading-state">
-                <div class="spinner"></div>
-                <p>Loading game...</p>
-            </div>
-        `;
-        
+    loadBtn.addEventListener('click', function() {
         try {
-            const response = await fetch(proxyUrl, {
-                headers: {
-                    'Origin': 'https://www.coolmathgames.com',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'text/html'
-                }
-            });
+            loading.style.display = 'block';
+            statusMessage.textContent = '';
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            // Create proxy iframe
+            const iframe = document.createElement('iframe');
+            iframe.style.width = '100%';
+            iframe.style.height = '600px';
+            iframe.style.border = 'none';
             
-            const html = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
+            // You can try different approaches:
             
-            // Try to find game content
-            const gameContent = doc.querySelector('#game-canvas') || 
-                              doc.querySelector('iframe') || 
-                              doc.querySelector('.game-container');
+            // Approach 1: Direct loading (least likely to work with blockers)
+            iframe.src = 'https://www.coolmathgames.com/';
             
-            if (gameContent) {
-                gameContainer.innerHTML = '';
-                gameContainer.appendChild(gameContent.cloneNode(true));
-                
-                // Fix relative URLs
-                const base = document.createElement('base');
-                base.href = `https://www.coolmathgames.com${gamePath}`;
-                gameContainer.prepend(base);
-                
-                localStorage.setItem('lastGame', gamePath);
-            } else {
-                throw new Error("Game content not found");
-            }
+            // Approach 2: Using a free CORS proxy (may work with some blockers)
+            // iframe.src = 'https://cors-anywhere.herokuapp.com/https://www.coolmathgames.com/';
+            
+            // Clear previous content and add the iframe
+            content.innerHTML = '';
+            content.appendChild(iframe);
+            
+            iframe.onload = function() {
+                loading.style.display = 'none';
+            };
+            
+            iframe.onerror = function() {
+                loading.style.display = 'none';
+                statusMessage.textContent = 'Error loading content. Try another approach.';
+            };
             
         } catch (error) {
-            showError(`Failed to load game: ${error.message}`);
-            console.error("Loading error:", error);
+            loading.style.display = 'none';
+            statusMessage.textContent = 'Error: ' + error.message;
         }
-    }
-    
-    // Helper Functions
-    function showError(message) {
-        gameContainer.innerHTML = `
-            <div class="error-state">
-                <p>${message}</p>
-                <button onclick="location.reload()">Try Again</button>
-            </div>
-        `;
-    }
-    
-    // Load last game if available
-    const lastGame = localStorage.getItem('lastGame');
-    if (lastGame) {
-        gameUrlInput.value = lastGame;
-    }
+    });
 });
