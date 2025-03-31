@@ -1,13 +1,8 @@
+// Your existing JavaScript would work like this:
 function loadGame() {
     const gamePath = document.getElementById('gameUrl').value;
-    const baseUrl = 'https://www.coolmathgames.com';
-    const fullUrl = `${baseUrl}${gamePath}`;
-    
-    const iframe = document.getElementById('gameFrame');
-    iframe.src = fullUrl;
-    
-    // Optional: Store last played game in localStorage
-    localStorage.setItem('lastGame', fullUrl);
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/https://www.coolmathgames.com' + gamePath;
+    document.getElementById('gameFrame').src = proxyUrl;
 }
 
 // Load last played game if available
