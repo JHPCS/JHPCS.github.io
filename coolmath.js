@@ -1,46 +1,78 @@
-// coolmath.js
-async function loadGame() {
-    const gamePath = document.getElementById('gameUrl').value;
-    const proxyUrl = `https://cors-anywhere.herokuapp.com/https://www.coolmathgames.com${gamePath}`;
-    
-    try {
-        const response = await fetch(proxyUrl, {
-            headers: {
-                'Origin': 'https://www.coolmathgames.com',
-                'X-Requested-With': 'XMLHttpRequest',
-                'User-Agent': 'Mozilla/5.0' // Some sites require user agent
-            }
-        });
-        
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const html = await response.text();
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up quick game loader
+    function loadQuickGame(path) {
+        document.getElementById('gameUrl').value = path;
+        loadGame();
+    }
+
+    // Main game loading function
+    async function loadGame() {
+        const gamePath = document.getElementById('gameUrl').value;
+        if (!gamePath) {
+            alert("Please enter a game path!");
+            return;
+        }
+
+        const proxyUrl = `https://cors-anywhere.herokuapp.com/https://www.coolmathgames.com${gamePath}`;
         const gameContainer = document.getElementById('gameContainer');
         
-        // Clear previous content and inject new HTML
-        gameContainer.innerHTML = '';
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        
-        // Fix relative URLs in links and scripts
-        const base = document.createElement('base');
-        base.href = `https://www.coolmathgames.com${gamePath}`;
-        gameContainer.appendChild(base);
-        
-        // Clone and append body content
-        const nodes = doc.body.children;
-        while(nodes.length > 0) {
-            gameContainer.appendChild(nodes[0]);
-        }
-        
-    } catch (error) {
-        alert(`Failed to load game: ${error.message}`);
-        console.error('Error details:', error);
-    }
-}
+        // Show loading state
+        gameContainer.innerHTML = `
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading game...</p>
+            </div>
+        `;
 
-// Initialize last game on load
-window.addEventListener('DOMContentLoaded', () => {
+        try {
+            const response = await fetch(proxyUrl, {
+                headers: {
+                    'Origin': 'https://www.coolmathgames.com',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            
+            const html = await response.text();
+            
+            // Create a temporary container to parse HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            // Find the game iframe in the response
+            const gameIframe = tempDiv.querySelector('iframe') || tempDiv.querySelector('#game-canvas');
+            
+            if (gameIframe) {
+                gameContainer.innerHTML = '';
+                gameContainer.appendChild(gameIframe);
+            } else {
+                throw new Error("Game content not found in response");
+            }
+            
+            // Store last loaded game
+            localStorage.setItem('lastGame', gamePath);
+            
+        } catch (error) {
+            gameContainer.innerHTML = `
+                <div class="error-state">
+                    <p>⚠️ Failed to load game</p>
+                    <p><small>${error.message}</small></p>
+                    <button onclick="location.reload()">Try Again</button>
+                </div>
+            `;
+            console.error("Game loading error:", error);
+        }
+    }
+
+    // Expose functions to global scope
+    window.loadGame = loadGame;
+    window.loadQuickGame = loadQuickGame;
+
+    // Load last game if available
     const lastGame = localStorage.getItem('lastGame');
-    if(lastGame) document.getElementById('gameUrl').value = lastGame;
+    if (lastGame) {
+        document.getElementById('gameUrl').value = lastGame;
+    }
 });
