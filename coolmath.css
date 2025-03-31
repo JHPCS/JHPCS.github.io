@@ -1,152 +1,60 @@
-/* Main Styles */
 body {
+    font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0;
     background-color: #f5f5f5;
-    color: #333;
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
-    background-color: white;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-}
-
-header {
-    text-align: center;
-    margin-bottom: 20px;
 }
 
 h1 {
-    color: #ff6b6b;
-    margin: 0;
-    font-size: 2.5em;
-}
-
-.subtitle {
-    color: #666;
-    margin-top: 5px;
-}
-
-/* Search Box */
-.search-box {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-#gameUrl {
-    flex: 1;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-button {
-    padding: 12px 25px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-/* Quick Links */
-.quick-links {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-
-.quick-links p {
-    margin: 0;
-    color: #666;
-}
-
-.quick-links button {
-    padding: 8px 15px;
-    background-color: #2196F3;
-}
-
-.quick-links button:hover {
-    background-color: #0b7dda;
-}
-
-/* Game Container */
-.game-container {
-    width: 100%;
-    min-height: 500px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin: 20px 0;
-    padding: 20px;
-    background: #f9f9f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    color: #2c3e50;
     text-align: center;
 }
 
-.game-container iframe {
+#proxy-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    min-height: 500px;
+}
+
+#content {
     width: 100%;
-    height: 500px;
+    height: 600px;
     border: none;
-    background: white;
 }
 
-/* States */
-.initial-message, .loading-state, .error-state {
-    color: #666;
+#controls {
+    text-align: center;
 }
 
-.loading-state .spinner {
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #3498db;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 15px;
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-.error-state {
+button:hover {
+    background-color: #2980b9;
+}
+
+#status-message {
+    margin-top: 10px;
     color: #e74c3c;
 }
 
-.error-state button {
-    margin-top: 15px;
-    background: #e74c3c;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .search-box {
-        flex-direction: column;
-    }
-    
-    button {
-        width: 100%;
-    }
-    
-    .game-container {
-        min-height: 300px;
-    }
+#loading {
+    text-align: center;
+    padding: 20px;
 }
