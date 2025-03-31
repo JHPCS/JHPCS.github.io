@@ -1,23 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coolmath Games Unblocked</title>
-    <link rel="stylesheet" href="coolmath.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Coolmath Games</h1>
-        <div class="search-container">
-            <input type="text" id="gameUrl" placeholder="Enter game path (e.g. /0-papas-freezeria)">
-            <button onclick="loadGame()">Load Game</button>
-        </div>
-        <div class="disclaimer">
-            <p>Note: Some games may not load due to content restrictions.</p>
-        </div>
-        <iframe id="gameFrame" src="about:blank"></iframe>
+<!-- In coolmath.html -->
+<div class="container">
+    <h1>Coolmath Games</h1>
+    <div class="search-container">
+        <input type="text" id="gameUrl" placeholder="Enter game path (e.g. /0-papas-freezeria)">
+        <button onclick="loadGame()">Load Game</button>
     </div>
-    <script src="coolmath.js"></script>
-</body>
-</html>
+    <div class="disclaimer">
+        <p>Note: Some games may not load due to security restrictions.</p>
+    </div>
+    <div id="gameContainer" class="game-container"></div>
+</div>
