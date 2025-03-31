@@ -3,22 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Learning Resources</title>
-    <link rel="stylesheet" href="coolmath.css">
+    <title>Math Learning Center</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #4682b4;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        .game-frame {
+            width: 100%;
+            height: 700px;
+            border: none;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .game-selector {
+            margin: 20px 0;
+            text-align: center;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: white;
+            min-width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4682b4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #36648b;
+        }
+        .description {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>Math Learning Center</h1>
+    </header>
+    
     <div class="container">
-        <h1>Math Learning Portal</h1>
-        <div id="proxy-container">
-            <iframe id="proxy-frame" src="about:blank" style="display: none;"></iframe>
-            <div id="loading">Loading resources...</div>
-            <div id="content"></div>
+        <div class="description">
+            <h2>Interactive Math Games and Puzzles</h2>
+            <p>Welcome to our collection of educational math games that make learning fun! Choose from a variety of games below to challenge your math skills.</p>
         </div>
-        <div id="controls">
-            <button id="load-btn">Load Learning Resources</button>
-            <div id="status-message"></div>
+        
+        <div class="game-selector">
+            <select id="gameSelect">
+                <option value="">-- Select a Game --</option>
+                <option value="https://www.coolmathgames.com/0-run-3">Run 3</option>
+                <option value="https://www.coolmathgames.com/0-2048">2048</option>
+                <option value="https://www.coolmathgames.com/0-chess">Chess</option>
+                <option value="https://www.coolmathgames.com/0-snake">Snake</option>
+                <option value="https://www.coolmathgames.com/0-worlds-hardest-game">World's Hardest Game</option>
+                <option value="https://www.coolmathgames.com/0-fireboy-and-water-girl-forest-temple">Fireboy and Water Girl</option>
+                <option value="https://www.coolmathgames.com/0-papa-louie-2-when-burgers-attack">Papa's Games</option>
+                <option value="https://www.coolmathgames.com/0-bloxorz">Bloxorz</option>
+                <option value="https://www.coolmathgames.com/0-tetris">Tetris</option>
+                <option value="https://www.coolmathgames.com/0-moto-x3m">Moto X3M</option>
+            </select>
+            <button onclick="loadGame()">Play Game</button>
+            <button onclick="loadCustomGame()">Custom URL</button>
         </div>
+        
+        <iframe id="gameFrame" class="game-frame" src="about:blank" allowfullscreen></iframe>
     </div>
-    <script src="coolmath.js"></script>
+
+    <script>
+        function loadGame() {
+            const gameSelect = document.getElementById('gameSelect');
+            const gameFrame = document.getElementById('gameFrame');
+            const selectedGame = gameSelect.value;
+            
+            if (selectedGame) {
+                gameFrame.src = selectedGame;
+            } else {
+                alert('Please select a game first!');
+            }
+        }
+        
+        function loadCustomGame() {
+            const customUrl = prompt("Enter the Coolmath game URL:");
+            if (customUrl) {
+                // Basic validation to ensure it's a Coolmath URL
+                if (customUrl.includes('coolmathgames.com') || customUrl.includes('coolmath-games.com')) {
+                    document.getElementById('gameFrame').src = customUrl;
+                } else {
+                    alert('Please enter a valid Coolmath games URL.');
+                }
+            }
+        }
+    </script>
 </body>
 </html>
