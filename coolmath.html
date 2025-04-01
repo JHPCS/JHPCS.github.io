@@ -119,43 +119,41 @@
         <iframe id="gameFrame" class="game-frame" src="about:blank" allowfullscreen></iframe>
     </div>
 
-<script>
-function loadGame() {
-    const gameSelect = document.getElementById('gameSelect');
-    const gameFrame = document.getElementById('gameFrame');
-    let selectedGame = gameSelect.value;
-    
-    if (selectedGame) {
-        // Ensure URL uses HTTPS
-        if (selectedGame.startsWith('http://')) {
-            selectedGame = selectedGame.replace('http://', 'https://');
-        } else if (!selectedGame.startsWith('https://')) {
-            selectedGame = 'https://' + selectedGame;
-        }
-        
-        gameFrame.src = selectedGame;
-    } else {
-        alert('Please select a game first!');
-    }
-}
+    <script>
+        // Populate the dropdown when the page loads
+        window.onload = function() {
+            const gameSelect = document.getElementById('gameSelect');
+            
+            gameList.forEach(game => {
+                const option = document.createElement('option');
+                option.value = game.url;
+                option.textContent = game.name;
+                gameSelect.appendChild(option);
+            });
+        };
 
-function loadCustomGame() {
-    let customUrl = prompt("Enter the Coolmath game URL:");
-    if (customUrl) {
-        // Force HTTPS
-        if (customUrl.startsWith('http://')) {
-            customUrl = customUrl.replace('http://', 'https://');
-        } else if (!customUrl.startsWith('https://')) {
-            customUrl = 'https://' + customUrl;
+        function loadGame() {
+            const gameSelect = document.getElementById('gameSelect');
+            const gameFrame = document.getElementById('gameFrame');
+            const selectedGame = gameSelect.value;
+            
+            if (selectedGame) {
+                gameFrame.src = selectedGame;
+            } else {
+                alert('Please select a game first!');
+            }
         }
         
-        if (customUrl.includes('coolmathgames.com') || customUrl.includes('coolmath-games.com')) {
-            document.getElementById('gameFrame').src = customUrl;
-        } else {
-            alert('Please enter a valid Coolmath games URL.');
+        function loadCustomGame() {
+            const customUrl = prompt("Enter the Coolmath game URL:");
+            if (customUrl) {
+                if (customUrl.includes('coolmathgames.com') || customUrl.includes('coolmath-games.com')) {
+                    document.getElementById('gameFrame').src = customUrl;
+                } else {
+                    alert('Please enter a valid Coolmath games URL.');
+                }
+            }
         }
-    }
-}
-</script>
+    </script>
 </body>
 </html>
