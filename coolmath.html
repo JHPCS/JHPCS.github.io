@@ -6,10 +6,11 @@
     <title>Math Learning Center</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f8ff;
+            background-color: #f5f9fc;
+            color: #333;
         }
         .container {
             max-width: 1200px;
@@ -17,82 +18,111 @@
             padding: 20px;
         }
         header {
-            background-color: #4682b4;
+            background: linear-gradient(135deg, #4682b4, #5f9ea0);
             color: white;
-            padding: 15px 0;
+            padding: 25px 0;
             text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         h1 {
             margin: 0;
+            font-size: 2.5rem;
+            font-weight: 600;
         }
         .game-frame {
             width: 100%;
             height: 700px;
             border: none;
-            margin-top: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 25px;
+            border-radius: 8px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            background-color: #fff;
         }
         .game-selector {
-            margin: 20px 0;
+            margin: 30px 0;
             text-align: center;
         }
         select {
-            padding: 10px;
+            padding: 12px 15px;
             font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
+            border-radius: 6px;
+            border: 2px solid #ddd;
             background-color: white;
-            min-width: 300px;
+            min-width: 350px;
+            transition: border-color 0.3s;
+        }
+        select:focus {
+            border-color: #4682b4;
+            outline: none;
         }
         button {
-            padding: 10px 20px;
-            background-color: #4682b4;
+            padding: 12px 24px;
+            background: linear-gradient(to right, #4682b4, #5f9ea0);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
-            margin-left: 10px;
+            font-weight: 500;
+            margin-left: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(70, 130, 180, 0.3);
         }
         button:hover {
-            background-color: #36648b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(70, 130, 180, 0.4);
         }
-        .description {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        button:active {
+            transform: translateY(0);
+        }
+        .game-selector-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 768px) {
+            .game-selector-container {
+                flex-direction: column;
+            }
+            select {
+                min-width: 100%;
+                margin-bottom: 15px;
+            }
+            button {
+                margin: 5px 0;
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Math Learning Center</h1>
+        <div class="container">
+            <h1>Math Learning Center</h1>
+        </div>
     </header>
     
     <div class="container">
-        <div class="description">
-            <h2>Interactive Math Games and Puzzles</h2>
-            <p>Welcome to our collection of educational math games that make learning fun! Choose from a variety of games below to challenge your math skills.</p>
-        </div>
-        
         <div class="game-selector">
-            <select id="gameSelect">
-                <option value="">-- Select a Game --</option>
-                <option value="https://www.coolmathgames.com/0-run-3">Run 3</option>
-                <option value="https://www.coolmathgames.com/0-2048">2048</option>
-                <option value="https://www.coolmathgames.com/0-chess">Chess</option>
-                <option value="https://www.coolmathgames.com/0-snake">Snake</option>
-                <option value="https://www.coolmathgames.com/0-worlds-hardest-game">World's Hardest Game</option>
-                <option value="https://www.coolmathgames.com/0-fireboy-and-water-girl-forest-temple">Fireboy and Water Girl</option>
-                <option value="https://www.coolmathgames.com/0-papa-louie-2-when-burgers-attack">Papa's Games</option>
-                <option value="https://www.coolmathgames.com/0-bloxorz">Bloxorz</option>
-                <option value="https://www.coolmathgames.com/0-tetris">Tetris</option>
-                <option value="https://www.coolmathgames.com/0-moto-x3m">Moto X3M</option>
-            </select>
-            <button onclick="loadGame()">Play Game</button>
-            <button onclick="loadCustomGame()">Custom URL</button>
+            <div class="game-selector-container">
+                <select id="gameSelect">
+                    <option value="">-- Select a Game --</option>
+                    <option value="https://www.coolmathgames.com/0-run-3">Run 3</option>
+                    <option value="https://www.coolmathgames.com/0-2048">2048</option>
+                    <option value="https://www.coolmathgames.com/0-chess">Chess</option>
+                    <option value="https://www.coolmathgames.com/0-snake">Snake</option>
+                    <option value="https://www.coolmathgames.com/0-worlds-hardest-game">World's Hardest Game</option>
+                    <option value="https://www.coolmathgames.com/0-fireboy-and-water-girl-forest-temple">Fireboy and Water Girl</option>
+                    <option value="https://www.coolmathgames.com/0-papa-louie-2-when-burgers-attack">Papa's Games</option>
+                    <option value="https://www.coolmathgames.com/0-bloxorz">Bloxorz</option>
+                    <option value="https://www.coolmathgames.com/0-tetris">Tetris</option>
+                    <option value="https://www.coolmathgames.com/0-moto-x3m">Moto X3M</option>
+                </select>
+                <button onclick="loadGame()">Play Game</button>
+                <button onclick="loadCustomGame()">Custom URL</button>
+            </div>
         </div>
         
         <iframe id="gameFrame" class="game-frame" src="about:blank" allowfullscreen></iframe>
@@ -114,7 +144,6 @@
         function loadCustomGame() {
             const customUrl = prompt("Enter the Coolmath game URL:");
             if (customUrl) {
-                // Basic validation to ensure it's a Coolmath URL
                 if (customUrl.includes('coolmathgames.com') || customUrl.includes('coolmath-games.com')) {
                     document.getElementById('gameFrame').src = customUrl;
                 } else {
