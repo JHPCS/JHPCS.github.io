@@ -144,16 +144,22 @@
             }
         }
         
-        function loadCustomGame() {
-            const customUrl = prompt("Enter the Coolmath game URL:");
-            if (customUrl) {
-                if (customUrl.includes('coolmathgames.com') || customUrl.includes('coolmath-games.com')) {
-                    document.getElementById('gameFrame').src = customUrl;
-                } else {
-                    alert('Please enter a valid Coolmath games URL.');
-                }
+function loadCustomGame() {
+    let customUrl = prompt("Enter the Coolmath game URL:");
+    if (customUrl) {
+        if (customUrl.includes('coolmathgames.com') || customUrl.includes('coolmath-games.com')) {
+            // Force HTTPS by replacing http:// with https:// or adding https:// if missing
+            if (customUrl.startsWith('http://')) {
+                customUrl = customUrl.replace('http://', 'https://');
+            } else if (!customUrl.startsWith('https://')) {
+                customUrl = 'https://' + customUrl;
             }
+            document.getElementById('gameFrame').src = customUrl;
+        } else {
+            alert('Please enter a valid Coolmath games URL.');
         }
+    }
+}
     </script>
 </body>
 </html>
