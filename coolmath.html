@@ -109,6 +109,7 @@
             <div class="game-selector-container">
                 <select id="gameSelect">
                     <option value="">-- Select a Game --</option>
+                    <option value="https://www.coolmathgames.com/0-chess">Chess (Multiplayer)</option>
                     <option value="https://www.coolmathgames.com/sites/default/files/public_games/49436/">Run 3</option>
                     <option value="https://www.coolmathgames.com/sites/default/files/public_games/48987/">Papa's Freezeria</option>
                     <option value="https://www.coolmathgames.com/sites/default/files/public_games/53294/">Suika Watermelon Game</option>
@@ -214,7 +215,12 @@
             </div>
         </div>
         
-        <iframe id="gameFrame" class="game-frame" src="about:blank" allowfullscreen></iframe>
+        <iframe id="gameFrame" class="game-frame" 
+        src="about:blank" 
+        allowfullscreen
+        allow="autoplay; microphone; camera; gamepad; cross-origin-isolated"
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
+</iframe>
     </div>
 
     <script>
