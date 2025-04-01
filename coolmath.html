@@ -96,6 +96,7 @@
             }
         }
     </style>
+    <script src="gamelist.js"></script>
 </head>
 <body>
     <header>
@@ -109,16 +110,6 @@
             <div class="game-selector-container">
                 <select id="gameSelect">
                     <option value="">-- Select a Game --</option>
-                    <option value="https://www.coolmathgames.com/0-run-3">Run 3</option>
-                    <option value="https://www.coolmathgames.com/0-2048">2048</option>
-                    <option value="https://www.coolmathgames.com/0-chess">Chess</option>
-                    <option value="https://www.coolmathgames.com/0-snake">Snake</option>
-                    <option value="https://www.coolmathgames.com/0-worlds-hardest-game">World's Hardest Game</option>
-                    <option value="https://www.coolmathgames.com/0-fireboy-and-water-girl-forest-temple">Fireboy and Water Girl</option>
-                    <option value="https://www.coolmathgames.com/0-papa-louie-2-when-burgers-attack">Papa's Games</option>
-                    <option value="https://www.coolmathgames.com/0-bloxorz">Bloxorz</option>
-                    <option value="https://www.coolmathgames.com/0-tetris">Tetris</option>
-                    <option value="https://www.coolmathgames.com/0-moto-x3m">Moto X3M</option>
                 </select>
                 <button onclick="loadGame()">Play Game</button>
                 <button onclick="loadCustomGame()">Custom URL</button>
@@ -129,6 +120,18 @@
     </div>
 
     <script>
+        // Populate the dropdown when the page loads
+        window.onload = function() {
+            const gameSelect = document.getElementById('gameSelect');
+            
+            gameList.forEach(game => {
+                const option = document.createElement('option');
+                option.value = game.url;
+                option.textContent = game.name;
+                gameSelect.appendChild(option);
+            });
+        };
+
         function loadGame() {
             const gameSelect = document.getElementById('gameSelect');
             const gameFrame = document.getElementById('gameFrame');
