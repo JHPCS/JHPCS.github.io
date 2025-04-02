@@ -29,11 +29,15 @@
             font-size: 2.5rem;
             font-weight: 600;
         }
+        .game-container {
+            position: relative;
+            width: 100%;
+            margin-top: 25px;
+        }
         .game-frame {
             width: 100%;
             height: 700px;
             border: none;
-            margin-top: 25px;
             border-radius: 8px;
             box-shadow: 0 6px 16px rgba(0,0,0,0.1);
             background-color: #fff;
@@ -81,6 +85,39 @@
             align-items: center;
             gap: 15px;
             flex-wrap: wrap;
+        }
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(70, 130, 180, 0.8);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .fullscreen-btn:hover {
+            background: rgba(70, 130, 180, 1);
+        }
+        .fullscreen-icon {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+        .game-frame.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            border-radius: 0;
         }
         @media (max-width: 768px) {
             .game-selector-container {
@@ -217,17 +254,26 @@
             </div>
         </div>
         
-<iframe id="gameFrame" class="game-frame" 
-    src="about:blank" 
-    allowfullscreen
-    allow="autoplay; microphone; camera; gamepad; cross-origin-isolated; keyboard-map; fullscreen *"
-    sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-top-navigation allow-top-navigation-by-user-activation">
-</iframe>
+        <div class="game-container">
+            <button id="fullscreenBtn" class="fullscreen-btn" onclick="toggleFullscreen()">
+                <svg class="fullscreen-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
+                Fullscreen
+            </button>
+            <iframe id="gameFrame" class="game-frame" 
+                src="about:blank" 
+                allowfullscreen
+                allow="autoplay; microphone; camera; gamepad; cross-origin-isolated; keyboard-map; fullscreen *"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-top-navigation allow-top-navigation-by-user-activation">
+            </iframe>
+        </div>
     </div>
 
     <script>
         let proxyEnabled = false;
         const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+        let isFullscreen = false;
         
         function loadGame() {
             const gameSelect = document.getElementById('gameSelect');
@@ -254,6 +300,40 @@
                 document.getElementById('gameFrame').src = finalUrl;
             }
         }
+        
+        function toggleFullscreen() {
+            const gameFrame = document.getElementById('gameFrame');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            
+            if (!isFullscreen) {
+                // Enter fullscreen
+                gameFrame.classList.add('fullscreen');
+                fullscreenBtn.innerHTML = `
+                    <svg class="fullscreen-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+                    </svg>
+                    Exit Fullscreen
+                `;
+            } else {
+                // Exit fullscreen
+                gameFrame.classList.remove('fullscreen');
+                fullscreenBtn.innerHTML = `
+                    <svg class="fullscreen-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                    </svg>
+                    Fullscreen
+                `;
+            }
+            
+            isFullscreen = !isFullscreen;
+        }
+        
+        // Also support Escape key to exit fullscreen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isFullscreen) {
+                toggleFullscreen();
+            }
+        });
     </script>
 </body>
 </html>
