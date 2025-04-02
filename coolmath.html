@@ -109,6 +109,7 @@
             <div class="game-selector-container">
                 <select id="gameSelect">
                     <option value="">-- Select a Game --</option>
+                    <option value="https://powerline.io/">Powerline.io (Multiplayer)</option>
                     <option value="https://www.coolmathgames.com/0-chess">Chess (Multiplayer)</option>
                     <option value="https://copterroyale2.coolmathgames.com">Coptor royale (Multiplayer)</option>
                     <option value="https://www.coolmathgames.com/sites/default/files/public_games/49436/">Run 3</option>
@@ -226,14 +227,7 @@
 
     <script>
         let proxyEnabled = false;
-        const proxyUrl = "https://cors-anywhere.herokuapp.com/"; // Public proxy - replace with your own in production
-        
-        function toggleProxy() {
-            proxyEnabled = !proxyEnabled;
-            document.getElementById('proxyToggle').textContent = 
-                proxyEnabled ? "Disable Proxy" : "Enable Proxy";
-            alert(`Proxy ${proxyEnabled ? 'enabled' : 'disabled'}`);
-        }
+        const proxyUrl = "https://cors-anywhere.herokuapp.com/";
         
         function loadGame() {
             const gameSelect = document.getElementById('gameSelect');
@@ -244,33 +238,20 @@
                 if (proxyEnabled) {
                     selectedGame = proxyUrl + selectedGame;
                 }
-                
-                // Special handling for chess
-                if (selectedGame.includes('0-chess')) {
-                    gameFrame.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-top-navigation-by-user-activation';
-                    
-                    // Alternative approach for chess - embed the game directly
-                    gameFrame.src = "https://www.coolmathgames.com/sites/default/files/chess/index.html";
-                } else {
-                    gameFrame.src = selectedGame;
-                }
+                gameFrame.src = selectedGame;
             } else {
                 alert('Please select a game first!');
             }
         }
         
         function loadCustomGame() {
-            const customUrl = prompt("Enter the Coolmath game URL:");
+            const customUrl = prompt("Enter the game URL:");
             if (customUrl) {
-                if (customUrl.includes('coolmathgames.com') || customUrl.includes('coolmath-games.com')) {
-                    let finalUrl = customUrl;
-                    if (proxyEnabled) {
-                        finalUrl = proxyUrl + customUrl;
-                    }
-                    document.getElementById('gameFrame').src = finalUrl;
-                } else {
-                    alert('Please enter a valid Coolmath games URL.');
+                let finalUrl = customUrl;
+                if (proxyEnabled) {
+                    finalUrl = proxyUrl + customUrl;
                 }
+                document.getElementById('gameFrame').src = finalUrl;
             }
         }
     </script>
