@@ -216,21 +216,43 @@
         </div>
         
         <iframe id="gameFrame" class="game-frame" 
-        src="about:blank" 
-        allowfullscreen
-        allow="autoplay; microphone; camera; gamepad; cross-origin-isolated"
-        sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
-</iframe>
+            src="about:blank" 
+            allowfullscreen
+            allow="autoplay; microphone; camera; gamepad; cross-origin-isolated; fullscreen *"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-top-navigation-by-user-activation">
+        </iframe>
     </div>
 
     <script>
+        let proxyEnabled = false;
+        const proxyUrl = "https://cors-anywhere.herokuapp.com/"; // Public proxy - replace with your own in production
+        
+        function toggleProxy() {
+            proxyEnabled = !proxyEnabled;
+            document.getElementById('proxyToggle').textContent = 
+                proxyEnabled ? "Disable Proxy" : "Enable Proxy";
+            alert(`Proxy ${proxyEnabled ? 'enabled' : 'disabled'}`);
+        }
+        
         function loadGame() {
             const gameSelect = document.getElementById('gameSelect');
             const gameFrame = document.getElementById('gameFrame');
-            const selectedGame = gameSelect.value;
+            let selectedGame = gameSelect.value;
             
             if (selectedGame) {
-                gameFrame.src = selectedGame;
+                if (proxyEnabled) {
+                    selectedGame = proxyUrl + selectedGame;
+                }
+                
+                // Special handling for chess
+                if (selectedGame.includes('0-chess')) {
+                    gameFrame.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-top-navigation-by-user-activation';
+                    
+                    // Alternative approach for chess - embed the game directly
+                    gameFrame.src = "https://www.coolmathgames.com/sites/default/files/chess/index.html";
+                } else {
+                    gameFrame.src = selectedGame;
+                }
             } else {
                 alert('Please select a game first!');
             }
@@ -240,7 +262,11 @@
             const customUrl = prompt("Enter the Coolmath game URL:");
             if (customUrl) {
                 if (customUrl.includes('coolmathgames.com') || customUrl.includes('coolmath-games.com')) {
-                    document.getElementById('gameFrame').src = customUrl;
+                    let finalUrl = customUrl;
+                    if (proxyEnabled) {
+                        finalUrl = proxyUrl + customUrl;
+                    }
+                    document.getElementById('gameFrame').src = finalUrl;
                 } else {
                     alert('Please enter a valid Coolmath games URL.');
                 }
