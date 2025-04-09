@@ -119,6 +119,65 @@
             z-index: 9999;
             border-radius: 0;
         }
+        .proxy-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-right: 10px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #4682b4;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .status-indicator {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            z-index: 100;
+        }
         @media (max-width: 768px) {
             .game-selector-container {
                 flex-direction: column;
@@ -253,6 +312,13 @@
                 <button onclick="loadGame()">Play Game</button>
                 <button onclick="loadCustomGame()">Custom URL</button>
             </div>
+            <div class="proxy-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="proxyToggle" checked>
+                    <span class="slider"></span>
+                </label>
+                <span>Use Proxy (Required for blocked sites)</span>
+            </div>
         </div>
         
         <div class="game-container">
@@ -262,6 +328,7 @@
                 </svg>
                 Fullscreen
             </button>
+            <div id="statusIndicator" class="status-indicator">Loading...</div>
             <iframe id="gameFrame" class="game-frame" 
                 src="about:blank" 
                 allowfullscreen
@@ -272,9 +339,26 @@
     </div>
 
     <script>
-        let proxyEnabled = false;
-        const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+        // Configuration
+        const proxyServerUrl = window.location.protocol + "//" + window.location.hostname + ":" + (window.location.port || "80") + "/proxy/";
         let isFullscreen = false;
+        
+        // Initialize toggle based on localStorage or default to true
+        document.getElementById('proxyToggle').checked = localStorage.getItem('proxyEnabled') !== 'false';
+        
+        // Save toggle state when changed
+        document.getElementById('proxyToggle').addEventListener('change', function() {
+            localStorage.setItem('proxyEnabled', this.checked);
+        });
+        
+        function showStatus(message) {
+            const statusIndicator = document.getElementById('statusIndicator');
+            statusIndicator.textContent = message;
+            statusIndicator.style.display = 'block';
+            setTimeout(() => {
+                statusIndicator.style.display = 'none';
+            }, 3000);
+        }
         
         function loadGame() {
             const gameSelect = document.getElementById('gameSelect');
@@ -282,10 +366,15 @@
             let selectedGame = gameSelect.value;
             
             if (selectedGame) {
-                if (proxyEnabled) {
-                    selectedGame = proxyUrl + selectedGame;
+                showStatus('Loading game...');
+                
+                if (document.getElementById('proxyToggle').checked) {
+                    // Encode the URL to handle special characters properly
+                    const encodedUrl = encodeURIComponent(selectedGame);
+                    gameFrame.src = proxyServerUrl + encodedUrl;
+                } else {
+                    gameFrame.src = selectedGame;
                 }
-                gameFrame.src = selectedGame;
             } else {
                 alert('Please select a game first!');
             }
@@ -293,12 +382,17 @@
         
         function loadCustomGame() {
             const customUrl = prompt("Enter the game URL:");
+            
             if (customUrl) {
-                let finalUrl = customUrl;
-                if (proxyEnabled) {
-                    finalUrl = proxyUrl + customUrl;
+                showStatus('Loading game...');
+                
+                if (document.getElementById('proxyToggle').checked) {
+                    // Encode the URL to handle special characters properly
+                    const encodedUrl = encodeURIComponent(customUrl);
+                    document.getElementById('gameFrame').src = proxyServerUrl + encodedUrl;
+                } else {
+                    document.getElementById('gameFrame').src = customUrl;
                 }
-                document.getElementById('gameFrame').src = finalUrl;
             }
         }
         
@@ -329,10 +423,18 @@
             isFullscreen = !isFullscreen;
         }
         
-        // Also support Escape key to exit fullscreen
+        // Support Escape key to exit fullscreen
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && isFullscreen) {
                 toggleFullscreen();
+            }
+        });
+        
+        // Handle iframe load events to update status
+        document.getElementById('gameFrame').addEventListener('load', function() {
+            // Only show message if not "about:blank"
+            if (this.src !== 'about:blank') {
+                showStatus('Game loaded successfully!');
             }
         });
     </script>
